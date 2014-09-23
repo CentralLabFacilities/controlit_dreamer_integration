@@ -1,0 +1,20 @@
+<package>
+    <description brief="controlit_dreamer_integration">
+        This package contains packages that enable ControlIt! to work with Dreamer.
+    </description>
+
+    <author>Chien-Liang Fok</author>
+    <license>LGPLv3</license>
+    <review status="unreviewed" notes=""/>
+    <url>http://ros.org/wiki/controlit_dreamer_integration</url>
+
+    <depend package="controlit_dreamer_integration"/>
+
+    <depend package="controlit_core"/>
+    
+    <export>
+        <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -lcontrolit_core"/>
+        <!-- <controlit plugin="${prefix}/tests/factories/controlit_example_plugin.xml" /> -->
+    </export>
+
+</package>
