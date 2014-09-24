@@ -1,0 +1,9 @@
+<library path="lib/libcontrolit_dreamer_integration">
+
+  <class name="controlit_servo_clock/ServoClockDreamer" type="controlit::servo_clock_library::ServoClockDreamer" base_class_type="controlit::ServoClock">
+    <description>
+      Implements the RTAI-based servo clock used by Dreamer.
+    </description>
+  </class>
+
+</library>

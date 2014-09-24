@@ -12,14 +12,14 @@ controlit_build_init()
 # find Eigen/RBDL
 controlit_build_depend_rbdl()
 
-
 #set the default path for built executables to the "bin" directory
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-# add the wbc source files
-rosbuild_add_executable(${PROJECT_NAME} src/ControlItExec.cpp)
+
+file(GLOB SRCS src/*.cpp)
+rosbuild_add_library (${PROJECT_NAME} SHARED ${SRCS})
 
 rosbuild_add_openmp_flags(${PROJECT_NAME})
 rosbuild_link_boost(${PROJECT_NAME} signals)
