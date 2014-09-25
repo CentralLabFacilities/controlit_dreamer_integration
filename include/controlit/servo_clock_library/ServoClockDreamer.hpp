@@ -1,6 +1,6 @@
 #ifndef __CONTROLIT_DREAMER_INTEGRATION_SERVO_CLOCK_RTAI_HPP__
 #define __CONTROLIT_DREAMER_INTEGRATION_SERVO_CLOCK_RTAI_HPP__
-b
+
 #include <controlit/ServoClock.hpp>
 #include <thread>  // for std::mutex
 
@@ -13,6 +13,15 @@ b
 
 namespace controlit {
 namespace servo_clock_library {
+
+typedef enum {
+    RT_THREAD_UNDEF,
+    RT_THREAD_INIT,
+    RT_THREAD_RUNNING,
+    RT_THREAD_CLEANUP,
+    RT_THREAD_ERROR,
+    RT_THREAD_DONE
+} rt_thread_state_t;
 
 /*!
  * The coordinator for robots that are controlled via ROS topics.
@@ -33,6 +42,11 @@ public:
      * The destructor.
      */
     virtual ~ServoClockDreamer();
+
+    /*!
+     * This is executed by the real-time thread.
+     */
+    void * rtMethod(void * arg);
 
 protected:
 
@@ -60,10 +74,6 @@ private:
 
     // RT_TASK * normalTask;
 
-    /*!
-     * This is executed by the real-time thread.
-     */
-    void * rtMethod(void * arg);
 
 
 };

@@ -18,6 +18,8 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 
+include_directories (/usr/realtime/include)
+
 file(GLOB SRCS src/*.cpp)
 rosbuild_add_library (${PROJECT_NAME} SHARED ${SRCS})
 

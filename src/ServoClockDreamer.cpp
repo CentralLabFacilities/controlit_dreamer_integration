@@ -15,6 +15,12 @@ namespace servo_clock_library {
 #define NON_REALTIME_PRIORITY 1
 #define MAX_START_LATENCY_CYCLES 30
 
+void * call_rtMethod(void * scd)
+{
+    ServoClockDreamer * servoClock = static_cast<ServoClockDreamer*>(scd);
+    return servoClock->rtMethod(nullptr);
+}
+
 ServoClockDreamer::ServoClockDreamer() :
     ServoClock(), // Call super-class' constructor
     rtThreadState(RT_THREAD_UNDEF)
@@ -33,11 +39,10 @@ void ServoClockDreamer::updateLoopImpl()
 
     // Compute the period of the real-time servo loop 
     rtPeriod_ns = 1000000000L / frequency;
-    long long const rtPeriod_us(rt_period_ns / 1000);
+    long long const rtPeriod_us(rtPeriod_ns / 1000);
     
     // Change scheduler of this thread to be RTAI
     rt_allow_nonroot_hrt();
-    int nonRTPriority = 1;
     RT_TASK * normalTask = rt_task_init_schmod(nam2num("TSHM"), NON_REALTIME_PRIORITY, 0, 0, SCHED_FIFO, 0xF);
     if (!normalTask)
         throw std::runtime_error("rt_task_init_schmod failed for non-RT task");
@@ -45,8 +50,8 @@ void ServoClockDreamer::updateLoopImpl()
     // Spawn the real-time thread
     CONTROLIT_INFO_RT << "Spawning RT thread";
     rtThreadState = RT_THREAD_UNDEF;
-    int rtThreadID = rt_thread_create((void*) this->rtMethod,
-                                  0, // parameters
+    int rtThreadID = rt_thread_create((void*)call_rtMethod,
+                                  this, // parameters
                                   10000); // XXXX 10000 is stack size I think
 
     // Wait up to MAX_START_LATENCY_CYCLES for real-time thread to begin running
@@ -92,7 +97,7 @@ void ServoClockDreamer::updateLoopImpl()
     PRINT_INFO_STATEMENT_RT("Method exiting.")
 }
 
-void * ServoClockDreamer::rtMethod()
+void * ServoClockDreamer::rtMethod(void *)
 {
     // M3Sds * sys;
     // RT_TASK * task = nullptr;
@@ -106,7 +111,7 @@ void * ServoClockDreamer::rtMethod()
     // jspace::State state(7, 7, 6);
     // jspace::Vector command(7);
     // RTIME tickPeriod;
-    int cb_status;
+    // int cb_status;
     
     //////////////////////////////////////////////////
     // Initialize shared memory, RT task, and semaphores.
@@ -130,7 +135,7 @@ void * ServoClockDreamer::rtMethod()
     {
         CONTROLIT_ERROR_RT << fprintf(stderr, "rt_task_init_schmod failed for TSHMP\n");
         rtThreadState = RT_THREAD_ERROR;
-        rt_shm_free(nam2num(TORQUE_SHM));
+        // rt_shm_free(nam2num(TORQUE_SHM));
         return nullptr;
     }
     
@@ -179,7 +184,7 @@ void * ServoClockDreamer::rtMethod()
         CONTROLIT_ERROR_RT << "Invalid real-time period " << rtPeriod_ns << " ns";
         rtThreadState = RT_THREAD_ERROR;
         rt_task_delete(task);
-        rt_shm_free(nam2num(TORQUE_SHM));
+        // rt_shm_free(nam2num(TORQUE_SHM));
         return nullptr;
     }
     
@@ -276,16 +281,16 @@ void * ServoClockDreamer::rtMethod()
     rtThreadState = RT_THREAD_CLEANUP;
     rt_make_soft_real_time();
     
-    cb_status = rtutil->cleanup();
-    if (cb_status != 0) 
-    {
-        CONTROLIT_ERROR_RT << "Cleanup returned " << cb_status;
-        rtThreadState = RT_THREAD_ERROR;
-    }
-    else 
-    {
-        rtThreadState = RT_THREAD_DONE;
-    }
+    // cb_status = rtutil->cleanup();
+    // if (cb_status != 0) 
+    // {
+    //     CONTROLIT_ERROR_RT << "Cleanup returned " << cb_status;
+    //     rtThreadState = RT_THREAD_ERROR;
+    // }
+    // else 
+    // {
+    //     rtThreadState = RT_THREAD_DONE;
+    // }
     
   // cleanup_period_check:
   // cleanup_init_callback:
@@ -293,7 +298,7 @@ void * ServoClockDreamer::rtMethod()
   // cleanup_status_sem:
     rt_task_delete(task);
   // cleanup_task:
-    rt_shm_free(nam2num(TORQUE_SHM));
+    // rt_shm_free(nam2num(TORQUE_SHM));
   // cleanup_sys:
 
     return nullptr;
