@@ -243,10 +243,6 @@ void * ServoClockDreamer::rtMethod(void *)
         servoableClass->update(currTime, duration);
         prevTime = currTime;
   
-  
-        servoableClass->update(currTime, duration);
-  
-  
         long long const end_time(nano2count(rt_get_cpu_time_ns()));
         long long const dt(end_time - start_time);
         if (dt > tickPeriod) 
