@@ -65,6 +65,8 @@ public:
      */
     bool stop();
 
+    virtual void update(const ros::Time & time, const ros::Duration & period);
+
     /*!
      * Returns a string representation of this class.
      */

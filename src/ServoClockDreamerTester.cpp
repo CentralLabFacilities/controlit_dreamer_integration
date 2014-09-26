@@ -43,7 +43,7 @@ ServoClockDreamerTester::~ServoClockDreamerTester()
 
 bool ServoClockDreamerTester::init()
 {
-    servoClock.reset(new controlit::servo_clock_library::ServoClockDreamer());
+    servoClock.reset(new ServoClockDreamer);
     servoClock->init(this);
     initialized = true;
     return true;
@@ -51,7 +51,8 @@ bool ServoClockDreamerTester::init()
 
 bool ServoClockDreamerTester::start()
 {
-    servoClock->start();
+	double freq = 1000; // TODO: ake this a command line parameter
+    servoClock->start(freq);
     return true;
 }
 
@@ -61,6 +62,10 @@ bool ServoClockDreamerTester::stop()
     return true;
 }
 
+void ServoClockDreamerTester::update(const ros::Time & time, const ros::Duration & period)
+{
+
+}
 
 std::string ServoClockDreamerTester::toString(std::string const& prefix) const
 {
@@ -112,9 +117,9 @@ int main(int argc, char **argv)
     std::cout << "ServoClockDreamerTester: Starting test..." << std::endl;
 
     // Create and start a ServoClockDreamerTester
-    controlit::exec::ServoClockDreamerTester ServoClockDreamerTester;
-    ServoClockDreamerTester.init();
-    ServoClockDreamerTester.start();
+    controlit::servo_clock_library::ServoClockDreamerTester servoClockDreamerTester;
+    servoClockDreamerTester.init();
+    servoClockDreamerTester.start();
 
     // Loop until someone hits ctrl+c
     ros::Rate loop_rate(1);
@@ -130,5 +135,5 @@ int main(int argc, char **argv)
     std::cout << "ServoClockDreamerTester: Done test, stopping servo clock." << std::endl;
 
     // Stop ServoClockDreamerTester
-    ServoClockDreamerTester.stop();
+    servoClockDreamerTester.stop();
 }

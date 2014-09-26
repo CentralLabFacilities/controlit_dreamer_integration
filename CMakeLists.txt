@@ -29,6 +29,7 @@ controlit_build_link_depends(${PROJECT_NAME})
 
 rosbuild_add_executable(ServoClockDreamerTester src/ServoClockDreamerTester.cpp)
 controlit_build_link_depends(ServoClockDreamerTester)
+target_link_libraries(ServoClockDreamerTester ${PROJECT_NAME})
 
 # TESTS!
 # add_subdirectory(tests)
