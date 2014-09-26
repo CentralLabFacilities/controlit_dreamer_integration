@@ -27,5 +27,8 @@ rosbuild_add_openmp_flags(${PROJECT_NAME})
 rosbuild_link_boost(${PROJECT_NAME} signals)
 controlit_build_link_depends(${PROJECT_NAME})
 
+rosbuild_add_executable(ServoClockDreamerTester src/ServoClockDreamerTester.cpp)
+controlit_build_link_depends(ServoClockDreamerTester)
+
 # TESTS!
 # add_subdirectory(tests)

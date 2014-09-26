@@ -1,5 +1,4 @@
 #include <controlit/servo_clock_library/ServoClockDreamer.hpp>
-
 #include <controlit/logging/RealTimeLogging.hpp>
 
 namespace controlit {
