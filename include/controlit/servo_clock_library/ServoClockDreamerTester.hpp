@@ -90,6 +90,8 @@ private:
      * The servo clock that is being tested.
      */
     std::unique_ptr<controlit::servo_clock_library::ServoClockDreamer> servoClock;
+
+    ros::Time prevTime;
 };
 
 } // namespace servo_clock_library

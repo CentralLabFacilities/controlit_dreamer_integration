@@ -23,6 +23,7 @@
  */
 
 #include <controlit/servo_clock_library/ServoClockDreamerTester.hpp>
+// #include <controlit/logging/RealTimeLogging.hpp>
 // #include <controlit/addons/ros/ROSParameterAccessor.hpp>
 // #include <controlit/servo_clock_library/ServoClockDreamer.hpp>
 
@@ -51,6 +52,7 @@ bool ServoClockDreamerTester::init()
 
 bool ServoClockDreamerTester::start()
 {
+	prevTime = ros::Time::now();
 	double freq = 1000; // TODO: ake this a command line parameter
     servoClock->start(freq);
     return true;
@@ -64,7 +66,8 @@ bool ServoClockDreamerTester::stop()
 
 void ServoClockDreamerTester::update(const ros::Time & time, const ros::Duration & period)
 {
-
+    std::cerr << "Method called, elapsed time = " << (time - prevTime).toSec() << std::endl;
+    prevTime = time;
 }
 
 std::string ServoClockDreamerTester::toString(std::string const& prefix) const
