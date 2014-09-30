@@ -240,7 +240,7 @@ void RobotInterfaceDreamer::printSHMStatus()
     std::stringstream ss;
 
     ss << "M3UTATorqueShmSdsStatus:\n"
-       << " - timestamp: " << shm_status.timestamp << "\n";
+       << " - timestamp: " << shm_status.timestamp << "\n"
        << " - right_arm:\n";
 
     printLimbSHMStatus(ss, "    ", shm_status.right_arm);
@@ -303,7 +303,7 @@ void RobotInterfaceDreamer::printSHMCommand()
     std::stringstream ss;
 
     ss << "M3TorqueShmSdsBaseCommand:\n";
-       << " - timestamp: " << shm_cmd.timestamp << "\n";
+       << " - timestamp: " << shm_cmd.timestamp << "\n"
        << " - right_arm:\n";
 
     printLimbSHMCommand(ss, "    ", shm_cmd.right_arm);
@@ -334,7 +334,7 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
 
     // Read the status and initialize the 
     rt_sem_wait(status_sem);
-    memcpy(&shm_status, sharedMemory->status, sizeof(shm_status));
+    memcpy(&shm_status, sharedMemoryPtr->status, sizeof(shm_status));
     rt_sem_signal(status_sem);
 
     // Temporary code to print everything received
