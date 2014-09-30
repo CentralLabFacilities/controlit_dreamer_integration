@@ -6,6 +6,7 @@
 #include <thread>  // for std::mutex
 #include <unistd.h>
 // #include <controlit_robot_interface_library/JointState.h>
+#include "m3uta/controllers/torque_shm_uta_sds.h"
 // #include <std_msgs/Int64.h>
 // #include <std_msgs/Float64.h>
 // #include <std_msgs/Float64MultiArray.h>

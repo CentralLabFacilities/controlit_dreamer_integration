@@ -6,8 +6,6 @@
 #include <controlit/logging/RealTimeLogging.hpp>
 #include <controlit/dreamer/OdometryStateReceiverDreamer.hpp>
 
-
-#include "m3uta/controllers/torque_shm_uta_sds.h"
 #include "m3/robots/chain_name.h"
 #include <m3rt/base/m3ec_def.h>
 #include <m3rt/base/m3rt_def.h>
