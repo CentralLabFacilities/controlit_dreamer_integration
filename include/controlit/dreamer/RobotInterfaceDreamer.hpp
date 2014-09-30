@@ -95,7 +95,7 @@ private:
      * A pointer to the shared memory used to communicate with the M3
      * server.  M3Sds stands for "M3 Shared Data Structure".
      */
-    M3Sds * sharedMemory;
+    M3Sds * sharedMemoryPtr;
 
     /*!
      * A pointer to the semaphore protecting the status register.

@@ -10,6 +10,11 @@
 #include <m3rt/base/m3ec_def.h>
 #include <m3rt/base/m3rt_def.h>
 
+#include <rtai_shm.h>
+
+#define TORQUE_SHM "TSHMM"
+#define TORQUE_CMD_SEM "TSHMC"
+#define TORQUE_STATUS_SEM "TSHMS"
 
 namespace controlit {
 namespace dreamer {
@@ -31,9 +36,9 @@ namespace dreamer {
 #define PRINT_COMMAND 0
 
 RobotInterfaceDreamer::RobotInterfaceDreamer() :
-    RobotInterface(), // Call super-class' constructor
-    receivedRobotState(false),
-    rcvdJointState(false)
+    RobotInterface() // Call super-class' constructor
+    //receivedRobotState(false),
+    //rcvdJointState(false)
 {
 }
 
@@ -77,15 +82,13 @@ bool RobotInterfaceDreamer::init(ros::NodeHandle & nh, RTControlModel * model)
     status_sem = (SEM *) rt_get_adr(nam2num(TORQUE_STATUS_SEM));
     if ( ! status_sem) {
       fprintf(stderr, "semaphore %s not found\n", TORQUE_STATUS_SEM);
-      rt_thread_state = RT_THREAD_ERROR;
-      goto cleanup_status_sem;
+      return false;
     }
     
     command_sem = (SEM *) rt_get_adr(nam2num(TORQUE_CMD_SEM));
     if ( ! command_sem) {
       fprintf(stderr, "semaphore %s not found\n", TORQUE_CMD_SEM);
-      rt_thread_state = RT_THREAD_ERROR;
-      goto cleanup_command_sem;
+      return false;
     }
 
 //----------------------------------------------------------------------------
@@ -104,9 +107,9 @@ bool RobotInterfaceDreamer::init(ros::NodeHandle & nh, RTControlModel * model)
     //   std::cerr << joint->name << "->" << index << std::endl;
     //   index++;
     // }
-    const std::vector<std::string> & names = model->get()->getRealJointNamesVector();
+    // const std::vector<std::string> & names = model->get()->getRealJointNamesVector();
 
-    PRINT_INFO_STATEMENT("Number of DoFs: " << names.size());
+    // PRINT_INFO_STATEMENT("Number of DoFs: " << names.size());
 
     // See Example here:  https://bitbucket.org/Jraipxg/matec_control/src/1d812060db36d7656e05d2cf8b8e182eccb1fcc2/atlas_sim/src/sm_plugin.cpp?at=develop
 
