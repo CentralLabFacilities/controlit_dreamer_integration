@@ -10,7 +10,7 @@
 #include <controlit/OdometryStateReceiver.hpp>
 #include <controlit/EigenRealtimeBuffer.hpp>
 
-#include <shared_memory_interface/shared_memory_subscriber.hpp>
+// #include <shared_memory_interface/shared_memory_subscriber.hpp>
 
 namespace controlit {
 namespace dreamer {
