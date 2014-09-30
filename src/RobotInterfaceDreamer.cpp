@@ -302,7 +302,7 @@ void RobotInterfaceDreamer::printSHMCommand()
 {
     std::stringstream ss;
 
-    ss << "M3TorqueShmSdsBaseCommand:\n";
+    ss << "M3TorqueShmSdsBaseCommand:\n"
        << " - timestamp: " << shm_cmd.timestamp << "\n"
        << " - right_arm:\n";
 
@@ -562,7 +562,7 @@ bool RobotInterfaceDreamer::write(const ros::Time & time, const controlit::Comma
 {
 //     if (jointNameMap.size() == 0) return false;
 
-//     bool result = false;
+     bool result = false;
 
 //     // if (position_cmds.size() != jointNameMap.size())
 //     // {
