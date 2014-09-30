@@ -1,4 +1,4 @@
-#include <controlit/robot_interface_library/RobotInterfaceDreamer.hpp>
+#include <controlit/dreamer/RobotInterfaceDreamer.hpp>
 
 #include <chrono>
 #include <controlit/Command.hpp>
