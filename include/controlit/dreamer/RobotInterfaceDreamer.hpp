@@ -12,6 +12,8 @@
 // #include <std_msgs/Float64MultiArray.h>
 #include <urdf/model.h>
 
+#include <rtai_sem.h> // for SEM
+
 // #include <shared_memory_interface/shared_memory_publisher.hpp>
 // #include <shared_memory_interface/shared_memory_subscriber.hpp>
 
