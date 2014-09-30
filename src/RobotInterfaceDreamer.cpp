@@ -338,24 +338,25 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
     rt_sem_signal(status_sem);
 
     // Temporary code to print everything received
+    printSHMStatus();
     
-    for (size_t ii(0); ii < 7; ++ii) { // XXXX to do: hardcoded NDOF
-      state.position_[ii] = M_PI * shm_status.right_arm.theta[ii] / 180.0;
-      state.velocity_[ii] = M_PI * shm_status.right_arm.thetadot[ii] / 180.0;
-      //state.force_[ii] = 1.0e-3 * shm_status.right_arm.torque[ii];
-    }
+    // for (size_t ii(0); ii < 7; ++ii) { // XXXX to do: hardcoded NDOF
+    //   state.position_[ii] = M_PI * shm_status.right_arm.theta[ii] / 180.0;
+    //   state.velocity_[ii] = M_PI * shm_status.right_arm.thetadot[ii] / 180.0;
+    //   //state.force_[ii] = 1.0e-3 * shm_status.right_arm.torque[ii];
+    // }
     
-    ///Force-Torque Sensor
-    for (size_t jj(0); jj < 6; ++jj) {
-      state.force_[jj] = 1.0e-3 * shm_status.right_arm.wrench[jj];
-    }   
+    // ///Force-Torque Sensor
+    // for (size_t jj(0); jj < 6; ++jj) {
+    //   state.force_[jj] = 1.0e-3 * shm_status.right_arm.wrench[jj];
+    // }   
 
-    cb_status = rtutil->init(state);
-    if (0 != cb_status) {
-      fprintf(stderr, "init callback returned %d\n", cb_status);
-      rt_thread_state = RT_THREAD_ERROR;
-      goto cleanup_init_callback;
-    }
+    // cb_status = rtutil->init(state);
+    // if (0 != cb_status) {
+    //   fprintf(stderr, "init callback returned %d\n", cb_status);
+    //   rt_thread_state = RT_THREAD_ERROR;
+    //   goto cleanup_init_callback;
+    // }
 
     // Check if RTT can be computed
     // std::vector<double> current_rtt;
