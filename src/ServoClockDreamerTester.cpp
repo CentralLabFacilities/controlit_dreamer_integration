@@ -52,8 +52,8 @@ bool ServoClockDreamerTester::init()
 
 bool ServoClockDreamerTester::start()
 {
-	prevTime = ros::Time::now();
-	double freq = 1000; // TODO: ake this a command line parameter
+    prevTime = ros::Time::now();
+    double freq = 1000; // TODO: ake this a command line parameter
     servoClock->start(freq);
     return true;
 }
@@ -66,7 +66,7 @@ bool ServoClockDreamerTester::stop()
 
 void ServoClockDreamerTester::update(const ros::Time & time, const ros::Duration & period)
 {
-	double elapsedTimeMS = (time - prevTime).toSec() * 1000;
+    double elapsedTimeMS = (time - prevTime).toSec() * 1000;
     std::cerr << "Method called, elapsed time = " << elapsedTimeMS << " ms, jitter = " << (elapsedTimeMS - 1) * 1000 << " us" << std::endl;
     prevTime = time;
 }
