@@ -22,13 +22,14 @@
  * <http://www.gnu.org/licenses/>
  */
 
-#include <controlit/servo_clock_library/RobotInterfaceDreamerTester.hpp>
+// #include <controlit/servo_clock_library/RobotInterfaceDreamerTester.hpp>
 // #include <controlit/logging/RealTimeLogging.hpp>
 // #include <controlit/addons/ros/ROSParameterAccessor.hpp>
 // #include <controlit/servo_clock_library/ServoClockDreamer.hpp>
 
 #include <ros/ros.h>
 #include <controlit/dreamer/RobotInterfaceDreamer.hpp>
+#include <controlit/RTControlModel.hpp>
 
 // This is the main method that starts everything.
 int main(int argc, char **argv)
@@ -68,22 +69,21 @@ int main(int argc, char **argv)
     std::cout << "RobotInterfaceDreamerTester: Starting test..." << std::endl;
 
     // Instantiate a RTControlModel and a RobotInterfaceDreamer object
-    RTControlModel model;
+    controlit::RTControlModel model;
     controlit::dreamer::RobotInterfaceDreamer robotInterfaceDreamer;
-    robotInterfaceDreamer.init(nh, &model)
+    robotInterfaceDreamer.init(nh, &model);
 
     // Instantiate a RobotState object
     controlit::RobotState robotState;
 
     // Loop until someone hits ctrl+c
     ros::Rate loop_rate(1);
-    int loopCounter = 0;
 
     std::cout << "RobotInterfaceDreamerTester: Running test..." << std::endl;
     while (ros::ok())
     {
         bool block = false;
-        robotIntefaceDreamer.read(ros::Time::now(), robotState, block);
+        robotInterfaceDreamer.read(ros::Time::now(), robotState, block);
         loop_rate.sleep();
     }
 

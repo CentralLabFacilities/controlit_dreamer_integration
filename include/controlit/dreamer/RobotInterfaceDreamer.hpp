@@ -52,8 +52,6 @@ public:
 
     // EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-protected:
-
     /*!
      * Obtains the current state of the robot.
      *
