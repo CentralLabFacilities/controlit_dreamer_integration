@@ -70,7 +70,7 @@ bool RobotInterfaceDreamer::init(ros::NodeHandle & nh, RTControlModel * model)
     sharedMemoryPtr = (M3Sds *) rt_shm_alloc(nam2num(TORQUE_SHM), sizeof(M3Sds), USE_VMALLOC);
     if (sharedMemoryPtr) 
     {
-        CONTROLIT_ERROR << "Found shared memory.";
+        CONTROLIT_INFO << "Found shared memory.";
     }
     else 
     {
@@ -80,14 +80,16 @@ bool RobotInterfaceDreamer::init(ros::NodeHandle & nh, RTControlModel * model)
 
     // Get the semaphores protecting the status and command shared memory registers.
     status_sem = (SEM *) rt_get_adr(nam2num(TORQUE_STATUS_SEM));
-    if ( ! status_sem) {
-      fprintf(stderr, "semaphore %s not found\n", TORQUE_STATUS_SEM);
+    if ( ! status_sem) 
+    {
+      CONTROLIT_ERROR << "Torque status semaphore " << TORQUE_STATUS_SEM << " not found";
       return false;
     }
     
     command_sem = (SEM *) rt_get_adr(nam2num(TORQUE_CMD_SEM));
-    if ( ! command_sem) {
-      fprintf(stderr, "semaphore %s not found\n", TORQUE_CMD_SEM);
+    if ( ! command_sem) 
+    {
+      CONTROLIT_ERROR << "Torque command semaphore " << TORQUE_CMD_SEM << " not found";
       return false;
     }
 
