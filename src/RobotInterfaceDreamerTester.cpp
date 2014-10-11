@@ -71,6 +71,7 @@ int main(int argc, char **argv)
     // Instantiate a RTControlModel and a RobotInterfaceDreamer object
     controlit::RTControlModel model;
     controlit::dreamer::RobotInterfaceDreamer robotInterfaceDreamer;
+
     robotInterfaceDreamer.init(nh, &model);
 
     // Instantiate a RobotState object

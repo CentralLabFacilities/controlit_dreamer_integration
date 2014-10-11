@@ -74,7 +74,7 @@ bool RobotInterfaceDreamer::init(ros::NodeHandle & nh, RTControlModel * model)
     }
     else 
     {
-        CONTROLIT_ERROR << "rt_shm_alloc failed for " << TORQUE_SHM;
+        CONTROLIT_ERROR << "Call to rt_shm_alloc failed for shared memory name \"" << TORQUE_SHM << "\"";
         return false;
     }
 
@@ -82,14 +82,14 @@ bool RobotInterfaceDreamer::init(ros::NodeHandle & nh, RTControlModel * model)
     status_sem = (SEM *) rt_get_adr(nam2num(TORQUE_STATUS_SEM));
     if ( ! status_sem) 
     {
-      CONTROLIT_ERROR << "Torque status semaphore " << TORQUE_STATUS_SEM << " not found";
+      CONTROLIT_ERROR << "Torque status semaphore \"" << TORQUE_STATUS_SEM << "\" not found";
       return false;
     }
     
     command_sem = (SEM *) rt_get_adr(nam2num(TORQUE_CMD_SEM));
     if ( ! command_sem) 
     {
-      CONTROLIT_ERROR << "Torque command semaphore " << TORQUE_CMD_SEM << " not found";
+      CONTROLIT_ERROR << "Torque command semaphore \"" << TORQUE_CMD_SEM << "\" not found";
       return false;
     }
 
