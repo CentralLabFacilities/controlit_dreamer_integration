@@ -53,7 +53,7 @@ bool ServoClockDreamerTester::init()
 bool ServoClockDreamerTester::start()
 {
     prevTime = ros::Time::now();
-    double freq = 1000; // TODO: ake this a command line parameter
+    double freq = 1000; // TODO: make this a command line parameter
     servoClock->start(freq);
     return true;
 }

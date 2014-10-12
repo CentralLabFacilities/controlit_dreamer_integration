@@ -22,14 +22,69 @@
  * <http://www.gnu.org/licenses/>
  */
 
-// #include <controlit/servo_clock_library/RobotInterfaceDreamerTester.hpp>
-// #include <controlit/logging/RealTimeLogging.hpp>
-// #include <controlit/addons/ros/ROSParameterAccessor.hpp>
-// #include <controlit/servo_clock_library/ServoClockDreamer.hpp>
+#include <controlit/servo_clock_library/RobotInterfaceDreamerTester.hpp>
 
-#include <ros/ros.h>
-#include <controlit/dreamer/RobotInterfaceDreamer.hpp>
-#include <controlit/RTControlModel.hpp>
+namespace controlit {
+namespace dreamer {
+
+#define TEST_PERIOD 10
+
+RobotInterfaceDreamerTester::RobotInterfaceDreamerTester() :
+  initialized(false),
+  firstRound(true)
+{
+}
+
+RobotInterfaceDreamerTester::~RobotInterfaceDreamerTester()
+{
+}
+
+bool RobotInterfaceDreamerTester::init()
+{
+    // Start a real-time servo clock. 
+    // The robot interface will be initialized the first time the servo clock calls update.
+    servoClock->init(this);
+    initialized = true;
+    return true;
+}
+
+bool RobotInterfaceDreamerTester::start()
+{
+    prevTime = ros::Time::now();
+    double freq = 1; // TODO: make this a command line parameter
+    servoClock->start(freq);
+    return true;
+}
+
+bool RobotInterfaceDreamerTester::stop()
+{
+    servoClock->stop();
+    return true;
+}
+
+void RobotInterfaceDreamerTester::update(const ros::Time & time, const ros::Duration & period)
+{
+    if (firstRound)
+    {
+        if (!robotInterface.init(nh, &model))
+        {
+            std::cerr << "Problems initializing the robot interface." << std::endl;
+            ros::shutdown();
+        }
+        firstRound = false;
+    }
+    else
+    {
+        if (!robotInterfaceDreamer.read(ros::Time::now(), robotState))
+        {
+            std::cerr << "Problems reading from robot state." << std::endl;
+        }
+    }
+}
+
+} // namespace dreamer
+} // namespace controlit
+
 
 // This is the main method that starts everything.
 int main(int argc, char **argv)
@@ -61,32 +116,26 @@ int main(int argc, char **argv)
         }
     }
 
-    ros::AsyncSpinner spinner(1);
-    spinner.start();
-
-    ros::NodeHandle nh;
-
     std::cout << "RobotInterfaceDreamerTester: Starting test..." << std::endl;
 
-    // Instantiate a RTControlModel and a RobotInterfaceDreamer object
-    controlit::RTControlModel model;
-    controlit::dreamer::RobotInterfaceDreamer robotInterfaceDreamer;
-
-    robotInterfaceDreamer.init(nh, &model);
-
-    // Instantiate a RobotState object
-    controlit::RobotState robotState;
+    // Create and start a RobotInterfaceDreamerTester
+    controlit::dreamer::RobotInterfaceDreamerTester RobotInterfaceDreamerTester;
+    RobotInterfaceDreamerTester.init();
+    RobotInterfaceDreamerTester.start();
 
     // Loop until someone hits ctrl+c
     ros::Rate loop_rate(1);
+    int loopCounter = 0;
 
-    std::cout << "RobotInterfaceDreamerTester: Running test..." << std::endl;
-    while (ros::ok())
+    std::cout << "RobotInterfaceDreamerTester: Letting test run for " << TEST_PERIOD << " seconds." << std::endl;
+    while (ros::ok() && loopCounter < TEST_PERIOD)
     {
-        bool block = false;
-        robotInterfaceDreamer.read(ros::Time::now(), robotState, block);
+        ros::spinOnce();
         loop_rate.sleep();
     }
 
-    std::cout << "RobotInterfaceDreamerTester: Done test..." << std::endl;
+    std::cout << "RobotInterfaceDreamerTester: Done test, stopping servo clock." << std::endl;
+
+    // Stop RobotInterfaceDreamerTester
+    RobotInterfaceDreamerTester.stop();
 }
