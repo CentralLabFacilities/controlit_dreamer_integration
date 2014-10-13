@@ -22,7 +22,7 @@
  * <http://www.gnu.org/licenses/>
  */
 
-#include <controlit/servo_clock_library/RobotInterfaceDreamerTester.hpp>
+#include <controlit/dreamer/RobotInterfaceDreamerTester.hpp>
 
 namespace controlit {
 namespace dreamer {
@@ -43,7 +43,7 @@ bool RobotInterfaceDreamerTester::init()
 {
     // Start a real-time servo clock. 
     // The robot interface will be initialized the first time the servo clock calls update.
-    servoClock->init(this);
+    servoClock.init(this);
     initialized = true;
     return true;
 }
@@ -52,13 +52,13 @@ bool RobotInterfaceDreamerTester::start()
 {
     prevTime = ros::Time::now();
     double freq = 1; // TODO: make this a command line parameter
-    servoClock->start(freq);
+    servoClock.start(freq);
     return true;
 }
 
 bool RobotInterfaceDreamerTester::stop()
 {
-    servoClock->stop();
+    servoClock.stop();
     return true;
 }
 
@@ -75,7 +75,7 @@ void RobotInterfaceDreamerTester::update(const ros::Time & time, const ros::Dura
     }
     else
     {
-        if (!robotInterfaceDreamer.read(ros::Time::now(), robotState))
+        if (!robotInterface.read(ros::Time::now(), robotState))
         {
             std::cerr << "Problems reading from robot state." << std::endl;
         }
