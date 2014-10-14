@@ -35,8 +35,23 @@ namespace dreamer {
 #define PRINT_RECEIVED_STATE 0
 #define PRINT_COMMAND 0
 
+/*!
+ * This is a global method that takes as input a pointer to a RobotInterfaceDreamer
+ * object and calls initSM() on it.
+ *
+ * \param[in] rid A pointer to the RobotInterfaceDreamer class.
+ * \return the return value of the call to RobotInterfaceDreamer->initSM().
+ */
+void * call_initSMMethod(void * rid)
+{
+    RobotInterfaceDreamer * robotInterface = static_cast<RobotInterfaceDreamer*>(rid);
+    return robotInterface->initSM(nullptr);
+}
+
+
 RobotInterfaceDreamer::RobotInterfaceDreamer() :
-    RobotInterface() // Call super-class' constructor
+    RobotInterface(), // Call super-class' constructor
+    rtThreadState(RT_THREAD_UNDEF)
     //receivedRobotState(false),
     //rcvdJointState(false)
 {
@@ -65,46 +80,16 @@ bool RobotInterfaceDreamer::init(ros::NodeHandle & nh, RTControlModel * model)
         CONTROLIT_ERROR_RT << "Super-class failed to initialize.";
         return false;
     }
+
+    // Spawn a real-time thread to initialize the shared memory connection
+    int rtThreadID = rt_thread_create((void*)call_initSMMethod,
+                                  this, // parameters
+                                  10000); // XXXX 10000 is stack size I think
+
     
-    // Switch to use RTAI real-time scheduler
-    RT_TASK * task = rt_task_init_schmod(nam2num("TSHMP"), 0, 0, 0, SCHED_FIFO, 0xF);
-    rt_allow_nonroot_hrt();
-    if (task == nullptr) 
-    {
-        CONTROLIT_ERROR_RT << "Call to rt_task_init_schmod failed for TSHMP";
-        // rt_shm_free(nam2num(TORQUE_SHM));
-        return false;
-    }
-
-    // Access the shared memory created by the M3 Server.
-    sharedMemoryPtr = (M3Sds *) rt_shm_alloc(nam2num(TORQUE_SHM), sizeof(M3Sds), USE_VMALLOC);
-    if (sharedMemoryPtr) 
-    {
-        CONTROLIT_INFO << "Found shared memory.";
-    }
-    else 
-    {
-        CONTROLIT_ERROR << "Call to rt_shm_alloc failed for shared memory name \"" << TORQUE_SHM << "\"";
-        return false;
-    }
-
-    // Get the semaphores protecting the status and command shared memory registers.
-    status_sem = (SEM *) rt_get_adr(nam2num(TORQUE_STATUS_SEM));
-    if ( ! status_sem) 
-    {
-      CONTROLIT_ERROR << "Torque status semaphore \"" << TORQUE_STATUS_SEM << "\" not found";
-      return false;
-    }
-    
-    command_sem = (SEM *) rt_get_adr(nam2num(TORQUE_CMD_SEM));
-    if ( ! command_sem) 
-    {
-      CONTROLIT_ERROR << "Torque command semaphore \"" << TORQUE_CMD_SEM << "\" not found";
-      return false;
-    }
-
-    rt_task_delete(task);
-
+    // Wait for the real-time thread to exit
+    PRINT_INFO_STATEMENT("Waiting for real-time thread to finish initializing the pointer to shared memory and exit...");
+    rt_thread_join(rtThreadID);
 //----------------------------------------------------------------------------
 
     //parse robot description
@@ -182,6 +167,47 @@ bool RobotInterfaceDreamer::init(ros::NodeHandle & nh, RTControlModel * model)
     PRINT_INFO_STATEMENT("Creating and initializing the odometry state receiver...");
     odometryStateReceiver.reset(new OdometryStateReceiverDreamer());
     return odometryStateReceiver->init(nh, model);
+}
+
+void * RobotInterfaceDreamer::initSM()
+{
+    // Switch to use RTAI real-time scheduler
+    RT_TASK * task = rt_task_init_schmod(nam2num("TSHMP"), 0, 0, 0, SCHED_FIFO, 0xF);
+    rt_allow_nonroot_hrt();
+    if (task == nullptr) 
+    {
+        CONTROLIT_ERROR_RT << "Call to rt_task_init_schmod failed for TSHMP";
+        return nullptr;
+    }
+
+    // Access the shared memory created by the M3 Server.
+    sharedMemoryPtr = (M3Sds *) rt_shm_alloc(nam2num(TORQUE_SHM), sizeof(M3Sds), USE_VMALLOC);
+    if (sharedMemoryPtr) 
+    {
+        CONTROLIT_INFO << "Found shared memory.";
+    }
+    else 
+    {
+        CONTROLIT_ERROR << "Call to rt_shm_alloc failed for shared memory name \"" << TORQUE_SHM << "\"";
+        return nullptr;
+    }
+
+    // Get the semaphores protecting the status and command shared memory registers.
+    status_sem = (SEM *) rt_get_adr(nam2num(TORQUE_STATUS_SEM));
+    if ( ! status_sem) 
+    {
+      CONTROLIT_ERROR << "Torque status semaphore \"" << TORQUE_STATUS_SEM << "\" not found";
+      return nullptr;
+    }
+    
+    command_sem = (SEM *) rt_get_adr(nam2num(TORQUE_CMD_SEM));
+    if ( ! command_sem) 
+    {
+      CONTROLIT_ERROR << "Torque command semaphore \"" << TORQUE_CMD_SEM << "\" not found";
+      return nullptr;
+    }
+
+    rt_task_delete(task);
 }
 
 // void RobotInterfaceDreamer::rttCallback(std_msgs::Int64 & msg)

@@ -72,6 +72,10 @@ public:
      */
     virtual bool write(const ros::Time & time, const controlit::Command & command);
 
+    /*!
+     * This is executed by the real-time thread. It initializes the connection to shared memory.
+     */
+    void * initSM(void * arg);
 private:
 
     void printLimbSHMStatus(std::stringstream & ss, std::string prefix, 
