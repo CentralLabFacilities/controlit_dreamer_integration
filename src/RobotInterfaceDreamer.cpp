@@ -65,6 +65,17 @@ bool RobotInterfaceDreamer::init(ros::NodeHandle & nh, RTControlModel * model)
         CONTROLIT_ERROR_RT << "Super-class failed to initialize.";
         return false;
     }
+    
+    // Switch to use RTAI real-time scheduler
+    RT_TASK * task = rt_task_init_schmod(nam2num("TSHMP"), 0, 0, 0, SCHED_FIFO, 0xF);
+    rt_allow_nonroot_hrt();
+    if (task == nullptr) 
+    {
+        CONTROLIT_ERROR_RT << "Call to rt_task_init_schmod failed for TSHMP";
+        rtThreadState = RT_THREAD_ERROR;
+        // rt_shm_free(nam2num(TORQUE_SHM));
+        return nullptr;
+    }
 
     // Access the shared memory created by the M3 Server.
     sharedMemoryPtr = (M3Sds *) rt_shm_alloc(nam2num(TORQUE_SHM), sizeof(M3Sds), USE_VMALLOC);
@@ -92,6 +103,8 @@ bool RobotInterfaceDreamer::init(ros::NodeHandle & nh, RTControlModel * model)
       CONTROLIT_ERROR << "Torque command semaphore \"" << TORQUE_CMD_SEM << "\" not found";
       return false;
     }
+
+    rt_task_delete(task);
 
 //----------------------------------------------------------------------------
 

@@ -14,6 +14,13 @@ namespace servo_clock_library {
 #define NON_REALTIME_PRIORITY 1
 #define MAX_START_LATENCY_CYCLES 30
 
+/*!
+ * This is a global method that takes as input a pointer to a ServoClockDreamer
+ * object and calls rtMethod() on it.
+ *
+ * \param[in] scd A pointer to the ServoClockDreamer class.
+ * \return the return value of the call to ServoClockDreamer->rtMethod().
+ */
 void * call_rtMethod(void * scd)
 {
     ServoClockDreamer * servoClock = static_cast<ServoClockDreamer*>(scd);
@@ -132,7 +139,7 @@ void * ServoClockDreamer::rtMethod(void *)
     rt_allow_nonroot_hrt();
     if (task == nullptr) 
     {
-        CONTROLIT_ERROR_RT << fprintf(stderr, "rt_task_init_schmod failed for TSHMP\n");
+        CONTROLIT_ERROR_RT << "Call to rt_task_init_schmod failed for TSHMP");
         rtThreadState = RT_THREAD_ERROR;
         // rt_shm_free(nam2num(TORQUE_SHM));
         return nullptr;
