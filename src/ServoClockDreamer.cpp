@@ -139,7 +139,7 @@ void * ServoClockDreamer::rtMethod(void *)
     rt_allow_nonroot_hrt();
     if (task == nullptr) 
     {
-        CONTROLIT_ERROR_RT << "Call to rt_task_init_schmod failed for TSHMP");
+        CONTROLIT_ERROR_RT << "Call to rt_task_init_schmod failed for TSHMP";
         rtThreadState = RT_THREAD_ERROR;
         // rt_shm_free(nam2num(TORQUE_SHM));
         return nullptr;

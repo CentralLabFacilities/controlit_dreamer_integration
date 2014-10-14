@@ -72,9 +72,8 @@ bool RobotInterfaceDreamer::init(ros::NodeHandle & nh, RTControlModel * model)
     if (task == nullptr) 
     {
         CONTROLIT_ERROR_RT << "Call to rt_task_init_schmod failed for TSHMP";
-        rtThreadState = RT_THREAD_ERROR;
         // rt_shm_free(nam2num(TORQUE_SHM));
-        return nullptr;
+        return false;
     }
 
     // Access the shared memory created by the M3 Server.
