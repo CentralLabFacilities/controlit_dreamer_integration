@@ -50,8 +50,8 @@ void * call_initSMMethod(void * rid)
 
 
 RobotInterfaceDreamer::RobotInterfaceDreamer() :
-    RobotInterface(), // Call super-class' constructor
-    rtThreadState(RT_THREAD_UNDEF)
+    RobotInterface() // Call super-class' constructor
+    //rtThreadState(RT_THREAD_UNDEF)
     //receivedRobotState(false),
     //rcvdJointState(false)
 {
@@ -169,7 +169,7 @@ bool RobotInterfaceDreamer::init(ros::NodeHandle & nh, RTControlModel * model)
     return odometryStateReceiver->init(nh, model);
 }
 
-void * RobotInterfaceDreamer::initSM()
+void * RobotInterfaceDreamer::initSM(void*)
 {
     // Switch to use RTAI real-time scheduler
     RT_TASK * task = rt_task_init_schmod(nam2num("TSHMP"), 0, 0, 0, SCHED_FIFO, 0xF);
@@ -208,6 +208,7 @@ void * RobotInterfaceDreamer::initSM()
     }
 
     rt_task_delete(task);
+    return nullptr;
 }
 
 // void RobotInterfaceDreamer::rttCallback(std_msgs::Int64 & msg)
