@@ -35,6 +35,8 @@ namespace dreamer {
 #define PRINT_RECEIVED_STATE 0
 #define PRINT_COMMAND 0
 
+#define NON_REALTIME_PRIORITY 1
+
 /*!
  * This is a global method that takes as input a pointer to a RobotInterfaceDreamer
  * object and calls initSM() on it.
@@ -81,6 +83,12 @@ bool RobotInterfaceDreamer::init(ros::NodeHandle & nh, RTControlModel * model)
         return false;
     }
 
+    // Change scheduler of this thread to be RTAI
+    rt_allow_nonroot_hrt();
+    RT_TASK * normalTask = rt_task_init_schmod(nam2num("TSHM"), NON_REALTIME_PRIORITY, 0, 0, SCHED_FIFO, 0xF);
+    if (!normalTask)
+        throw std::runtime_error("rt_task_init_schmod failed for non-RT task");
+
     // Spawn a real-time thread to initialize the shared memory connection
     int rtThreadID = rt_thread_create((void*)call_initSMMethod,
                                   this, // parameters
@@ -88,6 +96,7 @@ bool RobotInterfaceDreamer::init(ros::NodeHandle & nh, RTControlModel * model)
 
     
     // Wait for the real-time thread to exit
+    rt_task_delete(normalTask);
     PRINT_INFO_STATEMENT("Waiting for real-time thread to finish initializing the pointer to shared memory and exit...");
     rt_thread_join(rtThreadID);
 //----------------------------------------------------------------------------
