@@ -66,6 +66,7 @@ void RobotInterfaceDreamerTester::update(const ros::Time & time, const ros::Dura
 {
     if (firstRound)
     {
+        std::cout << "Initializing the robot interface." << std::endl;
         if (!robotInterface.init(nh, &model))
         {
             std::cerr << "Problems initializing the robot interface." << std::endl;
@@ -75,6 +76,7 @@ void RobotInterfaceDreamerTester::update(const ros::Time & time, const ros::Dura
     }
     else
     {
+        std::cout << "Calling robotInterface.read()..." << std::endl;
         if (!robotInterface.read(ros::Time::now(), robotState))
         {
             std::cerr << "Problems reading from robot state." << std::endl;

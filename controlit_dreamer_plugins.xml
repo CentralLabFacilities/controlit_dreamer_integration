@@ -6,4 +6,10 @@
     </description>
   </class>
 
+  <class name="controlit_dreamer/RobotInterfaceDreamer" type="controlit::dreamer::RobotInterfaceDreamer" base_class_type="controlit::RobotInterface">
+    <description>
+      Implements a RobotInterface for connecting to Dreamer using the M3 Server shared memory.
+    </description>
+  </class>
+
 </library>

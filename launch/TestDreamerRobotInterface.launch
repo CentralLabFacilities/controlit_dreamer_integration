@@ -1,8 +1,9 @@
 <launch>
-    <!-- Load the robot description parameter-->
-    <param name="robot_description"
-           command="$(find xacro)/xacro.py '$(find dreamer_no_left_arm_controlit)/models/dreamer_no_left_arm_controlit/xacro/dreamer_no_left_arm_controlit.xacro'"/>
+    <env name="ROSCONSOLE_CONFIG_FILE" 
+       value="$(find controlit_dreamer_integration)/conf/rosconsole.conf"/>
 
-    <!-- Start the robot state publisher, which generates the /tf transforms for rViz. -->
+    <include file="$(find controlit_dreamer_integration)/launch/LoadRobotDescription.launch"/>
+
+    <!-- Start the tester. -->
     <node name="RobotInterfaceDreamerTester" pkg="controlit_dreamer_integration" type="RobotInterfaceDreamerTester"/>
 </launch>

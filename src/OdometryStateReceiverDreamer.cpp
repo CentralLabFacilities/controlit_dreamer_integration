@@ -41,7 +41,7 @@ bool OdometryStateReceiverDreamer::getOdometry(const ros::Time & currTime, contr
 {
     // TODO: Verify Eigen::Quaterniond::Identiy() is equal to w = 1, x = y = z = 0
     Eigen::Quaterniond q = Eigen::Quaterniond::Identity();
-    CONTROLIT_ERROR_RT << "Testing Quaterniond:"
+    CONTROLIT_INFO_RT << "Testing Quaterniond:"
              << " q: [" << q.w() << ", " << q.x() << ", " << q.y() << ", " << q.z() << "]";
 
     // Dreamer is fixed to the world.  Just set the base state equal to zero.
