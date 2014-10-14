@@ -75,16 +75,6 @@ public:
 private:
 
     /*!
-     * Whether the instantiation of this class is initialized.
-     */
-    bool initialized;
-
-    /*!
-     * Whether this is the first time the servo clock calls update.
-     */
-    bool firstRound;
-
-    /*!
      * A ROS node handle.  Used during the initialization of the robot interface.
      */
     ros::NodeHandle nh;
@@ -95,19 +85,12 @@ private:
     controlit::RTControlModel model;
 
     /*!
-     * The name of the controller.  All parameters for the controller
-     * should reside on the ROS parameter server under a namespace
-     * with the same name as this controller.
-     */
-    // std::string controllerName;
-
-    /*!
      * For holding the robot state that's read from the robot interface.
      */
     controlit::RobotState robotState;
 
     /*!
-     * The servo clock that is being tested.
+     * The servo clock.  This is used to call RobotInterfaceDreamer's read method.
      */
     controlit::servo_clock_library::ServoClockDreamer servoClock;
 
@@ -115,8 +98,6 @@ private:
      * The robot interface being tested.
      */
     controlit::dreamer::RobotInterfaceDreamer robotInterface;
-
-    ros::Time prevTime;
 };
 
 } // namespace dreamer

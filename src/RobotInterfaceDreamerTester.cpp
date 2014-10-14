@@ -29,9 +29,7 @@ namespace dreamer {
 
 #define TEST_PERIOD 10
 
-RobotInterfaceDreamerTester::RobotInterfaceDreamerTester() :
-  initialized(false),
-  firstRound(true)
+RobotInterfaceDreamerTester::RobotInterfaceDreamerTester()
 {
 }
 
@@ -57,13 +55,11 @@ bool RobotInterfaceDreamerTester::init()
         return false;
     }
 
-    initialized = true;
     return true;
 }
 
 bool RobotInterfaceDreamerTester::start()
 {
-    prevTime = ros::Time::now();
     double freq = 1; // TODO: make this a command line parameter
     servoClock.start(freq);
     return true;
@@ -78,24 +74,11 @@ bool RobotInterfaceDreamerTester::stop()
 // This is periodically called by the servo clock.
 void RobotInterfaceDreamerTester::update(const ros::Time & time, const ros::Duration & period)
 {
-    // if (firstRound)
-    // {
-    //     std::cout << "Initializing the robot interface." << std::endl;
-    //     if (!robotInterface.init(nh, &model))
-    //     {
-    //         std::cerr << "Problems initializing the robot interface." << std::endl;
-    //         ros::shutdown();
-    //     }
-    //     firstRound = false;
-    // }
-    // else
-    // {
-        std::cout << "Calling robotInterface.read()..." << std::endl;
-        if (!robotInterface.read(ros::Time::now(), robotState))
-        {
-            std::cerr << "Problems reading from robot state." << std::endl;
-        }
-    // }
+    std::cout << "Calling robotInterface.read()..." << std::endl;
+    if (!robotInterface.read(ros::Time::now(), robotState))
+    {
+        std::cerr << "Problems reading from robot state." << std::endl;
+    }
 }
 
 } // namespace dreamer
