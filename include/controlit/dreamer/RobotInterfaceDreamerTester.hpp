@@ -1,7 +1,7 @@
 /*
  * Shared copyright notice and LGPLv3 license statement.
  *
- * Copyright (C) 2013 University of Texas at Austin. All rights reserved.
+ * Copyright (C) 2014 University of Texas at Austin. All rights reserved.
  *
  * Authors: Chien-Liang Fok (UT Austin)
  *
@@ -25,7 +25,7 @@
 #define __CONTROLIT_ROBOT_INTERFACE_DREAMER_TESTER_HPP__
 
 #include "ros/ros.h"
-#include <controlit/servo_clock_library/ServoClockDreamer.hpp>
+#include <controlit/dreamer/ServoClockDreamer.hpp>
 #include <controlit/ServoableClass.hpp>
 #include <controlit/dreamer/RobotInterfaceDreamer.hpp>
 #include <controlit/RTControlModel.hpp>
@@ -92,12 +92,12 @@ private:
     /*!
      * The servo clock.  This is used to call RobotInterfaceDreamer's read method.
      */
-    controlit::servo_clock_library::ServoClockDreamer servoClock;
+    ServoClockDreamer servoClock;
 
     /*!
      * The robot interface being tested.
      */
-    controlit::dreamer::RobotInterfaceDreamer robotInterface;
+    RobotInterfaceDreamer robotInterface;
 };
 
 } // namespace dreamer

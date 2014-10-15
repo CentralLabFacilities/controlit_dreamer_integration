@@ -25,7 +25,7 @@
 #include <controlit/dreamer/ServoClockDreamerTester.hpp>
 
 namespace controlit {
-namespace servo_clock_library {
+namespace dreamer {
 
 #define TEST_PERIOD 10
 
@@ -55,7 +55,7 @@ bool ServoClockDreamerTester::start()
 
 bool ServoClockDreamerTester::stop()
 {
-    servoClock->stop();
+    servoClock.stop();
     return true;
 }
 
@@ -116,7 +116,7 @@ int main(int argc, char **argv)
     std::cout << "ServoClockDreamerTester: Starting test..." << std::endl;
 
     // Create and start a ServoClockDreamerTester
-    controlit::servo_clock_library::ServoClockDreamerTester servoClockDreamerTester;
+    controlit::dreamer::ServoClockDreamerTester servoClockDreamerTester;
     servoClockDreamerTester.init();
     servoClockDreamerTester.start();
 
