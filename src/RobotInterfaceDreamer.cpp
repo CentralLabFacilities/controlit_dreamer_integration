@@ -381,11 +381,10 @@ void RobotInterfaceDreamer::printSHMCommand()
 
 bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState & latestRobotState, bool block)
 {
-    bool result = true;
-
     // Reset the timestamp within robot state to remember when the state was obtained.
     latestRobotState.resetTimestamp();
 
+    ///////////////////////////////////////////////////////////////////////////////////
     // Save the latest joint state into variable shm_status
     rt_sem_wait(status_sem);
     memcpy(&shm_status, sharedMemoryPtr->status, sizeof(shm_status));
@@ -394,6 +393,7 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
     // Temporary code to print everything received
     printSHMStatus();
 
+    ///////////////////////////////////////////////////////////////////////////////////
     // Save position data
     latestRobotState.setJointPosition(0, DEG_TO_RAD(shm_status.torso.theta[0])); // torso pan
     latestRobotState.setJointPosition(1, DEG_TO_RAD(shm_status.torso.theta[1])); // torso lower pitch
@@ -415,329 +415,117 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
     latestRobotState.setJointPosition(15, DEG_TO_RAD(shm_status.right_arm.theta[5]));
     latestRobotState.setJointPosition(16, DEG_TO_RAD(shm_status.right_arm.theta[6]));
 
-    latestRobotState.setJointPosition(17, DEG_TO_RAD(shm_status.head.theta[6])); // neck
-    latestRobotState.setJointPosition(18, DEG_TO_RAD(shm_status.head.theta[6]));
-    latestRobotState.setJointPosition(19, DEG_TO_RAD(shm_status.head.theta[6]));
-    latestRobotState.setJointPosition(20, DEG_TO_RAD(shm_status.head.theta[6]));
+    latestRobotState.setJointPosition(17, DEG_TO_RAD(shm_status.head.theta[0])); // neck
+    latestRobotState.setJointPosition(18, DEG_TO_RAD(shm_status.head.theta[1]));
+    latestRobotState.setJointPosition(19, DEG_TO_RAD(shm_status.head.theta[2]));
+    latestRobotState.setJointPosition(20, DEG_TO_RAD(shm_status.head.theta[3]));
 
+    ///////////////////////////////////////////////////////////////////////////////////
     // Save velocity data
-    latestRobotState.setJointPosition(0, DEG_TO_RAD(shm_status.torso.thetadot[0])); // torso pan
-    latestRobotState.setJointPosition(1, DEG_TO_RAD(shm_status.torso.thetadot[1])); // torso lower pitch
-    latestRobotState.setJointPosition(2, DEG_TO_RAD(shm_status.torso.thetadot[2])); // torso upper pitch
+    latestRobotState.setJointVelocity(0, DEG_TO_RAD(shm_status.torso.thetadot[0])); // torso pan
+    latestRobotState.setJointVelocity(1, DEG_TO_RAD(shm_status.torso.thetadot[1])); // torso lower pitch
+    latestRobotState.setJointVelocity(2, DEG_TO_RAD(shm_status.torso.thetadot[2])); // torso upper pitch
 
-    latestRobotState.setJointPosition(3, DEG_TO_RAD(shm_status.left_arm.thetadot[0])); // left arm
-    latestRobotState.setJointPosition(4, DEG_TO_RAD(shm_status.left_arm.thetadot[1]));
-    latestRobotState.setJointPosition(5, DEG_TO_RAD(shm_status.left_arm.thetadot[2]));
-    latestRobotState.setJointPosition(6, DEG_TO_RAD(shm_status.left_arm.thetadot[3]));
-    latestRobotState.setJointPosition(7, DEG_TO_RAD(shm_status.left_arm.thetadot[4]));
-    latestRobotState.setJointPosition(8, DEG_TO_RAD(shm_status.left_arm.thetadot[5]));
-    latestRobotState.setJointPosition(9, DEG_TO_RAD(shm_status.left_arm.thetadot[6]));
+    latestRobotState.setJointVelocity(3, DEG_TO_RAD(shm_status.left_arm.thetadot[0])); // left arm
+    latestRobotState.setJointVelocity(4, DEG_TO_RAD(shm_status.left_arm.thetadot[1]));
+    latestRobotState.setJointVelocity(5, DEG_TO_RAD(shm_status.left_arm.thetadot[2]));
+    latestRobotState.setJointVelocity(6, DEG_TO_RAD(shm_status.left_arm.thetadot[3]));
+    latestRobotState.setJointVelocity(7, DEG_TO_RAD(shm_status.left_arm.thetadot[4]));
+    latestRobotState.setJointVelocity(8, DEG_TO_RAD(shm_status.left_arm.thetadot[5]));
+    latestRobotState.setJointVelocity(9, DEG_TO_RAD(shm_status.left_arm.thetadot[6]));
 
-    latestRobotState.setJointPosition(10, DEG_TO_RAD(shm_status.right_arm.thetadot[0])); // right arm
-    latestRobotState.setJointPosition(11, DEG_TO_RAD(shm_status.right_arm.thetadot[1]));
-    latestRobotState.setJointPosition(12, DEG_TO_RAD(shm_status.right_arm.thetadot[2]));
-    latestRobotState.setJointPosition(13, DEG_TO_RAD(shm_status.right_arm.thetadot[3]));
-    latestRobotState.setJointPosition(14, DEG_TO_RAD(shm_status.right_arm.thetadot[4]));
-    latestRobotState.setJointPosition(15, DEG_TO_RAD(shm_status.right_arm.thetadot[5]));
-    latestRobotState.setJointPosition(16, DEG_TO_RAD(shm_status.right_arm.thetadot[6]));
+    latestRobotState.setJointVelocity(10, DEG_TO_RAD(shm_status.right_arm.thetadot[0])); // right arm
+    latestRobotState.setJointVelocity(11, DEG_TO_RAD(shm_status.right_arm.thetadot[1]));
+    latestRobotState.setJointVelocity(12, DEG_TO_RAD(shm_status.right_arm.thetadot[2]));
+    latestRobotState.setJointVelocity(13, DEG_TO_RAD(shm_status.right_arm.thetadot[3]));
+    latestRobotState.setJointVelocity(14, DEG_TO_RAD(shm_status.right_arm.thetadot[4]));
+    latestRobotState.setJointVelocity(15, DEG_TO_RAD(shm_status.right_arm.thetadot[5]));
+    latestRobotState.setJointVelocity(16, DEG_TO_RAD(shm_status.right_arm.thetadot[6]));
 
-    latestRobotState.setJointPosition(17, DEG_TO_RAD(shm_status.head.thetadot[6])); // neck
-    latestRobotState.setJointPosition(18, DEG_TO_RAD(shm_status.head.thetadot[6]));
-    latestRobotState.setJointPosition(19, DEG_TO_RAD(shm_status.head.thetadot[6]));
-    latestRobotState.setJointPosition(20, DEG_TO_RAD(shm_status.head.thetadot[6]));
+    latestRobotState.setJointVelocity(17, DEG_TO_RAD(shm_status.head.thetadot[0])); // neck
+    latestRobotState.setJointVelocity(18, DEG_TO_RAD(shm_status.head.thetadot[1]));
+    latestRobotState.setJointVelocity(19, DEG_TO_RAD(shm_status.head.thetadot[2]));
+    latestRobotState.setJointVelocity(20, DEG_TO_RAD(shm_status.head.thetadot[3]));
 
+    ///////////////////////////////////////////////////////////////////////////////////
+    // Save effort data
+    latestRobotState.setJointEffort(0, 1.0e-3 * shm_status.torso.torque[0]); // torso pan
+    latestRobotState.setJointEffort(1, 1.0e-3 * shm_status.torso.torque[1]); // torso lower pitch
+    latestRobotState.setJointEffort(2, 1.0e-3 * shm_status.torso.torque[2]); // torso upper pitch
 
-    // for (size_t ii(0); ii < 7; ++ii) { // XXXX to do: hardcoded NDOF
-    //   state.position_[ii] = M_PI * shm_status.right_arm.theta[ii] / 180.0;
-    //   state.velocity_[ii] = M_PI * shm_status.right_arm.thetadot[ii] / 180.0;
-    //   //state.force_[ii] = 1.0e-3 * shm_status.right_arm.torque[ii];
-    // }
-    
-    // ///Force-Torque Sensor
-    // for (size_t jj(0); jj < 6; ++jj) {
-    //   state.force_[jj] = 1.0e-3 * shm_status.right_arm.wrench[jj];
-    // }   
+    latestRobotState.setJointEffort(3, 1.0e-3 * shm_status.left_arm.torque[0]); // left arm
+    latestRobotState.setJointEffort(4, 1.0e-3 * shm_status.left_arm.torque[1]);
+    latestRobotState.setJointEffort(5, 1.0e-3 * shm_status.left_arm.torque[2]);
+    latestRobotState.setJointEffort(6, 1.0e-3 * shm_status.left_arm.torque[3]);
+    latestRobotState.setJointEffort(7, 1.0e-3 * shm_status.left_arm.torque[4]);
+    latestRobotState.setJointEffort(8, 1.0e-3 * shm_status.left_arm.torque[5]);
+    latestRobotState.setJointEffort(9, 1.0e-3 * shm_status.left_arm.torque[6]);
 
-    // cb_status = rtutil->init(state);
-    // if (0 != cb_status) {
-    //   fprintf(stderr, "init callback returned %d\n", cb_status);
-    //   rt_thread_state = RT_THREAD_ERROR;
-    //   goto cleanup_init_callback;
-    // }
+    latestRobotState.setJointEffort(10, 1.0e-3 * shm_status.right_arm.torque[0]); // right arm
+    latestRobotState.setJointEffort(11, 1.0e-3 * shm_status.right_arm.torque[1]);
+    latestRobotState.setJointEffort(12, 1.0e-3 * shm_status.right_arm.torque[2]);
+    latestRobotState.setJointEffort(13, 1.0e-3 * shm_status.right_arm.torque[3]);
+    latestRobotState.setJointEffort(14, 1.0e-3 * shm_status.right_arm.torque[4]);
+    latestRobotState.setJointEffort(15, 1.0e-3 * shm_status.right_arm.torque[5]);
+    latestRobotState.setJointEffort(16, 1.0e-3 * shm_status.right_arm.torque[6]);
 
-    // Check if RTT can be computed
-    // std::vector<double> current_rtt;
-    // smi.getCurrentFloatingPointVector("rtt", current_rtt);
-    // assert(current_rtt.size() == 2);
+    latestRobotState.setJointEffort(17, 1.0e-3 * shm_status.head.torque[0]); // neck
+    latestRobotState.setJointEffort(18, 1.0e-3 * shm_status.head.torque[1]);
+    latestRobotState.setJointEffort(19, 1.0e-3 * shm_status.head.torque[2]);
+    latestRobotState.setJointEffort(20, 1.0e-3 * shm_status.head.torque[3]);
 
-    // The receiver will save the previously-transmitted RTT sequence number into the RTT Rx buffer.
-    // rttRxMsgMutex.lock();
-
-    // if (rcvdRTTRxMsg)
-    // {
-    //     if(rttRxMsg.data == rttSeqNo)
-    //     {
-    //         rcvdRttSeqNo = rttSeqNo; // This will trigger the sender to increment the rttSeqNo.
-
-    //         if(rttLatencyPublisher->trylock()) // Only publish the RTT latency if the lock can be obtained.
-    //         {
-    //             // Compute the RTT.
-    //             std::chrono::nanoseconds timeSpan = duration_cast < std::chrono::nanoseconds > (high_resolution_clock::now() - lastRTTUpdate);
-
-    //             // Save the RTT in a message and publish it
-    //             rttLatencyPublisher->msg_.data = timeSpan.count() / 1e9;
-    //             rttLatencyPublisher->unlockAndPublish();
-    //         }
-    //     }
-    // }
-
-    // rttRxMsgMutex.unlock();
-
-    // std::vector<double> pos_vel_torque_measurements;
-    // smi.waitForFloatingPointMatrix("pos_vel_torque_measurement", pos_vel_torque_measurements);
-
-    // std::vector<double> positions = std::vector<double>(pos_vel_torque_measurements.begin() + latestRobotState.getNumJoints() * 0, pos_vel_torque_measurements.begin() + latestRobotState.getNumJoints() * 1);
-    // std::vector<double> velocities = std::vector<double>(pos_vel_torque_measurements.begin() + latestRobotState.getNumJoints() * 1, pos_vel_torque_measurements.begin() + latestRobotState.getNumJoints() * 2);
-    // std::vector<double> torques = std::vector<double>(pos_vel_torque_measurements.begin() + latestRobotState.getNumJoints() * 2, pos_vel_torque_measurements.begin() + latestRobotState.getNumJoints() * 3);
-
-    // jointStateMutex.lock();
-    // if (rcvdJointState)
-    // {
-    //     // Sanity check to make sure the received joint state information is of the correct length
-    //     if(latestRobotState.getNumJoints() != jointStateMsg.name.size())
-    //     {
-    //         CONTROLIT_ERROR << "Received joint state message of incorrect size!\n"
-    //             << "  - expected: " << latestRobotState.getNumJoints() << "\n"
-    //             << "  - received: " << jointStateMsg.name.size();
-    //         return false;
-    //     }
-
-    //     // Initialize jointMsgToModelIndexMap if it has not already been initialized.
-    //     // The order within the jointStateMsg is determined by the sender.  We need to find
-    //     // the mapping between this order and the order used by ControlIt!.
-    //     // if (jointMsgToModelIndexMap.get() == nullptr)
-    //     // {
-    //     //     jointMsgToModelIndexMap.reset(new std::vector<int>());
-    //     //     modelToJointMsgIndexMap.reset(new std::vector<int>());
-    //     //     modelToJointMsgIndexMap.resize(latestRobotState.getNumJoint());
-
-    //     //     for (unsigned int ii = 0; ii < latestRobotState.getNumJoint(); ii++)
-    //     //     {
-    //     //         int jointIndex = latestRobotState.getJointIndex(jointStateMsg.name[ii]);
-    //     //         jointMsgToModelIndexMap->push_back(jointIndex);   
-    //     //         modelToJointMsgIndexMap->at(jointIndex) = ii;
-    //     //     }
-    //     // }
-
-    //     // Intialize the jointNameMap if it has not already been initalized.
-    //     // This mapping stores each joint's index within the shared memory.
-    //     if (jointNameMap.size() == 0)
-    //     {
-    //         for (unsigned int ii = 0; ii < jointStateMsg.name.size(); ii++)
-    //         {
-    //             jointNameMap[jointStateMsg.name[ii]] = ii;
-    //         }
-    //     }
-
-        
-    //     for(unsigned int ii = 0; ii < latestRobotState.getNumJoints(); ii++)
-    //     {
-    //         // std::string name = latestRobotState.getJointNames()[ii];
-
-    //         // // Get the name of the current joint
-    //         // // std::string name = latestRobotState.getJointNames()[ii];
-
-    //         // // Get the joint's index in the controlit::RobotState object
-    //         // // TODO: Ensure the joint's name is in the map!
-    //         // // unsigned int jointStateMsgIndex = jointNameMap[name];
-
-    //         // // Update the joint state
-    //         // if(jointStateMsgIndex < jointNameMap.size())
-    //         // {
-    //         //     latestRobotState.setJointPosition(jointIndex, jointStateMsg.position[jointStateMsgIndex]);
-    //         //     latestRobotState.setJointVelocity(jointIndex, jointStateMsg.velocity[jointStateMsgIndex]);
-    //         //     latestRobotState.setJointEffort(jointIndex, jointStateMsg.effort[jointStateMsgIndex]);
-
-    //         //     #if PRINT_RECEIVED_STATE
-    //         //     ss << "Joint: " << latestRobotState.getJointNames()[ii] << ", "
-    //         //        << "position: " << pojointStateMsg.positionsitions[jointStateMsgIndex] << ", "
-    //         //        << "velocity: " << jointStateMsg.velocity[jointStateMsgIndex] << ", "
-    //         //        << "torque: " << jointStateMsg.effort[jointStateMsgIndex] << std::endl;
-    //         //     #endif
-    //         // }
-
-    //         // Get the name of the current joint
-    //         std::string name = latestRobotState.getJointNames()[ii];
-
-    //         unsigned int shmIndx;
-    //         try {
-    //             shmIndx = jointNameMap.at(name);
-    //         } 
-    //         catch(std::out_of_range exception)
-    //         {
-    //             CONTROLIT_ERROR_RT << "Unknown joint name: " << name;
-    //             result = false;
-    //         }
-            
-    //         if (result)
-    //         {
-    //             // Update the joint state
-    //             latestRobotState.setJointPosition(ii, jointStateMsg.position[shmIndx]);
-    //             latestRobotState.setJointVelocity(ii, jointStateMsg.velocity[shmIndx]);
-    //             latestRobotState.setJointEffort(ii, jointStateMsg.effort[shmIndx]);
-
-    //             // TEMPORARY!
-    //             if (std::abs(jointStateMsg.position[shmIndx]) > 1e3)
-    //             {
-    //                 std::cerr << "RobotInterfaceDreamer: questionable position: shmIndx = " << shmIndx << ", pos = " << jointStateMsg.position[shmIndx];
-    //                 assert(false);
-    //             }
-    //         }
-    //     }
-
-
-    //     {
-    //         // Check for valid values
-    //         bool isValid = true;
-    //         for(unsigned int ii = 0; ii < jointStateMsg.name.size() && isValid; ii++)            
-    //         {
-    //             if (std::abs(jointStateMsg.position[ii] >= 1e3)) isValid = false;
-    //             if (std::abs(jointStateMsg.velocity[ii] >= 1e3)) isValid = false;
-    //             if (std::abs(jointStateMsg.effort[ii] >= 1e3)) isValid = false;
-    //         }
-
-    //         if (!isValid)
-    //             CONTROLIT_ERROR_RT << "Received questionable robot state:" << std::endl << jointStateMsgToString();
-    //     }
-
-        
-    //     #if PRINT_RECEIVED_STATE
-    //     CONTROLIT_INFO_RT << "Received state: " << std::endl; << jointStateMsgToString();
-    //     #endif
-        
-    // } else
-    //     result = false;
-
-    // jointStateMutex.unlock();
-
-    if (!result) return false;
-
+    ///////////////////////////////////////////////////////////////////////////////////
     // Get and save the latest odometry data
     if (!odometryStateReceiver->getOdometry(time, latestRobotState, block))
-    {
-        // CONTROLIT_WARN_RT << "Failed to obtain odometry data.";
         return false;
-    }
     
-    return result;
+    ///////////////////////////////////////////////////////////////////////////////////
+    // Save the timestamp in the command message (not sure if this is necessary)
+    shm_cmd.timestamp = shm_status.timestamp;
+
+    return true;
 }
-
-// Note: this should only be called with thread holding lock on jointStateMutex
-// std::string RobotInterfaceDreamer::jointStateMsgToString()
-// {
-//     std::stringstream ss;
-
-//     for(unsigned int ii = 0; ii < jointStateMsg.name.size(); ii++)
-//     {
-//         ss << "  Joint: " << jointStateMsg.name[ii] << ", position: " << jointStateMsg.position[ii]
-//            << ", velocity: " << jointStateMsg.velocity[ii] << ", torque: " << jointStateMsg.effort[ii] << std::endl;
-//     }
-//     return ss.str();
-// }
-    
-
-// bool RobotInterfaceDreamer::loadSMJointNameToIndexMap()
-// {
-//     std::vector<std::string> sm_names;
-//     smi.getCurrentStringVector("joint_names", sm_names);
-
-//     std::stringstream ss;
-//     for(unsigned int ii = 0; ii < sm_names.size(); ii++)
-//     {
-//         jointNameMap[sm_names[ii]] = ii;
-// //        ss << sm_names[ii] << "->" << ii;
-// //        if (ii < sm_names.size() - 1) ss << "\n";
-//     }
-//     PRINT_INFO_STATEMENT("Shared Memory Joint Name to Index Map (size: " << jointNameMap.size() << "):\n" << ss.str());
-
-//     assert(jointNameMap.size() > 0);
-
-//     return true;
-// }
 
 bool RobotInterfaceDreamer::write(const ros::Time & time, const controlit::Command & command)
 {
-//     if (jointNameMap.size() == 0) return false;
+    if (command.getNumDOFs() != 21) return false;
 
-     bool result = false;
+    const Vector & cmd = command.getEffortCmd();
 
-//     // if (position_cmds.size() != jointNameMap.size())
-//     // {
-//     //     PRINT_INFO_STATEMENT("Resizing command variables to be of size " << jointNameMap.size() << ".");
-//     //     position_cmds.resize(jointNameMap.size());
-//     //     velocity_cmds.resize(jointNameMap.size());
-//     //     torque_cmds.resize(jointNameMap.size());
-//     // }
+    ///////////////////////////////////////////////////////////////////////////////////
+    // Save effort data into local variable
+    shm_cmd.torso.torque[0] = 1e3 * cmd[0]; // torso pan
+    shm_cmd.torso.torque[1] = 1e3 * cmd[1]; // torso lower pitch
+    shm_cmd.torso.torque[2] = 1e3 * cmd[2]; // torso upper pitch
 
-//     // The command may have fewer joints than the shared memory joint name map because
-//     // of unactuated joints.
-//     // assert(torqueCmdMsg.data.size() >= command.getNumDOFs());
+    shm_cmd.left_arm.torque[0] = 1e3 * cmd[3]; // left arm
+    shm_cmd.left_arm.torque[1] = 1e3 * cmd[4];
+    shm_cmd.left_arm.torque[2] = 1e3 * cmd[5];
+    shm_cmd.left_arm.torque[3] = 1e3 * cmd[6];
+    shm_cmd.left_arm.torque[4] = 1e3 * cmd[7];
+    shm_cmd.left_arm.torque[5] = 1e3 * cmd[8];
+    shm_cmd.left_arm.torque[6] = 1e3 * cmd[9];
 
-    
-//     // The command only applies to actuated joints
-//     const std::vector<std::string> & controlit_names = model->get()->getActuatedJointNamesVector();
+    shm_cmd.right_arm.torque[0] = 1e3 * cmd[10]; // right arm
+    shm_cmd.right_arm.torque[1] = 1e3 * cmd[11];
+    shm_cmd.right_arm.torque[2] = 1e3 * cmd[12];
+    shm_cmd.right_arm.torque[3] = 1e3 * cmd[13];
+    shm_cmd.right_arm.torque[4] = 1e3 * cmd[14];
+    shm_cmd.right_arm.torque[5] = 1e3 * cmd[15];
+    shm_cmd.right_arm.torque[6] = 1e3 * cmd[16];
 
-//     // Save the command into the message
-//     for(unsigned int ii = 0; ii < command.getNumDOFs(); ii++)
-//     {
-//         int shmIndx = jointNameMap[controlit_names[ii]]; //TODO: make sure the string is in the map!
+    shm_cmd.head.torque[0] = 1e3 * cmd[17]; // neck
+    shm_cmd.head.torque[1] = 1e3 * cmd[18];
+    shm_cmd.head.torque[2] = 1e3 * cmd[19];
+    shm_cmd.head.torque[3] = 1e3 * cmd[20];
 
-//         // if(shmIndx >= (int)jointNameMap.size())
-//         // {
-// //                std::cerr << controlit_names[ii] << ":" << shmIndx << "," << jointNameMap.size() << std::endl;
-//             // assert(shmIndx < (int)jointNameMap.size());
-//         // }
+    ///////////////////////////////////////////////////////////////////////////////////
+    // Write commands to shared memory
+    rt_sem_wait(command_sem);
+    memcpy(sharedMemoryPtr->cmd, &shm_cmd, sizeof(shm_cmd));      
+    rt_sem_signal(command_sem);
 
-//         // CONTROLIT_INFO << "Saving command, shmIndx = " << shmIndx;
-//         // position_cmds[shmIndx] = command.getPositionCmd()[ii];
-//         // velocity_cmds[shmIndx] = command.getVelocityCmd()[ii];
-//         // torque_cmds[shmIndx] = command.getEffortCmd()[ii];
-//         torqueCmdMsg.data[shmIndx] = command.getEffortCmd()[ii];
-
-//         // #if PRINT_COMMAND
-//         // // ss << "  Joint: " << controlit_names[ii] << ", position_cmd: " << position_cmds[ii]
-//         // //    << ", velocity_cmd: " << velocity_cmds[ii] << ", torque_cmd: " << torque_cmds[ii] << std::endl;
-        
-//         // #endif
-//     }
-
-    // Print command (useful for debugging purposes)
-    // {
-    //     #if PRINT_COMMAND
-    //     std::stringstream ss;
-        
-    //     for(unsigned int ii = 0; ii < command.getNumDOFs(); ii++)
-    //     {
-    //         int shmIndx = jointNameMap[controlit_names[ii]];
-    //         ss << "  Joint: " << controlit_names[ii] << ", effort_cmd: " << torqueCmdMsg.data[shmIndx] << std::endl;
-    //     }
-
-    //     std::cerr << "Writing command: " << std::endl << ss.str();
-    //     #endif
-    // }
-
-    // cmdPublisher.publish(torqueCmdMsg);
-
-    // If the current RTT sequence number equals the received RTT sequence number, 
-    // increment the current RTT sequence number and write it to shared memory.
-    // if(rttSeqNo == rcvdRttSeqNo)
-    // {
-    //     rttSeqNo++;
-    //     currentRTTMsg.data = rttSeqNo;
-    //     rttTxPublisher.publish(currentRTTMsg);
-    //     lastRTTUpdate = high_resolution_clock::now();
-    // }
-    return result;
+    return true;
 }
 
 } // namespace dreamer
