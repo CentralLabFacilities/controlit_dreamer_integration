@@ -55,6 +55,32 @@ bool RobotInterfaceDreamerTester::init()
         return false;
     }
 
+    // Initialize the RobotState
+    std::vectror<std::string> jointNames;
+    jointNames.push_back("m3joint_mt3_j0");
+    jointNames.push_back("m3joint_mt3_j1");
+    jointNames.push_back("m3joint_slave_mt3_j2");
+    jointNames.push_back("left_arm_pan");
+    jointNames.push_back("left_shoulder_pitch");
+    jointNames.push_back("left_shoulder_roll");
+    jointNames.push_back("left_arm_elbow");
+    jointNames.push_back("left_arm_elbow_rotator");
+    jointNames.push_back("left_wrist_j0");
+    jointNames.push_back("left_wrist_j1");
+    jointNames.push_back("m3joint_ma10_j0");
+    jointNames.push_back("m3joint_ma10_j1");
+    jointNames.push_back("m3joint_ma10_j2");
+    jointNames.push_back("m3joint_ma10_j3");
+    jointNames.push_back("m3joint_ma10_j4");
+    jointNames.push_back("m3joint_ma10_j5");
+    jointNames.push_back("m3joint_ma10_j6");
+    jointNames.push_back("m3joint_ms2_j0");
+    jointNames.push_back("m3joint_ms2_j1");
+    jointNames.push_back("m3joint_ms2_j2");
+    jointNames.push_back("m3joint_ms2_j3");
+    
+    robotstate.init(jointNames);
+
     return true;
 }
 
