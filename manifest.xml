@@ -11,8 +11,8 @@
     <depend package="controlit_core"/>
     
     <export>
-        <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -lcontrolit_core"/>
-        <!-- <controlit plugin="${prefix}/tests/factories/controlit_example_plugin.xml" /> -->
+        <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -lcontrolit_core" />
+        <controlit_dreamer_integration plugin="${prefix}/controlit_dreamer_plugins.xml" />
     </export>
 
 </package>
