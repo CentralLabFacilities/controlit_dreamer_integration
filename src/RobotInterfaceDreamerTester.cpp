@@ -39,6 +39,7 @@ RobotInterfaceDreamerTester::~RobotInterfaceDreamerTester()
 
 bool RobotInterfaceDreamerTester::init()
 {
+    std::cout << "RobotInterfaceDreamerTester Init Method called." << std::endl;
     // Initialize the robot interface.
     if (!robotInterface.init(nh, &model))
     {
@@ -56,7 +57,7 @@ bool RobotInterfaceDreamerTester::init()
     }
 
     // Initialize the RobotState
-    std::vectror<std::string> jointNames;
+    std::vector<std::string> jointNames;
     jointNames.push_back("m3joint_mt3_j0");
     jointNames.push_back("m3joint_mt3_j1");
     jointNames.push_back("m3joint_slave_mt3_j2");
@@ -78,8 +79,11 @@ bool RobotInterfaceDreamerTester::init()
     jointNames.push_back("m3joint_ms2_j1");
     jointNames.push_back("m3joint_ms2_j2");
     jointNames.push_back("m3joint_ms2_j3");
-    
-    robotstate.init(jointNames);
+   
+    std::cout << "Initializing the robot state..." << std::endl; 
+    robotState.init(jointNames);
+
+    std::cout << "Done initializing the robot interface tester..." << std::endl;
 
     return true;
 }

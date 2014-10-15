@@ -9,5 +9,5 @@
     <rosparam param="log_fields">["package", "file", "line", "function"]</rosparam>
 
     <!-- Start the ServoClockDreamerTester. -->
-    <node name="ServoClockDreamerTester" pkg="controlit_dreamer_integration" type="ServoClockDreamerTester"/>
+    <node name="ServoClockDreamerTester" pkg="controlit_dreamer_integration" type="ServoClockDreamerTester" output="screen" />
 </launch>

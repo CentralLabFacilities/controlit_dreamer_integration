@@ -10,5 +10,5 @@
     <include file="$(find controlit_dreamer_integration)/launch/LoadRobotDescription.launch"/>
 
     <!-- Start the RobotInterfaceDreamer tester -->
-    <node name="RobotInterfaceDreamerTester" pkg="controlit_dreamer_integration" type="RobotInterfaceDreamerTester"/>
+    <node name="RobotInterfaceDreamerTester" pkg="controlit_dreamer_integration" type="RobotInterfaceDreamerTester" output="screen" />
 </launch>
