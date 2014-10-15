@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <launch>
 
-	<!-- Specify the custom debug level -->
+    <!-- Specify the custom debug level -->
     <env name="ROSCONSOLE_CONFIG_FILE" value="$(find controlit_dreamer_integration)/config/rosconsole.config"/>
     
     <!-- Specify the log level and the log prefix fields -->
