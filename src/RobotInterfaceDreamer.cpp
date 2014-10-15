@@ -494,30 +494,30 @@ bool RobotInterfaceDreamer::write(const ros::Time & time, const controlit::Comma
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Save effort data into local variable
-    shm_cmd.torso.torque[0] = 1e3 * cmd[0]; // torso pan
-    shm_cmd.torso.torque[1] = 1e3 * cmd[1]; // torso lower pitch
-    shm_cmd.torso.torque[2] = 1e3 * cmd[2]; // torso upper pitch
+    shm_cmd.torso.tq_desired[0] = 1e3 * cmd[0]; // torso pan
+    shm_cmd.torso.tq_desired[1] = 1e3 * cmd[1]; // torso lower pitch
+    shm_cmd.torso.tq_desired[2] = 1e3 * cmd[2]; // torso upper pitch
 
-    shm_cmd.left_arm.torque[0] = 1e3 * cmd[3]; // left arm
-    shm_cmd.left_arm.torque[1] = 1e3 * cmd[4];
-    shm_cmd.left_arm.torque[2] = 1e3 * cmd[5];
-    shm_cmd.left_arm.torque[3] = 1e3 * cmd[6];
-    shm_cmd.left_arm.torque[4] = 1e3 * cmd[7];
-    shm_cmd.left_arm.torque[5] = 1e3 * cmd[8];
-    shm_cmd.left_arm.torque[6] = 1e3 * cmd[9];
+    shm_cmd.left_arm.tq_desired[0] = 1e3 * cmd[3]; // left arm
+    shm_cmd.left_arm.tq_desired[1] = 1e3 * cmd[4];
+    shm_cmd.left_arm.tq_desired[2] = 1e3 * cmd[5];
+    shm_cmd.left_arm.tq_desired[3] = 1e3 * cmd[6];
+    shm_cmd.left_arm.tq_desired[4] = 1e3 * cmd[7];
+    shm_cmd.left_arm.tq_desired[5] = 1e3 * cmd[8];
+    shm_cmd.left_arm.tq_desired[6] = 1e3 * cmd[9];
 
-    shm_cmd.right_arm.torque[0] = 1e3 * cmd[10]; // right arm
-    shm_cmd.right_arm.torque[1] = 1e3 * cmd[11];
-    shm_cmd.right_arm.torque[2] = 1e3 * cmd[12];
-    shm_cmd.right_arm.torque[3] = 1e3 * cmd[13];
-    shm_cmd.right_arm.torque[4] = 1e3 * cmd[14];
-    shm_cmd.right_arm.torque[5] = 1e3 * cmd[15];
-    shm_cmd.right_arm.torque[6] = 1e3 * cmd[16];
+    shm_cmd.right_arm.tq_desired[0] = 1e3 * cmd[10]; // right arm
+    shm_cmd.right_arm.tq_desired[1] = 1e3 * cmd[11];
+    shm_cmd.right_arm.tq_desired[2] = 1e3 * cmd[12];
+    shm_cmd.right_arm.tq_desired[3] = 1e3 * cmd[13];
+    shm_cmd.right_arm.tq_desired[4] = 1e3 * cmd[14];
+    shm_cmd.right_arm.tq_desired[5] = 1e3 * cmd[15];
+    shm_cmd.right_arm.tq_desired[6] = 1e3 * cmd[16];
 
-    shm_cmd.head.torque[0] = 1e3 * cmd[17]; // neck
-    shm_cmd.head.torque[1] = 1e3 * cmd[18];
-    shm_cmd.head.torque[2] = 1e3 * cmd[19];
-    shm_cmd.head.torque[3] = 1e3 * cmd[20];
+    shm_cmd.head.tq_desired[0] = 1e3 * cmd[17]; // neck
+    shm_cmd.head.tq_desired[1] = 1e3 * cmd[18];
+    shm_cmd.head.tq_desired[2] = 1e3 * cmd[19];
+    shm_cmd.head.tq_desired[3] = 1e3 * cmd[20];
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Write commands to shared memory
