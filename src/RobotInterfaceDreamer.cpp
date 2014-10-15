@@ -37,6 +37,8 @@ namespace dreamer {
 
 #define NON_REALTIME_PRIORITY 1
 
+#define DEG_TO_RAD(deg) deg / 180 * 3.14159265359
+
 /*!
  * This is a global method that takes as input a pointer to a RobotInterfaceDreamer
  * object and calls initSM() on it.
@@ -178,6 +180,8 @@ bool RobotInterfaceDreamer::init(ros::NodeHandle & nh, RTControlModel * model)
     return odometryStateReceiver->init(nh, model);
 }
 
+// This is a helper method that is run by RTAI's real-time scheduler and helps initialize
+// the pointer to the shared memory and the semaphores that protect the shared memory.
 void * RobotInterfaceDreamer::initSM(void*)
 {
     // Switch to use RTAI real-time scheduler
@@ -368,7 +372,7 @@ void RobotInterfaceDreamer::printSHMCommand()
     printLimbSHMCommand(ss, "    ", shm_cmd.head);
 
     ss << " - right_hand:\n";
-    printLimbSHMCommand(ss, "    ", shm_cmd.head);
+    printLimbSHMCommand(ss, "    ", shm_cmd.right_hand);
 
     // NOTE: omitting mobile_base for now
 
@@ -382,14 +386,67 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
     // Reset the timestamp within robot state to remember when the state was obtained.
     latestRobotState.resetTimestamp();
 
-    // Read the status and initialize the 
+    // Save the latest joint state into variable shm_status
     rt_sem_wait(status_sem);
     memcpy(&shm_status, sharedMemoryPtr->status, sizeof(shm_status));
     rt_sem_signal(status_sem);
 
     // Temporary code to print everything received
     printSHMStatus();
-    
+
+    // Save position data
+    latestRobotState.setJointPosition(0, DEG_TO_RAD(shm_status.torso.theta[0])); // torso pan
+    latestRobotState.setJointPosition(1, DEG_TO_RAD(shm_status.torso.theta[1])); // torso lower pitch
+    latestRobotState.setJointPosition(2, DEG_TO_RAD(shm_status.torso.theta[2])); // torso upper pitch
+
+    latestRobotState.setJointPosition(3, DEG_TO_RAD(shm_status.left_arm.theta[0])); // left arm
+    latestRobotState.setJointPosition(4, DEG_TO_RAD(shm_status.left_arm.theta[1]));
+    latestRobotState.setJointPosition(5, DEG_TO_RAD(shm_status.left_arm.theta[2]));
+    latestRobotState.setJointPosition(6, DEG_TO_RAD(shm_status.left_arm.theta[3]));
+    latestRobotState.setJointPosition(7, DEG_TO_RAD(shm_status.left_arm.theta[4]));
+    latestRobotState.setJointPosition(8, DEG_TO_RAD(shm_status.left_arm.theta[5]));
+    latestRobotState.setJointPosition(9, DEG_TO_RAD(shm_status.left_arm.theta[6]));
+
+    latestRobotState.setJointPosition(10, DEG_TO_RAD(shm_status.right_arm.theta[0])); // right arm
+    latestRobotState.setJointPosition(11, DEG_TO_RAD(shm_status.right_arm.theta[1]));
+    latestRobotState.setJointPosition(12, DEG_TO_RAD(shm_status.right_arm.theta[2]));
+    latestRobotState.setJointPosition(13, DEG_TO_RAD(shm_status.right_arm.theta[3]));
+    latestRobotState.setJointPosition(14, DEG_TO_RAD(shm_status.right_arm.theta[4]));
+    latestRobotState.setJointPosition(15, DEG_TO_RAD(shm_status.right_arm.theta[5]));
+    latestRobotState.setJointPosition(16, DEG_TO_RAD(shm_status.right_arm.theta[6]));
+
+    latestRobotState.setJointPosition(17, DEG_TO_RAD(shm_status.head.theta[6])); // neck
+    latestRobotState.setJointPosition(18, DEG_TO_RAD(shm_status.head.theta[6]));
+    latestRobotState.setJointPosition(19, DEG_TO_RAD(shm_status.head.theta[6]));
+    latestRobotState.setJointPosition(20, DEG_TO_RAD(shm_status.head.theta[6]));
+
+    // Save velocity data
+    latestRobotState.setJointPosition(0, DEG_TO_RAD(shm_status.torso.thetadot[0])); // torso pan
+    latestRobotState.setJointPosition(1, DEG_TO_RAD(shm_status.torso.thetadot[1])); // torso lower pitch
+    latestRobotState.setJointPosition(2, DEG_TO_RAD(shm_status.torso.thetadot[2])); // torso upper pitch
+
+    latestRobotState.setJointPosition(3, DEG_TO_RAD(shm_status.left_arm.thetadot[0])); // left arm
+    latestRobotState.setJointPosition(4, DEG_TO_RAD(shm_status.left_arm.thetadot[1]));
+    latestRobotState.setJointPosition(5, DEG_TO_RAD(shm_status.left_arm.thetadot[2]));
+    latestRobotState.setJointPosition(6, DEG_TO_RAD(shm_status.left_arm.thetadot[3]));
+    latestRobotState.setJointPosition(7, DEG_TO_RAD(shm_status.left_arm.thetadot[4]));
+    latestRobotState.setJointPosition(8, DEG_TO_RAD(shm_status.left_arm.thetadot[5]));
+    latestRobotState.setJointPosition(9, DEG_TO_RAD(shm_status.left_arm.thetadot[6]));
+
+    latestRobotState.setJointPosition(10, DEG_TO_RAD(shm_status.right_arm.thetadot[0])); // right arm
+    latestRobotState.setJointPosition(11, DEG_TO_RAD(shm_status.right_arm.thetadot[1]));
+    latestRobotState.setJointPosition(12, DEG_TO_RAD(shm_status.right_arm.thetadot[2]));
+    latestRobotState.setJointPosition(13, DEG_TO_RAD(shm_status.right_arm.thetadot[3]));
+    latestRobotState.setJointPosition(14, DEG_TO_RAD(shm_status.right_arm.thetadot[4]));
+    latestRobotState.setJointPosition(15, DEG_TO_RAD(shm_status.right_arm.thetadot[5]));
+    latestRobotState.setJointPosition(16, DEG_TO_RAD(shm_status.right_arm.thetadot[6]));
+
+    latestRobotState.setJointPosition(17, DEG_TO_RAD(shm_status.head.thetadot[6])); // neck
+    latestRobotState.setJointPosition(18, DEG_TO_RAD(shm_status.head.thetadot[6]));
+    latestRobotState.setJointPosition(19, DEG_TO_RAD(shm_status.head.thetadot[6]));
+    latestRobotState.setJointPosition(20, DEG_TO_RAD(shm_status.head.thetadot[6]));
+
+
     // for (size_t ii(0); ii < 7; ++ii) { // XXXX to do: hardcoded NDOF
     //   state.position_[ii] = M_PI * shm_status.right_arm.theta[ii] / 180.0;
     //   state.velocity_[ii] = M_PI * shm_status.right_arm.thetadot[ii] / 180.0;
