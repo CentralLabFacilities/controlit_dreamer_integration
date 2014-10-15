@@ -1,5 +1,0 @@
-<launch>
-    <!-- Load the robot description parameter-->
-    <param name="robot_description"
-           command="$(find xacro)/xacro.py '$(find dreamer_no_left_arm_controlit)/models/dreamer_no_left_arm_controlit/xacro/dreamer_no_left_arm_controlit.xacro'"/>
-</launch>

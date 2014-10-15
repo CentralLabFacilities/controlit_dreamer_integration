@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<launch>
+    <group ns="dreamer_controller">
+        <include file="$(find controlit_dreamer_integration)/launch/dreamer_param_base.xml"/>
+        <param name="parameters" textfile="$(find controlit_dreamer_integration)/parameters/JointPositionControl.yaml"/>
+        <!-- <param name="sensorSet" textfile="$(find controlit_dreamer_integration)/parameters/Sensors.yaml"/> -->
+    </group>
+</launch>
