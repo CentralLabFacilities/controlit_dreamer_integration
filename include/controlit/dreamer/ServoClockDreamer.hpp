@@ -1,5 +1,5 @@
-#ifndef __CONTROLIT_DREAMER_INTEGRATION_SERVO_CLOCK_RTAI_HPP__
-#define __CONTROLIT_DREAMER_INTEGRATION_SERVO_CLOCK_RTAI_HPP__
+#ifndef __CONTROLIT_DREAMER_INTEGRATION_SERVO_CLOCK_DREAMER_RTAI_HPP__
+#define __CONTROLIT_DREAMER_INTEGRATION_SERVO_CLOCK_DREAMER_RTAI_HPP__
 
 #include <controlit/ServoClock.hpp>
 #include <thread>  // for std::mutex
@@ -12,7 +12,7 @@
 #include <rtai_registry.h>
 
 namespace controlit {
-namespace servo_clock_library {
+namespace dreamer {
 
 typedef enum {
     RT_THREAD_UNDEF,
@@ -66,19 +66,9 @@ private:
      * The period of the real-time servo loop in nanoseconds.
      */
     long long rtPeriod_ns;
-
-    /*!
-     * The ID of the realtime thread.
-     */
-    // int rtThreadID;
-
-    // RT_TASK * normalTask;
-
-
-
 };
 
-} // namespace servo_clock_library
+} // namespace dreamer
 } // namespace controlit
 
-#endif // __CONTROLIT_DREAMER_INTEGRATION_SERVO_CLOCK_RTAI_HPP__
+#endif // __CONTROLIT_DREAMER_INTEGRATION_SERVO_CLOCK_DREAMER_RTAI_HPP__

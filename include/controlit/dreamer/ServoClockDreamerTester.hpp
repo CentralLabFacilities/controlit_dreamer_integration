@@ -1,7 +1,7 @@
 /*
  * Shared copyright notice and LGPLv3 license statement.
  *
- * Copyright (C) 2013 University of Texas at Austin. All rights reserved.
+ * Copyright (C) 2014 University of Texas at Austin. All rights reserved.
  *
  * Authors: Chien-Liang Fok (UT Austin)
  *
@@ -25,11 +25,11 @@
 #define __CONTROLIT_SERVO_CLOCK_DREAMER_TESTER_HPP__
 
 #include "ros/ros.h"
-#include <controlit/servo_clock_library/ServoClockDreamer.hpp>
+#include <controlit/dreamer/ServoClockDreamer.hpp>
 #include <controlit/ServoableClass.hpp>
 
 namespace controlit {
-namespace servo_clock_library {
+namespace dreamer {
 
 /*!
  * A class that provides the main method for launching a ControlIt!
@@ -83,21 +83,17 @@ private:
     bool initialized;
 
     /*!
-     * The name of the controller.  All parameters for the controller
-     * should reside on the ROS parameter server under a namespace
-     * with the same name as this controller.
-     */
-    // std::string controllerName;
-
-    /*!
      * The servo clock that is being tested.
      */
-    std::unique_ptr<controlit::servo_clock_library::ServoClockDreamer> servoClock;
+    ServoClockDreamer servoClock;
 
+    /*!
+     * The previous time update() was called by the servo clock.
+     */
     ros::Time prevTime;
 };
 
-} // namespace servo_clock_library
+} // namespace dreamer
 } // namespace controlit
 
 #endif  // __CONTROLIT_SERVO_CLOCK_DREAMER_TESTER_HPP__

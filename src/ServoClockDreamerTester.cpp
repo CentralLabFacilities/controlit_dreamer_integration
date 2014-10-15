@@ -1,7 +1,7 @@
 /*
  * Shared copyright notice and LGPLv3 license statement.
  *
- * Copyright (C) 2013 University of Texas at Austin. All rights reserved.
+ * Copyright (C) 2014 University of Texas at Austin. All rights reserved.
  *
  * Authors: Chien-Liang Fok (UT Austin)
  *
@@ -22,10 +22,7 @@
  * <http://www.gnu.org/licenses/>
  */
 
-#include <controlit/servo_clock_library/ServoClockDreamerTester.hpp>
-// #include <controlit/logging/RealTimeLogging.hpp>
-// #include <controlit/addons/ros/ROSParameterAccessor.hpp>
-// #include <controlit/servo_clock_library/ServoClockDreamer.hpp>
+#include <controlit/dreamer/ServoClockDreamerTester.hpp>
 
 namespace controlit {
 namespace servo_clock_library {
@@ -33,8 +30,7 @@ namespace servo_clock_library {
 #define TEST_PERIOD 10
 
 ServoClockDreamerTester::ServoClockDreamerTester() :
-  initialized(false),
-  servoClock(nullptr)
+  initialized(false)
 {
 }
 
@@ -44,8 +40,7 @@ ServoClockDreamerTester::~ServoClockDreamerTester()
 
 bool ServoClockDreamerTester::init()
 {
-    servoClock.reset(new ServoClockDreamer);
-    servoClock->init(this);
+    servoClock.init(this);
     initialized = true;
     return true;
 }
@@ -54,7 +49,7 @@ bool ServoClockDreamerTester::start()
 {
     prevTime = ros::Time::now();
     double freq = 1000; // TODO: make this a command line parameter
-    servoClock->start(freq);
+    servoClock.start(freq);
     return true;
 }
 
