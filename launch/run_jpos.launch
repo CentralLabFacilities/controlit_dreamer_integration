@@ -1,0 +1,5 @@
+<?xml version="1.0" ?>
+<launch>
+    <include file="$(find controlit_dreamer_integration)/launch/load_dreamer_parameters_jpos.launch"/>
+    <include file="$(find controlit_dreamer_integration)/launch/start_controlit.launch"/>
+</launch>
