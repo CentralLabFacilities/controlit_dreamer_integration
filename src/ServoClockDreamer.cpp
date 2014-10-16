@@ -71,8 +71,6 @@ void ServoClockDreamer::updateLoopImpl()
         }
         usleep(rtPeriod_us);
     }
-
-    CONTROLIT_INFO_RT << "RT thread started!";
     
     if (rtThreadState != RT_THREAD_RUNNING) 
     {
@@ -81,13 +79,13 @@ void ServoClockDreamer::updateLoopImpl()
 
         switch (rtThreadState) 
         {
-            case RT_THREAD_UNDEF: ss << "RT_THREAD_UNDEF"; break;
-            case RT_THREAD_INIT: ss << "RT_THREAD_INIT"; break;
+            case RT_THREAD_UNDEF:   ss << "RT_THREAD_UNDEF";   break;
+            case RT_THREAD_INIT:    ss << "RT_THREAD_INIT";    break;
             case RT_THREAD_RUNNING: ss << "RT_THREAD_RUNNING"; break;
             case RT_THREAD_CLEANUP: ss << "RT_THREAD_CLEANUP"; break;
-            case RT_THREAD_ERROR: ss << "RT_THREAD_ERROR"; break;
-            case RT_THREAD_DONE: ss << "RT_THREAD_DONE"; break;
-            default: ss << "Invalid state " << rtThreadState;
+            case RT_THREAD_ERROR:   ss << "RT_THREAD_ERROR";   break;
+            case RT_THREAD_DONE:    ss << "RT_THREAD_DONE";    break;
+            default:                ss << "Invalid state: " << rtThreadState;
         }
 
         usleep(15 * rtPeriod_us);
@@ -139,6 +137,15 @@ void * ServoClockDreamer::rtMethod(void *)
     mlockall(MCL_CURRENT | MCL_FUTURE);
     rt_make_hard_real_time();
     
+    //////////////////////////////////////////////////
+    // The servo init method if necessary.
+
+    if (callServoInit)
+    {
+        servoableClass->servoInit();
+        callServoInit = false;
+    }
+
     //////////////////////////////////////////////////
     // The servo loop.
 

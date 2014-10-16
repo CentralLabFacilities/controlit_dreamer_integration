@@ -243,6 +243,8 @@ void RobotInterfaceDreamer::printSHMCommand()
 
 bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState & latestRobotState, bool block)
 {
+    PRINT_INFO_STATEMENT("Method called!");
+
     if (!sharedMemoryReady)
     {
         if (!initSM()) return false;
@@ -357,6 +359,8 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
 
 bool RobotInterfaceDreamer::write(const ros::Time & time, const controlit::Command & command)
 {
+    PRINT_INFO_STATEMENT("Method called!");
+
     if (command.getNumDOFs() != 21) return false;
  
     if (!sharedMemoryReady)
