@@ -73,33 +73,34 @@ bool RobotInterfaceDreamer::init(ros::NodeHandle & nh, RTControlModel * model)
 // It is called the first time either read() or write() is called.
 bool RobotInterfaceDreamer::initSM()
 {
+    PRINT_INFO_STATEMENT("Method called!");
+
     // Get a pointer to the shared memory created by the M3 Server.
+    PRINT_INFO_STATEMENT("Getting point to shared memory...");
     sharedMemoryPtr = (M3Sds *) rt_shm_alloc(nam2num(TORQUE_SHM), sizeof(M3Sds), USE_VMALLOC);
-    if (sharedMemoryPtr) 
-    {
-        CONTROLIT_INFO << "Found shared memory.";
-    }
-    else 
+    if (!sharedMemoryPtr)
     {
         CONTROLIT_ERROR << "Call to rt_shm_alloc failed for shared memory name \"" << TORQUE_SHM << "\"";
         return false;
     }
 
     // Get the semaphores protecting the status and command shared memory registers.
+    PRINT_INFO_STATEMENT("Getting shared memory semaphores...");
     status_sem = (SEM *) rt_get_adr(nam2num(TORQUE_STATUS_SEM));
-    if ( ! status_sem) 
+    if (!status_sem) 
     {
       CONTROLIT_ERROR << "Torque status semaphore \"" << TORQUE_STATUS_SEM << "\" not found";
       return false;
     }
     
     command_sem = (SEM *) rt_get_adr(nam2num(TORQUE_CMD_SEM));
-    if ( ! command_sem) 
+    if (!command_sem) 
     {
       CONTROLIT_ERROR << "Torque command semaphore \"" << TORQUE_CMD_SEM << "\" not found";
       return false;
     }
 
+    PRINT_INFO_STATEMENT("Done initializing connection to shared memory.");
     sharedMemoryReady = true;  // Prevents this method from being called again.
 
     return true;
@@ -246,14 +247,17 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
     {
         if (!initSM()) return false;
     }
+
     // Reset the timestamp within robot state to remember when the state was obtained.
     latestRobotState.resetTimestamp();
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Save the latest joint state into variable shm_status
+    PRINT_INFO_STATEMENT("Grabbing lock on status semaphore...");
     rt_sem_wait(status_sem);
     memcpy(&shm_status, sharedMemoryPtr->status, sizeof(shm_status));
     rt_sem_signal(status_sem);
+    PRINT_INFO_STATEMENT("Releasing lock on status semaphore...");
 
     // Temporary code to print everything received
     printSHMStatus();
@@ -391,9 +395,11 @@ bool RobotInterfaceDreamer::write(const ros::Time & time, const controlit::Comma
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Write commands to shared memory
+    PRINT_INFO_STATEMENT("Getting lock on command semaphore...");
     rt_sem_wait(command_sem);
     memcpy(sharedMemoryPtr->cmd, &shm_cmd, sizeof(shm_cmd));      
     rt_sem_signal(command_sem);
+    PRINT_INFO_STATEMENT("Releasing lock on command semaphore...");
 
     return true;
 }
