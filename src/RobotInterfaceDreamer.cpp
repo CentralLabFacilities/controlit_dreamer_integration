@@ -266,7 +266,8 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Save position data
-    latestRobotState.setJointPosition(0, DEG_TO_RAD(shm_status.torso.theta[0])); // torso pan
+    // latestRobotState.setJointPosition(0, DEG_TO_RAD(shm_status.torso.theta[0])); // torso pan
+    latestRobotState.setJointPosition(0, 0); // torso pan, fixed to zero since joint is not working as of 2014/10/16
     latestRobotState.setJointPosition(1, DEG_TO_RAD(shm_status.torso.theta[1])); // torso lower pitch
     latestRobotState.setJointPosition(2, DEG_TO_RAD(shm_status.torso.theta[2])); // torso upper pitch
 
@@ -293,7 +294,8 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Save velocity data
-    latestRobotState.setJointVelocity(0, DEG_TO_RAD(shm_status.torso.thetadot[0])); // torso pan
+    // latestRobotState.setJointVelocity(0, DEG_TO_RAD(shm_status.torso.thetadot[0])); // torso pan
+    latestRobotState.setJointVelocity(0, 0); // torso pan, fixed to zero since joint is not working as of 2014/10/16
     latestRobotState.setJointVelocity(1, DEG_TO_RAD(shm_status.torso.thetadot[1])); // torso lower pitch
     latestRobotState.setJointVelocity(2, DEG_TO_RAD(shm_status.torso.thetadot[2])); // torso upper pitch
 
@@ -321,6 +323,7 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
     ///////////////////////////////////////////////////////////////////////////////////
     // Save effort data
     latestRobotState.setJointEffort(0, 1.0e-3 * shm_status.torso.torque[0]); // torso pan
+    latestRobotState.setJointEffort(0, 0); // torso pan, fixed to zero since joint is not working as of 2014/10/16
     latestRobotState.setJointEffort(1, 1.0e-3 * shm_status.torso.torque[1]); // torso lower pitch
     latestRobotState.setJointEffort(2, 1.0e-3 * shm_status.torso.torque[2]); // torso upper pitch
 
@@ -372,7 +375,8 @@ bool RobotInterfaceDreamer::write(const ros::Time & time, const controlit::Comma
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Save effort data into local variable
-    shm_cmd.torso.tq_desired[0] = 1e3 * cmd[0]; // torso pan
+    // shm_cmd.torso.tq_desired[0] = 1e3 * cmd[0]; // torso pan
+    shm_cmd.torso.tq_desired[0] = 0; // torso pan, fixed to zero since joint is not working as of 2014/10/16
     shm_cmd.torso.tq_desired[1] = 1e3 * cmd[1]; // torso lower pitch
     shm_cmd.torso.tq_desired[2] = 1e3 * cmd[2]; // torso upper pitch
 
