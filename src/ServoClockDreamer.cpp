@@ -97,6 +97,9 @@ void ServoClockDreamer::updateLoopImpl()
     
     CONTROLIT_INFO_RT << "OK - real-time thread started.";
 
+    rt_thread_join(rtThreadID);  // blocks until the real-time thread exits.
+    rt_task_delete(normalTask);
+    
     PRINT_INFO_STATEMENT_RT("Method exiting.")
 }
 
