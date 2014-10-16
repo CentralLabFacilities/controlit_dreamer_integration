@@ -39,26 +39,9 @@ namespace dreamer {
 
 #define DEG_TO_RAD(deg) deg / 180 * 3.14159265359
 
-/*!
- * This is a global method that takes as input a pointer to a RobotInterfaceDreamer
- * object and calls initSM() on it.
- *
- * \param[in] rid A pointer to the RobotInterfaceDreamer class.
- * \return the return value of the call to RobotInterfaceDreamer->initSM().
- */
-/*void * call_initSMMethod(void * rid)
-{
-    RobotInterfaceDreamer * robotInterface = static_cast<RobotInterfaceDreamer*>(rid);
-    return robotInterface->initSM(nullptr);
-}*/
-
-
 RobotInterfaceDreamer::RobotInterfaceDreamer() :
-    RobotInterface(), // Call super-class' constructor
+    RobotInterface(),         // Call super-class' constructor
     sharedMemoryReady(false)
-    //rtThreadState(RT_THREAD_UNDEF)
-    //receivedRobotState(false),
-    //rcvdJointState(false)
 {
 }
 
@@ -77,124 +60,20 @@ bool RobotInterfaceDreamer::init(ros::NodeHandle & nh, RTControlModel * model)
     }
 
     // Initialize the parent class.
-    bool initSuccess = RobotInterface::init(nh, model);
-
-    // If the super-class fails to initialize, abort.
-    if(!initSuccess)
-    {
-        CONTROLIT_ERROR_RT << "Super-class failed to initialize.";
+    if (!RobotInterface::init(nh, model))
         return false;
-    }
 
-    // Change scheduler of this thread to be RTAI
-    // rt_allow_nonroot_hrt();
-    // RT_TASK * normalTask = rt_task_init_schmod(nam2num("TSHM"), NON_REALTIME_PRIORITY, 0, 0, SCHED_FIFO, 0xF);
-    // if (!normalTask)
-    //     throw std::runtime_error("rt_task_init_schmod failed for non-RT task");
-
-    // Spawn a real-time thread to initialize the shared memory connection
-    //int rtThreadID = rt_thread_create((void*)call_initSMMethod,
-      //                            this, // parameters
-        //                          10000); // XXXX 10000 is stack size I think
-
-    
-    // Wait for the real-time thread to exit
-    //rt_task_delete(normalTask);
-    //PRINT_INFO_STATEMENT("Waiting for real-time thread to finish initializing the pointer to shared memory and exit...");
-    //rt_thread_join(rtThreadID);
-//----------------------------------------------------------------------------
-
-    //parse robot description
-    // urdf::Model model;
-    // model.initParam("/robot_description");
-    //
-    //pull the relevant data into global structures
-    // std::map<std::string, boost::shared_ptr<urdf::Joint> > joints = model.joints_;
-    // unsigned long index = 0;
-    // for(std::map<std::string, boost::shared_ptr<urdf::Joint> >::iterator iter = joints.begin(); iter != joints.end(); iter++)
-    // {
-    //   boost::shared_ptr<urdf::Joint> joint = iter->second;
-    //   jointNameMap[joint->name] = index;
-    //   std::cerr << joint->name << "->" << index << std::endl;
-    //   index++;
-    // }
-    // const std::vector<std::string> & names = model->get()->getRealJointNamesVector();
-
-    // PRINT_INFO_STATEMENT("Number of DoFs: " << names.size());
-
-    // See Example here:  https://bitbucket.org/Jraipxg/matec_control/src/1d812060db36d7656e05d2cf8b8e182eccb1fcc2/atlas_sim/src/sm_plugin.cpp?at=develop
-
-    // Create a shared memory location called "cmd" and initialize a 
-    // torque command message that will be used to hold the torque command data.
-    // PRINT_INFO_STATEMENT("Advertising topic \"/cmd\".");
-    // cmdPublisher.advertise("/cmd");
-
-    // torqueCmdMsg.layout.dim.resize(names.size());
-    // torqueCmdMsg.layout.dim[0].stride = names.size();
-    // torqueCmdMsg.layout.dim[0].size = names.size();
-    // torqueCmdMsg.layout.dim[1].stride = 1;
-    // torqueCmdMsg.layout.dim[1].size = 1;
-    // torqueCmdMsg.data.resize(names.size());
-
-    // PRINT_INFO_STATEMENT("Advertising topic \"/rtt_tx topic\".");
-    // rttTxPublisher.advertise("/rtt_tx");
-
-    // if (!rttRxSubscriber.subscribe("/rtt_rx", boost::bind(&RobotInterfaceDreamer::rttCallback, this, _1)))
-    // {
-    //     CONTROLIT_ERROR << "Failed to subscribe to topic \"/rtt_rx\"!";
-    //     return false;
-    // }
-
-    // if (!robotStateSubscriber.subscribe("/joint_states", boost::bind(&RobotInterfaceDreamer::jointStateCallback, this, _1)))
-    // {
-    //     CONTROLIT_ERROR << "Failed to subscribe to topic \"/joint_states\"!";
-    //     return false;
-    // }
-
-    // smi.subscribeSerializedROS<std_msgs::Int64>("/rtt_rx", boost::bind(&RobotInterfaceDreamer::rttCallback, this, _1));
-    // smi.subscribeSerializedROS<sensor_msgs::JointState>("/joint_state", boost::bind(&RobotInterfaceDreamer::jointStateCallback, this, _1));
-
-    // PRINT_INFO_STATEMENT("Loading joint names from shared memory...");
-    // loadSMJointNameToIndexMap();
-    // PRINT_INFO_STATEMENT("Joint names loaded!");
-
-    // // Initialize the RTT latency publisher
-    // rttLatencyPublisher.reset(new controlit::addons::ros::RealtimePublisher<std_msgs::Float64>(nh, "diagnostics/rttLatency", 1));
-    // if(rttLatencyPublisher->trylock())
-    // {
-    //     rttLatencyPublisher->msg_.data = 0;
-    //     rttLatencyPublisher->unlockAndPublish();
-    // }
-    // else
-    // {
-    //     CONTROLIT_ERROR_RT << "Unable to initialize rttLatencyPublisher!";
-    //     return false;
-    // }
-
-    // rttSeqNo = 0;
-    // rcvdRttSeqNo = 0;
-
-    // Create the object that receives odometry information
-    // For now we hard-code it to receive this data from a ROS topic
+    // Create the odometry receiver.
     PRINT_INFO_STATEMENT("Creating and initializing the odometry state receiver...");
     odometryStateReceiver.reset(new OdometryStateReceiverDreamer());
     return odometryStateReceiver->init(nh, model);
 }
 
-// This is a helper method that is run by RTAI's real-time scheduler and helps initialize
-// the pointer to the shared memory and the semaphores that protect the shared memory.
+// This needs to be called by the RT thread provided by ServoClockDreamer.
+// It is called the first time either read() or write() is called.
 bool RobotInterfaceDreamer::initSM()
 {
-    // Switch to use RTAI real-time scheduler
-    /*RT_TASK * task = rt_task_init_schmod(nam2num("TSHMP"), 0, 0, 0, SCHED_FIFO, 0xF);
-    rt_allow_nonroot_hrt();
-    if (task == nullptr) 
-    {
-        CONTROLIT_ERROR_RT << "Call to rt_task_init_schmod failed for TSHMP";
-        return false;
-    }*/
-
-    // Access the shared memory created by the M3 Server.
+    // Get a pointer to the shared memory created by the M3 Server.
     sharedMemoryPtr = (M3Sds *) rt_shm_alloc(nam2num(TORQUE_SHM), sizeof(M3Sds), USE_VMALLOC);
     if (sharedMemoryPtr) 
     {
@@ -221,30 +100,10 @@ bool RobotInterfaceDreamer::initSM()
       return false;
     }
 
-    sharedMemoryReady = true;
-    // rt_task_delete(task);
+    sharedMemoryReady = true;  // Prevents this method from being called again.
+
     return true;
 }
-
-// void RobotInterfaceDreamer::rttCallback(std_msgs::Int64 & msg)
-// {
-//     rttRxMsgMutex.lock();
-
-//     rttRxMsg = msg;
-//     rcvdRTTRxMsg = true;
-
-//     rttRxMsgMutex.unlock();
-// }
-
-// void RobotInterfaceDreamer::jointStateCallback(sensor_msgs::JointState & msg)
-// {
-//     jointStateMutex.lock();
-
-//     jointStateMsg = msg;
-//     rcvdJointState = true;
-    
-//     jointStateMutex.unlock();
-// }
 
 void RobotInterfaceDreamer::printLimbSHMStatus(std::stringstream & ss, std::string prefix, 
     M3TorqueShmSdsBaseStatus & shmLimbStatus)
@@ -392,9 +251,9 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Save the latest joint state into variable shm_status
-    //rt_sem_wait(status_sem);
-    //memcpy(&shm_status, sharedMemoryPtr->status, sizeof(shm_status));
-    //rt_sem_signal(status_sem);
+    rt_sem_wait(status_sem);
+    memcpy(&shm_status, sharedMemoryPtr->status, sizeof(shm_status));
+    rt_sem_signal(status_sem);
 
     // Temporary code to print everything received
     printSHMStatus();
@@ -532,9 +391,9 @@ bool RobotInterfaceDreamer::write(const ros::Time & time, const controlit::Comma
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Write commands to shared memory
-    //rt_sem_wait(command_sem);
-    //memcpy(sharedMemoryPtr->cmd, &shm_cmd, sizeof(shm_cmd));      
-    //rt_sem_signal(command_sem);
+    rt_sem_wait(command_sem);
+    memcpy(sharedMemoryPtr->cmd, &shm_cmd, sizeof(shm_cmd));      
+    rt_sem_signal(command_sem);
 
     return true;
 }
