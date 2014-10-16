@@ -59,7 +59,12 @@ bool ServoClockDreamerTester::stop()
     return true;
 }
 
-void ServoClockDreamerTester::update(const ros::Time & time, const ros::Duration & period)
+void ServoClockDreamerTester::servoInit()
+{
+    std::cerr << "Servo init called!" << std::endl;
+}
+
+void ServoClockDreamerTester::servoUpdate(const ros::Time & time, const ros::Duration & period)
 {
     double elapsedTimeMS = (time - prevTime).toSec() * 1000;
     std::cerr << "Method called, elapsed time = " << elapsedTimeMS << " ms, jitter = " << (elapsedTimeMS - 1) * 1000 << " us" << std::endl;

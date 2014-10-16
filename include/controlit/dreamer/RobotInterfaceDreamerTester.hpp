@@ -68,9 +68,14 @@ public:
     bool stop();
 
     /*!
+     * Called once the first time the servo clock is started.
+     */
+    void servoInit();
+
+    /*!
      * The callback function for the Servo Clock.
      */
-    virtual void update(const ros::Time & time, const ros::Duration & period);
+    void servoUpdate(const ros::Time & time, const ros::Duration & period);
 
 private:
 

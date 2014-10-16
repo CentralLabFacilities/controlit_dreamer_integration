@@ -160,7 +160,7 @@ void * ServoClockDreamer::rtMethod(void *)
         
         currTime = ros::Time::now();
         duration = currTime - prevTime;
-        servoableClass->update(currTime, duration);
+        servoableClass->servoUpdate(currTime, duration);
         prevTime = currTime;
   
         long long const end_time(nano2count(rt_get_cpu_time_ns()));

@@ -350,7 +350,7 @@ compound_task:
 
   events:
     - name: converged
-      expression: JPosTask.converged && JPosTask.quiescent
+      expression: JPosTask.converged and JPosTask.quiescent
   task_list:
      - name: JPosTask
        priority: 0
