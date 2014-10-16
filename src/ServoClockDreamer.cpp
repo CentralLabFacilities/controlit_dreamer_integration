@@ -41,7 +41,7 @@ ServoClockDreamer::~ServoClockDreamer()
 
 void ServoClockDreamer::updateLoopImpl()
 {
-    PRINT_INFO_STATEMENT_RT("Method called!");
+    PRINT_INFO_STATEMENT("Method called!");
 
     // Compute the period of the real-time servo loop.
     // TODO: Make this a parameter
@@ -49,17 +49,18 @@ void ServoClockDreamer::updateLoopImpl()
     long long const rtPeriod_us(rtPeriod_ns / 1000);
     
     // Change scheduler of this thread to be RTAI
+    PRINT_INFO_STATEMENT("Switching to RTAI scheduler...");
     rt_allow_nonroot_hrt();
     RT_TASK * normalTask = rt_task_init_schmod(nam2num("TSHM"), NON_REALTIME_PRIORITY, 0, 0, SCHED_FIFO, 0xF);
     if (!normalTask)
         throw std::runtime_error("rt_task_init_schmod failed for non-RT task");
     
     // Spawn the real-time thread
-    CONTROLIT_INFO_RT << "Spawning RT thread";
+    PRINT_INFO_STATEMENT("Spawning RT thread...");
     rtThreadState = RT_THREAD_UNDEF;
     int rtThreadID = rt_thread_create((void*)call_rtMethod,
                                   this,   // parameters
-                                  10000); // stack size
+                                  5000); // stack size
 
     // Wait up to MAX_START_LATENCY_CYCLES for real-time thread to begin running
     for (int ii = 0; ii < MAX_START_LATENCY_CYCLES; ii++) 

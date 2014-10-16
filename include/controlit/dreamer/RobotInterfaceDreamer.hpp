@@ -75,7 +75,7 @@ public:
     /*!
      * This is executed by the real-time thread. It initializes the connection to shared memory.
      */
-    void * initSM(void * arg);
+    bool initSM();
 private:
 
     void printLimbSHMStatus(std::stringstream & ss, std::string prefix, 
@@ -87,6 +87,11 @@ private:
         M3TorqueShmSdsBaseCommand & shmLimbCommand);
 
     void printSHMCommand();
+
+    /*!
+     * Whether the shared memory variables are initialized.
+     */
+    bool sharedMemoryReady;
 
     /*!
      * Maps the name of a joint to its index within the shared memory.

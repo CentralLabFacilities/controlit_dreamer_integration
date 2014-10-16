@@ -13,6 +13,7 @@
 
     <!-- Specify the robot interface type. -->
     <rosparam param="controlit_robot_interface_type">controlit_dreamer/RobotInterfaceDreamer</rosparam>
+    <!-- <rosparam param="controlit_robot_interface_type">controlit_robot_interface/RobotInterfaceUDP</rosparam> -->
 
     <!-- <rosparam param="odometry_topic">/gazebo/root_link_odom</rosparam> -->
 

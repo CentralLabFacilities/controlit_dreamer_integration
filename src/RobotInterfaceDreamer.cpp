@@ -46,15 +46,16 @@ namespace dreamer {
  * \param[in] rid A pointer to the RobotInterfaceDreamer class.
  * \return the return value of the call to RobotInterfaceDreamer->initSM().
  */
-void * call_initSMMethod(void * rid)
+/*void * call_initSMMethod(void * rid)
 {
     RobotInterfaceDreamer * robotInterface = static_cast<RobotInterfaceDreamer*>(rid);
     return robotInterface->initSM(nullptr);
-}
+}*/
 
 
 RobotInterfaceDreamer::RobotInterfaceDreamer() :
-    RobotInterface() // Call super-class' constructor
+    RobotInterface(), // Call super-class' constructor
+    sharedMemoryReady(false)
     //rtThreadState(RT_THREAD_UNDEF)
     //receivedRobotState(false),
     //rcvdJointState(false)
@@ -86,21 +87,21 @@ bool RobotInterfaceDreamer::init(ros::NodeHandle & nh, RTControlModel * model)
     }
 
     // Change scheduler of this thread to be RTAI
-    rt_allow_nonroot_hrt();
-    RT_TASK * normalTask = rt_task_init_schmod(nam2num("TSHM"), NON_REALTIME_PRIORITY, 0, 0, SCHED_FIFO, 0xF);
-    if (!normalTask)
-        throw std::runtime_error("rt_task_init_schmod failed for non-RT task");
+    // rt_allow_nonroot_hrt();
+    // RT_TASK * normalTask = rt_task_init_schmod(nam2num("TSHM"), NON_REALTIME_PRIORITY, 0, 0, SCHED_FIFO, 0xF);
+    // if (!normalTask)
+    //     throw std::runtime_error("rt_task_init_schmod failed for non-RT task");
 
     // Spawn a real-time thread to initialize the shared memory connection
-    int rtThreadID = rt_thread_create((void*)call_initSMMethod,
-                                  this, // parameters
-                                  10000); // XXXX 10000 is stack size I think
+    //int rtThreadID = rt_thread_create((void*)call_initSMMethod,
+      //                            this, // parameters
+        //                          10000); // XXXX 10000 is stack size I think
 
     
     // Wait for the real-time thread to exit
-    rt_task_delete(normalTask);
-    PRINT_INFO_STATEMENT("Waiting for real-time thread to finish initializing the pointer to shared memory and exit...");
-    rt_thread_join(rtThreadID);
+    //rt_task_delete(normalTask);
+    //PRINT_INFO_STATEMENT("Waiting for real-time thread to finish initializing the pointer to shared memory and exit...");
+    //rt_thread_join(rtThreadID);
 //----------------------------------------------------------------------------
 
     //parse robot description
@@ -182,16 +183,16 @@ bool RobotInterfaceDreamer::init(ros::NodeHandle & nh, RTControlModel * model)
 
 // This is a helper method that is run by RTAI's real-time scheduler and helps initialize
 // the pointer to the shared memory and the semaphores that protect the shared memory.
-void * RobotInterfaceDreamer::initSM(void*)
+bool RobotInterfaceDreamer::initSM()
 {
     // Switch to use RTAI real-time scheduler
-    RT_TASK * task = rt_task_init_schmod(nam2num("TSHMP"), 0, 0, 0, SCHED_FIFO, 0xF);
+    /*RT_TASK * task = rt_task_init_schmod(nam2num("TSHMP"), 0, 0, 0, SCHED_FIFO, 0xF);
     rt_allow_nonroot_hrt();
     if (task == nullptr) 
     {
         CONTROLIT_ERROR_RT << "Call to rt_task_init_schmod failed for TSHMP";
-        return nullptr;
-    }
+        return false;
+    }*/
 
     // Access the shared memory created by the M3 Server.
     sharedMemoryPtr = (M3Sds *) rt_shm_alloc(nam2num(TORQUE_SHM), sizeof(M3Sds), USE_VMALLOC);
@@ -202,7 +203,7 @@ void * RobotInterfaceDreamer::initSM(void*)
     else 
     {
         CONTROLIT_ERROR << "Call to rt_shm_alloc failed for shared memory name \"" << TORQUE_SHM << "\"";
-        return nullptr;
+        return false;
     }
 
     // Get the semaphores protecting the status and command shared memory registers.
@@ -210,18 +211,19 @@ void * RobotInterfaceDreamer::initSM(void*)
     if ( ! status_sem) 
     {
       CONTROLIT_ERROR << "Torque status semaphore \"" << TORQUE_STATUS_SEM << "\" not found";
-      return nullptr;
+      return false;
     }
     
     command_sem = (SEM *) rt_get_adr(nam2num(TORQUE_CMD_SEM));
     if ( ! command_sem) 
     {
       CONTROLIT_ERROR << "Torque command semaphore \"" << TORQUE_CMD_SEM << "\" not found";
-      return nullptr;
+      return false;
     }
 
-    rt_task_delete(task);
-    return nullptr;
+    sharedMemoryReady = true;
+    // rt_task_delete(task);
+    return true;
 }
 
 // void RobotInterfaceDreamer::rttCallback(std_msgs::Int64 & msg)
@@ -381,14 +383,18 @@ void RobotInterfaceDreamer::printSHMCommand()
 
 bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState & latestRobotState, bool block)
 {
+    if (!sharedMemoryReady)
+    {
+        if (!initSM()) return false;
+    }
     // Reset the timestamp within robot state to remember when the state was obtained.
     latestRobotState.resetTimestamp();
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Save the latest joint state into variable shm_status
-    rt_sem_wait(status_sem);
-    memcpy(&shm_status, sharedMemoryPtr->status, sizeof(shm_status));
-    rt_sem_signal(status_sem);
+    //rt_sem_wait(status_sem);
+    //memcpy(&shm_status, sharedMemoryPtr->status, sizeof(shm_status));
+    //rt_sem_signal(status_sem);
 
     // Temporary code to print everything received
     printSHMStatus();
@@ -489,6 +495,11 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
 bool RobotInterfaceDreamer::write(const ros::Time & time, const controlit::Command & command)
 {
     if (command.getNumDOFs() != 21) return false;
+ 
+    if (!sharedMemoryReady)
+    {
+        if (!initSM()) return false;
+    }
 
     const Vector & cmd = command.getEffortCmd();
 
@@ -521,9 +532,9 @@ bool RobotInterfaceDreamer::write(const ros::Time & time, const controlit::Comma
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Write commands to shared memory
-    rt_sem_wait(command_sem);
-    memcpy(sharedMemoryPtr->cmd, &shm_cmd, sizeof(shm_cmd));      
-    rt_sem_signal(command_sem);
+    //rt_sem_wait(command_sem);
+    //memcpy(sharedMemoryPtr->cmd, &shm_cmd, sizeof(shm_cmd));      
+    //rt_sem_signal(command_sem);
 
     return true;
 }
