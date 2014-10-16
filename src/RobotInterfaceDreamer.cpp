@@ -20,8 +20,8 @@ namespace controlit {
 namespace dreamer {
 
 // Uncomment one of the following lines to enable/disable detailed debug statements.
-// #define PRINT_INFO_STATEMENT(ss)
-#define PRINT_INFO_STATEMENT(ss) CONTROLIT_INFO << ss;
+#define PRINT_INFO_STATEMENT(ss)
+// #define PRINT_INFO_STATEMENT(ss) CONTROLIT_INFO << ss;
 
 #define PRINT_INFO_STATEMENT_RT(ss)
 // #define PRINT_INFO_STATEMENT_RT(ss) CONTROLIT_INFO_RT << ss;
@@ -262,7 +262,7 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
     PRINT_INFO_STATEMENT("Releasing lock on status semaphore...");
 
     // Temporary code to print everything received
-    printSHMStatus();
+    // printSHMStatus();
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Save position data
