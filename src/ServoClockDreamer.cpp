@@ -177,7 +177,7 @@ void * ServoClockDreamer::rtMethod(void *)
 
             // The following just issues a warning without changing the desired servo frequency.
             //
-            CONTROLIT_WARN_RT << "Desired RT Frequency violated! Desired " << count2nano(tickperiod) << "ns, got " << count2nano(dt) << "ns";
+            CONTROLIT_WARN_RT << "Desired RT Frequency violated! Desired " << count2nano(tickPeriod) << "ns, got " << count2nano(dt) << "ns";
         }
     }
     
