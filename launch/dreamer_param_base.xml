@@ -3,7 +3,7 @@
 
     <!-- Load the robot description parameter. -->
     <param name="robot_description"
-           command="$(find xacro)/xacro.py '$(find dreamer_controlit)/models/dreamer_controlit/xacro/dreamer_controlit.xacro'"/>
+           command="$(find xacro)/xacro.py '$(find dreamer_controlit)/models/dreamer_controlit/xacro/dreamer_controlit_rviz.xacro'"/>
 
     <!-- Specify the servo clock type. -->
     <rosparam param="controlit_servo_clock_type">controlit_dreamer/ServoClockDreamer</rosparam>
