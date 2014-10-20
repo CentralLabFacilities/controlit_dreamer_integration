@@ -167,11 +167,17 @@ void * ServoClockDreamer::rtMethod(void *)
         long long const dt(end_time - start_time);
         if (dt > tickPeriod) 
         {
-            CONTROLIT_WARN_RT << "Slowing period of RT task from " << count2nano(tickPeriod) << " to " << count2nano(dt);
-    
-            tickPeriod = dt;
-            rtPeriod_ns = count2nano(dt);
-            rt_task_make_periodic(task, rt_get_time() + tickPeriod, tickPeriod); 
+
+            // The following code will actually reduce the servo frequency based on the actual period.
+            //
+            // CONTROLIT_WARN_RT << "Slowing period of RT task from " << count2nano(tickPeriod) << " to " << count2nano(dt);
+            // tickPeriod = dt;
+            // rtPeriod_ns = count2nano(dt);
+            // rt_task_make_periodic(task, rt_get_time() + tickPeriod, tickPeriod); 
+
+            // The following just issues a warning without changing the desired servo frequency.
+            //
+            CONTROLIT_WARN_RT << "Desired RT Frequency violated! Desired " << count2nano(tickperiod) << "ns, got " << count2nano(dt) << "ns";
         }
     }
     
