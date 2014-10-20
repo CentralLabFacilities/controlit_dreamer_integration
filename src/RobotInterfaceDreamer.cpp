@@ -279,18 +279,20 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
     latestRobotState.setJointPosition(7, DEG_TO_RAD(shm_status.left_arm.theta[5]));
     latestRobotState.setJointPosition(8, DEG_TO_RAD(shm_status.left_arm.theta[6]));
 
-    latestRobotState.setJointPosition(9, DEG_TO_RAD(shm_status.right_arm.theta[0])); // right arm
-    latestRobotState.setJointPosition(10, DEG_TO_RAD(shm_status.right_arm.theta[1]));
-    latestRobotState.setJointPosition(11, DEG_TO_RAD(shm_status.right_arm.theta[2]));
-    latestRobotState.setJointPosition(12, DEG_TO_RAD(shm_status.right_arm.theta[3]));
-    latestRobotState.setJointPosition(13, DEG_TO_RAD(shm_status.right_arm.theta[4]));
-    latestRobotState.setJointPosition(14, DEG_TO_RAD(shm_status.right_arm.theta[5]));
-    latestRobotState.setJointPosition(15, DEG_TO_RAD(shm_status.right_arm.theta[6]));
+    latestRobotState.setJointPosition(9, DEG_TO_RAD(shm_status.head.theta[0])); // neck
+    latestRobotState.setJointPosition(10, DEG_TO_RAD(shm_status.head.theta[1]));
+    latestRobotState.setJointPosition(11, DEG_TO_RAD(shm_status.head.theta[2]));
+    latestRobotState.setJointPosition(12, DEG_TO_RAD(shm_status.head.theta[3]));
 
-    latestRobotState.setJointPosition(16, DEG_TO_RAD(shm_status.head.theta[0])); // neck
-    latestRobotState.setJointPosition(17, DEG_TO_RAD(shm_status.head.theta[1]));
-    latestRobotState.setJointPosition(18, DEG_TO_RAD(shm_status.head.theta[2]));
-    latestRobotState.setJointPosition(19, DEG_TO_RAD(shm_status.head.theta[3]));
+    latestRobotState.setJointPosition(13, DEG_TO_RAD(shm_status.right_arm.theta[0])); // right arm
+    latestRobotState.setJointPosition(14, DEG_TO_RAD(shm_status.right_arm.theta[1]));
+    latestRobotState.setJointPosition(15, DEG_TO_RAD(shm_status.right_arm.theta[2]));
+    latestRobotState.setJointPosition(16, DEG_TO_RAD(shm_status.right_arm.theta[3]));
+    latestRobotState.setJointPosition(17, DEG_TO_RAD(shm_status.right_arm.theta[4]));
+    latestRobotState.setJointPosition(18, DEG_TO_RAD(shm_status.right_arm.theta[5]));
+    latestRobotState.setJointPosition(19, DEG_TO_RAD(shm_status.right_arm.theta[6]));
+
+
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Save velocity data
@@ -307,18 +309,18 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
     latestRobotState.setJointVelocity(7, DEG_TO_RAD(shm_status.left_arm.thetadot[5]));
     latestRobotState.setJointVelocity(8, DEG_TO_RAD(shm_status.left_arm.thetadot[6]));
 
-    latestRobotState.setJointVelocity(9, DEG_TO_RAD(shm_status.right_arm.thetadot[0])); // right arm
-    latestRobotState.setJointVelocity(10, DEG_TO_RAD(shm_status.right_arm.thetadot[1]));
-    latestRobotState.setJointVelocity(11, DEG_TO_RAD(shm_status.right_arm.thetadot[2]));
-    latestRobotState.setJointVelocity(12, DEG_TO_RAD(shm_status.right_arm.thetadot[3]));
-    latestRobotState.setJointVelocity(13, DEG_TO_RAD(shm_status.right_arm.thetadot[4]));
-    latestRobotState.setJointVelocity(14, DEG_TO_RAD(shm_status.right_arm.thetadot[5]));
-    latestRobotState.setJointVelocity(15, DEG_TO_RAD(shm_status.right_arm.thetadot[6]));
+    latestRobotState.setJointVelocity(9, DEG_TO_RAD(shm_status.head.thetadot[0])); // neck
+    latestRobotState.setJointVelocity(10, DEG_TO_RAD(shm_status.head.thetadot[1]));
+    latestRobotState.setJointVelocity(11, DEG_TO_RAD(shm_status.head.thetadot[2]));
+    latestRobotState.setJointVelocity(12, DEG_TO_RAD(shm_status.head.thetadot[3]));
 
-    latestRobotState.setJointVelocity(16, DEG_TO_RAD(shm_status.head.thetadot[0])); // neck
-    latestRobotState.setJointVelocity(17, DEG_TO_RAD(shm_status.head.thetadot[1]));
-    latestRobotState.setJointVelocity(18, DEG_TO_RAD(shm_status.head.thetadot[2]));
-    latestRobotState.setJointVelocity(19, DEG_TO_RAD(shm_status.head.thetadot[3]));
+    latestRobotState.setJointVelocity(13, DEG_TO_RAD(shm_status.right_arm.thetadot[0])); // right arm
+    latestRobotState.setJointVelocity(14, DEG_TO_RAD(shm_status.right_arm.thetadot[1]));
+    latestRobotState.setJointVelocity(15, DEG_TO_RAD(shm_status.right_arm.thetadot[2]));
+    latestRobotState.setJointVelocity(16, DEG_TO_RAD(shm_status.right_arm.thetadot[3]));
+    latestRobotState.setJointVelocity(17, DEG_TO_RAD(shm_status.right_arm.thetadot[4]));
+    latestRobotState.setJointVelocity(18, DEG_TO_RAD(shm_status.right_arm.thetadot[5]));
+    latestRobotState.setJointVelocity(19, DEG_TO_RAD(shm_status.right_arm.thetadot[6]));
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Save effort data
@@ -335,18 +337,20 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
     latestRobotState.setJointEffort(7, 1.0e-3 * shm_status.left_arm.torque[5]);
     latestRobotState.setJointEffort(8, 1.0e-3 * shm_status.left_arm.torque[6]);
 
-    latestRobotState.setJointEffort(9, 1.0e-3 * shm_status.right_arm.torque[0]); // right arm
-    latestRobotState.setJointEffort(10, 1.0e-3 * shm_status.right_arm.torque[1]);
-    latestRobotState.setJointEffort(11, 1.0e-3 * shm_status.right_arm.torque[2]);
-    latestRobotState.setJointEffort(12, 1.0e-3 * shm_status.right_arm.torque[3]);
-    latestRobotState.setJointEffort(13, 1.0e-3 * shm_status.right_arm.torque[4]);
-    latestRobotState.setJointEffort(14, 1.0e-3 * shm_status.right_arm.torque[5]);
-    latestRobotState.setJointEffort(15, 1.0e-3 * shm_status.right_arm.torque[6]);
+    latestRobotState.setJointEffort(9, 1.0e-3 * shm_status.head.torque[0]); // neck
+    latestRobotState.setJointEffort(10, 1.0e-3 * shm_status.head.torque[1]);
+    latestRobotState.setJointEffort(11, 1.0e-3 * shm_status.head.torque[2]);
+    latestRobotState.setJointEffort(12, 1.0e-3 * shm_status.head.torque[3]);
 
-    latestRobotState.setJointEffort(16, 1.0e-3 * shm_status.head.torque[0]); // neck
-    latestRobotState.setJointEffort(17, 1.0e-3 * shm_status.head.torque[1]);
-    latestRobotState.setJointEffort(18, 1.0e-3 * shm_status.head.torque[2]);
-    latestRobotState.setJointEffort(19, 1.0e-3 * shm_status.head.torque[3]);
+    latestRobotState.setJointEffort(13, 1.0e-3 * shm_status.right_arm.torque[0]); // right arm
+    latestRobotState.setJointEffort(14, 1.0e-3 * shm_status.right_arm.torque[1]);
+    latestRobotState.setJointEffort(15, 1.0e-3 * shm_status.right_arm.torque[2]);
+    latestRobotState.setJointEffort(16, 1.0e-3 * shm_status.right_arm.torque[3]);
+    latestRobotState.setJointEffort(17, 1.0e-3 * shm_status.right_arm.torque[4]);
+    latestRobotState.setJointEffort(18, 1.0e-3 * shm_status.right_arm.torque[5]);
+    latestRobotState.setJointEffort(19, 1.0e-3 * shm_status.right_arm.torque[6]);
+
+
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Get and save the latest odometry data
@@ -388,18 +392,18 @@ bool RobotInterfaceDreamer::write(const ros::Time & time, const controlit::Comma
     shm_cmd.left_arm.tq_desired[5] = 1e3 * cmd[7];
     shm_cmd.left_arm.tq_desired[6] = 1e3 * cmd[8];
 
-    shm_cmd.right_arm.tq_desired[0] = 1e3 * cmd[9]; // right arm
-    shm_cmd.right_arm.tq_desired[1] = 1e3 * cmd[10];
-    shm_cmd.right_arm.tq_desired[2] = 1e3 * cmd[11];
-    shm_cmd.right_arm.tq_desired[3] = 1e3 * cmd[12];
-    shm_cmd.right_arm.tq_desired[4] = 1e3 * cmd[13];
-    shm_cmd.right_arm.tq_desired[5] = 1e3 * cmd[14];
-    shm_cmd.right_arm.tq_desired[6] = 1e3 * cmd[15];
+    shm_cmd.head.tq_desired[0] = 1e3 * cmd[9]; // neck
+    shm_cmd.head.tq_desired[1] = 1e3 * cmd[10];
+    shm_cmd.head.tq_desired[2] = 1e3 * cmd[11];
+    shm_cmd.head.tq_desired[3] = 1e3 * cmd[12];
 
-    shm_cmd.head.tq_desired[0] = 1e3 * cmd[16]; // neck
-    shm_cmd.head.tq_desired[1] = 1e3 * cmd[17];
-    shm_cmd.head.tq_desired[2] = 1e3 * cmd[18];
-    shm_cmd.head.tq_desired[3] = 1e3 * cmd[19];
+    shm_cmd.right_arm.tq_desired[0] = 1e3 * cmd[13]; // right arm
+    shm_cmd.right_arm.tq_desired[1] = 1e3 * cmd[14];
+    shm_cmd.right_arm.tq_desired[2] = 1e3 * cmd[15];
+    shm_cmd.right_arm.tq_desired[3] = 1e3 * cmd[16];
+    shm_cmd.right_arm.tq_desired[4] = 1e3 * cmd[17];
+    shm_cmd.right_arm.tq_desired[5] = 1e3 * cmd[18];
+    shm_cmd.right_arm.tq_desired[6] = 1e3 * cmd[19];
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Write commands to shared memory
