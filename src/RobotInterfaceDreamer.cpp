@@ -356,10 +356,6 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
     // Get and save the latest odometry data
     if (!odometryStateReceiver->getOdometry(time, latestRobotState, block))
         return false;
-    
-    ///////////////////////////////////////////////////////////////////////////////////
-    // Save the timestamp in the command message (not sure if this is necessary)
-    shm_cmd.timestamp = shm_status.timestamp;
 
     return true;
 }
@@ -404,6 +400,12 @@ bool RobotInterfaceDreamer::write(const ros::Time & time, const controlit::Comma
     shm_cmd.right_arm.tq_desired[4] = 1e3 * cmd[17];
     shm_cmd.right_arm.tq_desired[5] = 1e3 * cmd[18];
     shm_cmd.right_arm.tq_desired[6] = 1e3 * cmd[19];
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    // Save the timestamp in the command message (not sure if this is necessary)
+    shm_cmd.timestamp = shm_status.timestamp;
+
+    CONTROLIT_INFO << "Setting command time stamp to be " << shm_cmd.timestamp;
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Write commands to shared memory
