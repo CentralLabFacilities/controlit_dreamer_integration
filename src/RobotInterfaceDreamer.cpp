@@ -243,11 +243,12 @@ void RobotInterfaceDreamer::printSHMCommand()
 
 bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState & latestRobotState, bool block)
 {
-    PRINT_INFO_STATEMENT("Method called!");
-
     if (!sharedMemoryReady)
     {
-        if (!initSM()) return false;
+        if (!initSM())
+        {
+             return false;
+        }
     }
 
     // Reset the timestamp within robot state to remember when the state was obtained.
@@ -362,13 +363,21 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
 
 bool RobotInterfaceDreamer::write(const ros::Time & time, const controlit::Command & command)
 {
-    PRINT_INFO_STATEMENT("Method called!");
+    CONTROLIT_INFO << "Method called!";
 
-    if (command.getNumDOFs() != 21) return false;
+    if (command.getNumDOFs() != 19)
+    {
+       CONTROLIT_ERROR << "Unexpected number of DOFs got " << command.getNumDOFs() << ", expected 19";
+       return false;
+    }
  
     if (!sharedMemoryReady)
     {
-        if (!initSM()) return false;
+        if (!initSM())
+        {
+            CONTROLIT_INFO << "Shared memory failed to initialize. Aborting write.";
+            return false;
+        }
     }
 
     const Vector & cmd = command.getEffortCmd();
