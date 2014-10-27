@@ -1,12 +1,5 @@
 <?xml version="1.0" ?>
 <launch>
-    <!-- Specify the custom debug level -->
-    <env name="ROSCONSOLE_CONFIG_FILE" value="$(find controlit_environment_config)/config/rosconsole.config"/>
-
-    <!-- Load the robot description parameter. -->
-    <param name="robot_description"
-           command="$(find xacro)/xacro.py '$(find dreamer_controlit)/models/dreamer_controlit/xacro/dreamer_controlit_rviz.xacro'"/>
-
     <!-- Start controlit_exec with controller stickbot_lowerleg_3dof_controller -->
     <node name="ControlItExec" pkg="controlit_exec" type="controlit_exec" output="screen" ns="dreamer_controller" respawn="false"/>
 
