@@ -363,8 +363,6 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
 
 bool RobotInterfaceDreamer::write(const ros::Time & time, const controlit::Command & command)
 {
-    CONTROLIT_INFO << "Method called!";
-
     if (command.getNumDOFs() != 19)
     {
        CONTROLIT_ERROR << "Unexpected number of DOFs got " << command.getNumDOFs() << ", expected 19";
@@ -413,8 +411,6 @@ bool RobotInterfaceDreamer::write(const ros::Time & time, const controlit::Comma
     ///////////////////////////////////////////////////////////////////////////////////
     // Save the timestamp in the command message (not sure if this is necessary)
     shm_cmd.timestamp = shm_status.timestamp;
-
-    CONTROLIT_INFO << "Setting command time stamp to be " << shm_cmd.timestamp;
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Write commands to shared memory
