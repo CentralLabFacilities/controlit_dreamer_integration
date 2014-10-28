@@ -371,9 +371,9 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
 
 bool RobotInterfaceDreamer::write(const ros::Time & time, const controlit::Command & command)
 {
-    if (command.getNumDOFs() != 19)
+    if (command.getNumDOFs() != 2)
     {
-       CONTROLIT_ERROR << "Unexpected number of DOFs got " << command.getNumDOFs() << ", expected 19";
+       CONTROLIT_ERROR << "Unexpected number of DOFs got " << command.getNumDOFs() << ", expected 2");
        return false;
     }
  
