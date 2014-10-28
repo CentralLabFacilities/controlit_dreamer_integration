@@ -267,91 +267,99 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Save position data
-    // latestRobotState.setJointPosition(0, DEG_TO_RAD(shm_status.torso.theta[0])); // torso pan
-    // latestRobotState.setJointPosition(0, 0); // torso pan, fixed to zero since joint is not working as of 2014/10/16
-    latestRobotState.setJointPosition(0, DEG_TO_RAD(shm_status.torso.theta[1])); // torso_pitch_1
-    latestRobotState.setJointPosition(1, DEG_TO_RAD(shm_status.torso.theta[2])); // torso_pitch_2
+    // // latestRobotState.setJointPosition(0, DEG_TO_RAD(shm_status.torso.theta[0])); // torso pan
+    // // latestRobotState.setJointPosition(0, 0); // torso pan, fixed to zero since joint is not working as of 2014/10/16
+    // latestRobotState.setJointPosition(0, DEG_TO_RAD(shm_status.torso.theta[1])); // torso_pitch_1
+    // latestRobotState.setJointPosition(1, DEG_TO_RAD(shm_status.torso.theta[2])); // torso_pitch_2
 
-    latestRobotState.setJointPosition(2, DEG_TO_RAD(shm_status.left_arm.theta[0])); // left arm
-    latestRobotState.setJointPosition(3, DEG_TO_RAD(shm_status.left_arm.theta[1]));
-    latestRobotState.setJointPosition(4, DEG_TO_RAD(shm_status.left_arm.theta[2]));
-    latestRobotState.setJointPosition(5, DEG_TO_RAD(shm_status.left_arm.theta[3]));
-    latestRobotState.setJointPosition(6, DEG_TO_RAD(shm_status.left_arm.theta[4]));
-    latestRobotState.setJointPosition(7, DEG_TO_RAD(shm_status.left_arm.theta[5]));
-    latestRobotState.setJointPosition(8, DEG_TO_RAD(shm_status.left_arm.theta[6]));
+    // latestRobotState.setJointPosition(2, DEG_TO_RAD(shm_status.left_arm.theta[0])); // left arm
+    // latestRobotState.setJointPosition(3, DEG_TO_RAD(shm_status.left_arm.theta[1]));
+    // latestRobotState.setJointPosition(4, DEG_TO_RAD(shm_status.left_arm.theta[2]));
+    // latestRobotState.setJointPosition(5, DEG_TO_RAD(shm_status.left_arm.theta[3]));
+    // latestRobotState.setJointPosition(6, DEG_TO_RAD(shm_status.left_arm.theta[4]));
+    // latestRobotState.setJointPosition(7, DEG_TO_RAD(shm_status.left_arm.theta[5]));
+    // latestRobotState.setJointPosition(8, DEG_TO_RAD(shm_status.left_arm.theta[6]));
 
-    latestRobotState.setJointPosition(9, DEG_TO_RAD(shm_status.head.theta[0])); // neck
-    latestRobotState.setJointPosition(10, DEG_TO_RAD(shm_status.head.theta[1]));
-    latestRobotState.setJointPosition(11, DEG_TO_RAD(shm_status.head.theta[2]));
-    latestRobotState.setJointPosition(12, DEG_TO_RAD(shm_status.head.theta[3]));
+    // latestRobotState.setJointPosition(9, DEG_TO_RAD(shm_status.head.theta[0])); // neck
+    // latestRobotState.setJointPosition(10, DEG_TO_RAD(shm_status.head.theta[1]));
+    // latestRobotState.setJointPosition(11, DEG_TO_RAD(shm_status.head.theta[2]));
+    // latestRobotState.setJointPosition(12, DEG_TO_RAD(shm_status.head.theta[3]));
 
-    latestRobotState.setJointPosition(13, DEG_TO_RAD(shm_status.right_arm.theta[0])); // right arm
-    latestRobotState.setJointPosition(14, DEG_TO_RAD(shm_status.right_arm.theta[1]));
-    latestRobotState.setJointPosition(15, DEG_TO_RAD(shm_status.right_arm.theta[2]));
-    latestRobotState.setJointPosition(16, DEG_TO_RAD(shm_status.right_arm.theta[3]));
-    latestRobotState.setJointPosition(17, DEG_TO_RAD(shm_status.right_arm.theta[4]));
-    latestRobotState.setJointPosition(18, DEG_TO_RAD(shm_status.right_arm.theta[5]));
-    latestRobotState.setJointPosition(19, DEG_TO_RAD(shm_status.right_arm.theta[6]));
+    // latestRobotState.setJointPosition(13, DEG_TO_RAD(shm_status.right_arm.theta[0])); // right arm
+    // latestRobotState.setJointPosition(14, DEG_TO_RAD(shm_status.right_arm.theta[1]));
+    // latestRobotState.setJointPosition(15, DEG_TO_RAD(shm_status.right_arm.theta[2]));
+    // latestRobotState.setJointPosition(16, DEG_TO_RAD(shm_status.right_arm.theta[3]));
+    // latestRobotState.setJointPosition(17, DEG_TO_RAD(shm_status.right_arm.theta[4]));
+    // latestRobotState.setJointPosition(18, DEG_TO_RAD(shm_status.right_arm.theta[5]));
+    // latestRobotState.setJointPosition(19, DEG_TO_RAD(shm_status.right_arm.theta[6]));
 
-
+    // Only control the two wrist joints
+    latestRobotState.setJointPosition(0, DEG_TO_RAD(shm_status.right_arm.theta[5]));
+    latestRobotState.setJointPosition(1, DEG_TO_RAD(shm_status.right_arm.theta[6]));
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Save velocity data
-    // latestRobotState.setJointVelocity(0, DEG_TO_RAD(shm_status.torso.thetadot[0])); // torso pan
-    // latestRobotState.setJointVelocity(0, 0); // torso pan, fixed to zero since joint is not working as of 2014/10/16
-    latestRobotState.setJointVelocity(0, DEG_TO_RAD(shm_status.torso.thetadot[1])); // torso_pitch_1
-    latestRobotState.setJointVelocity(1, DEG_TO_RAD(shm_status.torso.thetadot[2])); // torso_pitch_2
+    // // latestRobotState.setJointVelocity(0, DEG_TO_RAD(shm_status.torso.thetadot[0])); // torso pan
+    // // latestRobotState.setJointVelocity(0, 0); // torso pan, fixed to zero since joint is not working as of 2014/10/16
+    // latestRobotState.setJointVelocity(0, DEG_TO_RAD(shm_status.torso.thetadot[1])); // torso_pitch_1
+    // latestRobotState.setJointVelocity(1, DEG_TO_RAD(shm_status.torso.thetadot[2])); // torso_pitch_2
 
-    latestRobotState.setJointVelocity(2, DEG_TO_RAD(shm_status.left_arm.thetadot[0])); // left arm
-    latestRobotState.setJointVelocity(3, DEG_TO_RAD(shm_status.left_arm.thetadot[1]));
-    latestRobotState.setJointVelocity(4, DEG_TO_RAD(shm_status.left_arm.thetadot[2]));
-    latestRobotState.setJointVelocity(5, DEG_TO_RAD(shm_status.left_arm.thetadot[3]));
-    latestRobotState.setJointVelocity(6, DEG_TO_RAD(shm_status.left_arm.thetadot[4]));
-    latestRobotState.setJointVelocity(7, DEG_TO_RAD(shm_status.left_arm.thetadot[5]));
-    latestRobotState.setJointVelocity(8, DEG_TO_RAD(shm_status.left_arm.thetadot[6]));
+    // latestRobotState.setJointVelocity(2, DEG_TO_RAD(shm_status.left_arm.thetadot[0])); // left arm
+    // latestRobotState.setJointVelocity(3, DEG_TO_RAD(shm_status.left_arm.thetadot[1]));
+    // latestRobotState.setJointVelocity(4, DEG_TO_RAD(shm_status.left_arm.thetadot[2]));
+    // latestRobotState.setJointVelocity(5, DEG_TO_RAD(shm_status.left_arm.thetadot[3]));
+    // latestRobotState.setJointVelocity(6, DEG_TO_RAD(shm_status.left_arm.thetadot[4]));
+    // latestRobotState.setJointVelocity(7, DEG_TO_RAD(shm_status.left_arm.thetadot[5]));
+    // latestRobotState.setJointVelocity(8, DEG_TO_RAD(shm_status.left_arm.thetadot[6]));
 
-    latestRobotState.setJointVelocity(9, DEG_TO_RAD(shm_status.head.thetadot[0])); // neck
-    latestRobotState.setJointVelocity(10, DEG_TO_RAD(shm_status.head.thetadot[1]));
-    latestRobotState.setJointVelocity(11, DEG_TO_RAD(shm_status.head.thetadot[2]));
-    latestRobotState.setJointVelocity(12, DEG_TO_RAD(shm_status.head.thetadot[3]));
+    // latestRobotState.setJointVelocity(9, DEG_TO_RAD(shm_status.head.thetadot[0])); // neck
+    // latestRobotState.setJointVelocity(10, DEG_TO_RAD(shm_status.head.thetadot[1]));
+    // latestRobotState.setJointVelocity(11, DEG_TO_RAD(shm_status.head.thetadot[2]));
+    // latestRobotState.setJointVelocity(12, DEG_TO_RAD(shm_status.head.thetadot[3]));
 
-    latestRobotState.setJointVelocity(13, DEG_TO_RAD(shm_status.right_arm.thetadot[0])); // right arm
-    latestRobotState.setJointVelocity(14, DEG_TO_RAD(shm_status.right_arm.thetadot[1]));
-    latestRobotState.setJointVelocity(15, DEG_TO_RAD(shm_status.right_arm.thetadot[2]));
-    latestRobotState.setJointVelocity(16, DEG_TO_RAD(shm_status.right_arm.thetadot[3]));
-    latestRobotState.setJointVelocity(17, DEG_TO_RAD(shm_status.right_arm.thetadot[4]));
-    latestRobotState.setJointVelocity(18, DEG_TO_RAD(shm_status.right_arm.thetadot[5]));
-    latestRobotState.setJointVelocity(19, DEG_TO_RAD(shm_status.right_arm.thetadot[6]));
+    // latestRobotState.setJointVelocity(13, DEG_TO_RAD(shm_status.right_arm.thetadot[0])); // right arm
+    // latestRobotState.setJointVelocity(14, DEG_TO_RAD(shm_status.right_arm.thetadot[1]));
+    // latestRobotState.setJointVelocity(15, DEG_TO_RAD(shm_status.right_arm.thetadot[2]));
+    // latestRobotState.setJointVelocity(16, DEG_TO_RAD(shm_status.right_arm.thetadot[3]));
+    // latestRobotState.setJointVelocity(17, DEG_TO_RAD(shm_status.right_arm.thetadot[4]));
+    // latestRobotState.setJointVelocity(18, DEG_TO_RAD(shm_status.right_arm.thetadot[5]));
+    // latestRobotState.setJointVelocity(19, DEG_TO_RAD(shm_status.right_arm.thetadot[6]));
+
+    // Only control the two wrist joints
+    latestRobotState.setJointVelocity(0, DEG_TO_RAD(shm_status.right_arm.thetadot[5]));
+    latestRobotState.setJointVelocity(1, DEG_TO_RAD(shm_status.right_arm.thetadot[6]));
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Save effort data
-    // latestRobotState.setJointEffort(0, 1.0e-3 * shm_status.torso.torque[0]); // torso pan
-    // latestRobotState.setJointEffort(0, 0); // torso pan, fixed to zero since joint is not working as of 2014/10/16
-    latestRobotState.setJointEffort(0, 1.0e-3 * shm_status.torso.torque[1]); // torso_pitch_1
-    latestRobotState.setJointEffort(1, 1.0e-3 * shm_status.torso.torque[2]); // torso_pitch_2
+    // // latestRobotState.setJointEffort(0, 1.0e-3 * shm_status.torso.torque[0]); // torso pan
+    // // latestRobotState.setJointEffort(0, 0); // torso pan, fixed to zero since joint is not working as of 2014/10/16
+    // latestRobotState.setJointEffort(0, 1.0e-3 * shm_status.torso.torque[1]); // torso_pitch_1
+    // latestRobotState.setJointEffort(1, 1.0e-3 * shm_status.torso.torque[2]); // torso_pitch_2
 
-    latestRobotState.setJointEffort(2, 1.0e-3 * shm_status.left_arm.torque[0]); // left arm
-    latestRobotState.setJointEffort(3, 1.0e-3 * shm_status.left_arm.torque[1]);
-    latestRobotState.setJointEffort(4, 1.0e-3 * shm_status.left_arm.torque[2]);
-    latestRobotState.setJointEffort(5, 1.0e-3 * shm_status.left_arm.torque[3]);
-    latestRobotState.setJointEffort(6, 1.0e-3 * shm_status.left_arm.torque[4]);
-    latestRobotState.setJointEffort(7, 1.0e-3 * shm_status.left_arm.torque[5]);
-    latestRobotState.setJointEffort(8, 1.0e-3 * shm_status.left_arm.torque[6]);
+    // latestRobotState.setJointEffort(2, 1.0e-3 * shm_status.left_arm.torque[0]); // left arm
+    // latestRobotState.setJointEffort(3, 1.0e-3 * shm_status.left_arm.torque[1]);
+    // latestRobotState.setJointEffort(4, 1.0e-3 * shm_status.left_arm.torque[2]);
+    // latestRobotState.setJointEffort(5, 1.0e-3 * shm_status.left_arm.torque[3]);
+    // latestRobotState.setJointEffort(6, 1.0e-3 * shm_status.left_arm.torque[4]);
+    // latestRobotState.setJointEffort(7, 1.0e-3 * shm_status.left_arm.torque[5]);
+    // latestRobotState.setJointEffort(8, 1.0e-3 * shm_status.left_arm.torque[6]);
 
-    latestRobotState.setJointEffort(9, 1.0e-3 * shm_status.head.torque[0]); // neck
-    latestRobotState.setJointEffort(10, 1.0e-3 * shm_status.head.torque[1]);
-    latestRobotState.setJointEffort(11, 1.0e-3 * shm_status.head.torque[2]);
-    latestRobotState.setJointEffort(12, 1.0e-3 * shm_status.head.torque[3]);
+    // latestRobotState.setJointEffort(9, 1.0e-3 * shm_status.head.torque[0]); // neck
+    // latestRobotState.setJointEffort(10, 1.0e-3 * shm_status.head.torque[1]);
+    // latestRobotState.setJointEffort(11, 1.0e-3 * shm_status.head.torque[2]);
+    // latestRobotState.setJointEffort(12, 1.0e-3 * shm_status.head.torque[3]);
 
-    latestRobotState.setJointEffort(13, 1.0e-3 * shm_status.right_arm.torque[0]); // right arm
-    latestRobotState.setJointEffort(14, 1.0e-3 * shm_status.right_arm.torque[1]);
-    latestRobotState.setJointEffort(15, 1.0e-3 * shm_status.right_arm.torque[2]);
-    latestRobotState.setJointEffort(16, 1.0e-3 * shm_status.right_arm.torque[3]);
-    latestRobotState.setJointEffort(17, 1.0e-3 * shm_status.right_arm.torque[4]);
-    latestRobotState.setJointEffort(18, 1.0e-3 * shm_status.right_arm.torque[5]);
-    latestRobotState.setJointEffort(19, 1.0e-3 * shm_status.right_arm.torque[6]);
+    // latestRobotState.setJointEffort(13, 1.0e-3 * shm_status.right_arm.torque[0]); // right arm
+    // latestRobotState.setJointEffort(14, 1.0e-3 * shm_status.right_arm.torque[1]);
+    // latestRobotState.setJointEffort(15, 1.0e-3 * shm_status.right_arm.torque[2]);
+    // latestRobotState.setJointEffort(16, 1.0e-3 * shm_status.right_arm.torque[3]);
+    // latestRobotState.setJointEffort(17, 1.0e-3 * shm_status.right_arm.torque[4]);
+    // latestRobotState.setJointEffort(18, 1.0e-3 * shm_status.right_arm.torque[5]);
+    // latestRobotState.setJointEffort(19, 1.0e-3 * shm_status.right_arm.torque[6]);
 
-
+    // Only control the two wrist joints
+    latestRobotState.setJointEffort(0, 1.0e-3 * shm_status.right_arm.torque[5]);
+    latestRobotState.setJointEffort(1, 1.0e-3 * shm_status.right_arm.torque[6]);
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Get and save the latest odometry data
@@ -382,31 +390,35 @@ bool RobotInterfaceDreamer::write(const ros::Time & time, const controlit::Comma
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Save effort data into local variable
-    // shm_cmd.torso.tq_desired[0] = 1e3 * cmd[0]; // torso pan
-    shm_cmd.torso.tq_desired[0] = 0; // torso_yaw, fixed to zero since joint is not working as of 2014/10/16
-    shm_cmd.torso.tq_desired[1] = 1e3 * cmd[0]; // torso_pitch_1
-    //shm_cmd.torso.tq_desired[2] = 1e3 * cmd[1]; // torso_pitch_2
+    // // shm_cmd.torso.tq_desired[0] = 1e3 * cmd[0]; // torso pan
+    // shm_cmd.torso.tq_desired[0] = 0; // torso_yaw, fixed to zero since joint is not working as of 2014/10/16
+    // shm_cmd.torso.tq_desired[1] = 1e3 * cmd[0]; // torso_pitch_1
+    // //shm_cmd.torso.tq_desired[2] = 1e3 * cmd[1]; // torso_pitch_2
 
-    shm_cmd.left_arm.tq_desired[0] = 1e3 * cmd[1]; // left arm
-    shm_cmd.left_arm.tq_desired[1] = 1e3 * cmd[2];
-    shm_cmd.left_arm.tq_desired[2] = 1e3 * cmd[3];
-    shm_cmd.left_arm.tq_desired[3] = 1e3 * cmd[4];
-    shm_cmd.left_arm.tq_desired[4] = 1e3 * cmd[5];
-    shm_cmd.left_arm.tq_desired[5] = 1e3 * cmd[6];
-    shm_cmd.left_arm.tq_desired[6] = 1e3 * cmd[7];
+    // shm_cmd.left_arm.tq_desired[0] = 1e3 * cmd[1]; // left arm
+    // shm_cmd.left_arm.tq_desired[1] = 1e3 * cmd[2];
+    // shm_cmd.left_arm.tq_desired[2] = 1e3 * cmd[3];
+    // shm_cmd.left_arm.tq_desired[3] = 1e3 * cmd[4];
+    // shm_cmd.left_arm.tq_desired[4] = 1e3 * cmd[5];
+    // shm_cmd.left_arm.tq_desired[5] = 1e3 * cmd[6];
+    // shm_cmd.left_arm.tq_desired[6] = 1e3 * cmd[7];
 
-    shm_cmd.head.tq_desired[0] = 1e3 * cmd[8]; // neck
-    shm_cmd.head.tq_desired[1] = 1e3 * cmd[9];
-    shm_cmd.head.tq_desired[2] = 1e3 * cmd[10];
-    shm_cmd.head.tq_desired[3] = 1e3 * cmd[11];
+    // shm_cmd.head.tq_desired[0] = 1e3 * cmd[8]; // neck
+    // shm_cmd.head.tq_desired[1] = 1e3 * cmd[9];
+    // shm_cmd.head.tq_desired[2] = 1e3 * cmd[10];
+    // shm_cmd.head.tq_desired[3] = 1e3 * cmd[11];
 
-    shm_cmd.right_arm.tq_desired[0] = 1e3 * cmd[12]; // right arm
-    shm_cmd.right_arm.tq_desired[1] = 1e3 * cmd[13];
-    shm_cmd.right_arm.tq_desired[2] = 1e3 * cmd[14];
-    shm_cmd.right_arm.tq_desired[3] = 1e3 * cmd[15];
-    shm_cmd.right_arm.tq_desired[4] = 1e3 * cmd[16];
-    shm_cmd.right_arm.tq_desired[5] = 1e3 * cmd[17];
-    shm_cmd.right_arm.tq_desired[6] = 1e3 * cmd[18];
+    // shm_cmd.right_arm.tq_desired[0] = 1e3 * cmd[12]; // right arm
+    // shm_cmd.right_arm.tq_desired[1] = 1e3 * cmd[13];
+    // shm_cmd.right_arm.tq_desired[2] = 1e3 * cmd[14];
+    // shm_cmd.right_arm.tq_desired[3] = 1e3 * cmd[15];
+    // shm_cmd.right_arm.tq_desired[4] = 1e3 * cmd[16];
+    // shm_cmd.right_arm.tq_desired[5] = 1e3 * cmd[17];
+    // shm_cmd.right_arm.tq_desired[6] = 1e3 * cmd[18];
+
+    // Only control the two wrist joints
+    shm_cmd.right_arm.tq_desired[5] = 1e3 * cmd[0];
+    shm_cmd.right_arm.tq_desired[6] = 1e3 * cmd[1];
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Save the timestamp in the command message (not sure if this is necessary)
