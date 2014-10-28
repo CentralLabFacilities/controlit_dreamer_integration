@@ -7,50 +7,48 @@ tasks:
     parameters:
       - name: kp
         type: vector
-        value: [
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        value: [0, 0]
+        # value: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        #         0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
       - name: kd
         type: vector
-        value: [
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        value: [0, 0]
+        # value: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        #         0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
       - name: maxVelocity
         type: vector
-        value: [
-                101.00, 101.00, 101.00, 101.00, 101.00, 101.00, 101.00, 101.00, 101.00, 101.00,
-                101.00, 101.00, 101.00, 101.00, 101.00, 101.00, 101.00, 101.00, 101.00, 101.00]
+        value: [101.00, 101.00]
+        # value: [101.00, 101.00, 101.00, 101.00, 101.00, 101.00, 101.00, 101.00, 101.00, 101.00,
+        #         101.00, 101.00, 101.00, 101.00, 101.00, 101.00, 101.00, 101.00, 101.00, 101.00]
+
       - name: goalPosition
         type: vector
-        value: [
-                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        value: [0.0, 0.0]
+        # value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        #         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
       - name: goalVelocity
         type: vector
-        value: [
-                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        value: [0.0, 0.0]
+        # value: [0.0, 0.0]
+
       - name: goalAcceleration
         type: vector
-        value: [
-                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        value: [0.0, 0.0]
+
       - name: maxAcceleration
         type: real
-        value: [
-                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        value: [0.0, 0.0]
+
       - name: error
         type: vector
-        value: [
-                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        value: [0.0, 0.0]
+
       - name: errorDot
         type: vector
-        value: [
-                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        value: [0.0, 0.0]
 
     events:
       - name: converged
@@ -184,18 +182,18 @@ constraints:
       - name: enabled
         type: integer
         value: 1
-  - type: controlit/TransmissionConstraint
-    name: J1J2Transmission
-    parameters:
-      - name: masterNodeName
-        type: string
-        value: "torso_pitch_1"
-      - name: slaveNodeName
-        type: string
-        value: "torso_pitch_2"
-      - name: transmissionRatio
-        type: float
-        value: 1.0
+  # - type: controlit/TransmissionConstraint
+  #   name: J1J2Transmission
+  #   parameters:
+  #     - name: masterNodeName
+  #       type: string
+  #       value: "torso_pitch_1"
+  #     - name: slaveNodeName
+  #       type: string
+  #       value: "torso_pitch_2"
+  #     - name: transmissionRatio
+  #       type: float
+  #       value: 1.0
 constraint_set:
   type: constraint_set
   name: My Constraint Set
@@ -220,5 +218,5 @@ constraint_set:
   active_constraints:
     - name: ContactConstraint
       enabled: 1
-    - name: J1J2Transmission
-      enabled: 1
+    # - name: J1J2Transmission
+    #   enabled: 1
