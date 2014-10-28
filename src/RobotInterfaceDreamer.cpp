@@ -243,11 +243,12 @@ void RobotInterfaceDreamer::printSHMCommand()
 
 bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState & latestRobotState, bool block)
 {
-    PRINT_INFO_STATEMENT("Method called!");
-
     if (!sharedMemoryReady)
     {
-        if (!initSM()) return false;
+        if (!initSM())
+        {
+             return false;
+        }
     }
 
     // Reset the timestamp within robot state to remember when the state was obtained.
@@ -362,13 +363,19 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
 
 bool RobotInterfaceDreamer::write(const ros::Time & time, const controlit::Command & command)
 {
-    PRINT_INFO_STATEMENT("Method called!");
-
-    if (command.getNumDOFs() != 21) return false;
+    if (command.getNumDOFs() != 19)
+    {
+       CONTROLIT_ERROR << "Unexpected number of DOFs got " << command.getNumDOFs() << ", expected 19";
+       return false;
+    }
  
     if (!sharedMemoryReady)
     {
-        if (!initSM()) return false;
+        if (!initSM())
+        {
+            CONTROLIT_INFO << "Shared memory failed to initialize. Aborting write.";
+            return false;
+        }
     }
 
     const Vector & cmd = command.getEffortCmd();
@@ -378,34 +385,32 @@ bool RobotInterfaceDreamer::write(const ros::Time & time, const controlit::Comma
     // shm_cmd.torso.tq_desired[0] = 1e3 * cmd[0]; // torso pan
     shm_cmd.torso.tq_desired[0] = 0; // torso_yaw, fixed to zero since joint is not working as of 2014/10/16
     shm_cmd.torso.tq_desired[1] = 1e3 * cmd[0]; // torso_pitch_1
-    shm_cmd.torso.tq_desired[2] = 1e3 * cmd[1]; // torso_pitch_2
+    //shm_cmd.torso.tq_desired[2] = 1e3 * cmd[1]; // torso_pitch_2
 
-    shm_cmd.left_arm.tq_desired[0] = 1e3 * cmd[2]; // left arm
-    shm_cmd.left_arm.tq_desired[1] = 1e3 * cmd[3];
-    shm_cmd.left_arm.tq_desired[2] = 1e3 * cmd[4];
-    shm_cmd.left_arm.tq_desired[3] = 1e3 * cmd[5];
-    shm_cmd.left_arm.tq_desired[4] = 1e3 * cmd[6];
-    shm_cmd.left_arm.tq_desired[5] = 1e3 * cmd[7];
-    shm_cmd.left_arm.tq_desired[6] = 1e3 * cmd[8];
+    shm_cmd.left_arm.tq_desired[0] = 1e3 * cmd[1]; // left arm
+    shm_cmd.left_arm.tq_desired[1] = 1e3 * cmd[2];
+    shm_cmd.left_arm.tq_desired[2] = 1e3 * cmd[3];
+    shm_cmd.left_arm.tq_desired[3] = 1e3 * cmd[4];
+    shm_cmd.left_arm.tq_desired[4] = 1e3 * cmd[5];
+    shm_cmd.left_arm.tq_desired[5] = 1e3 * cmd[6];
+    shm_cmd.left_arm.tq_desired[6] = 1e3 * cmd[7];
 
-    shm_cmd.head.tq_desired[0] = 1e3 * cmd[9]; // neck
-    shm_cmd.head.tq_desired[1] = 1e3 * cmd[10];
-    shm_cmd.head.tq_desired[2] = 1e3 * cmd[11];
-    shm_cmd.head.tq_desired[3] = 1e3 * cmd[12];
+    shm_cmd.head.tq_desired[0] = 1e3 * cmd[8]; // neck
+    shm_cmd.head.tq_desired[1] = 1e3 * cmd[9];
+    shm_cmd.head.tq_desired[2] = 1e3 * cmd[10];
+    shm_cmd.head.tq_desired[3] = 1e3 * cmd[11];
 
-    shm_cmd.right_arm.tq_desired[0] = 1e3 * cmd[13]; // right arm
-    shm_cmd.right_arm.tq_desired[1] = 1e3 * cmd[14];
-    shm_cmd.right_arm.tq_desired[2] = 1e3 * cmd[15];
-    shm_cmd.right_arm.tq_desired[3] = 1e3 * cmd[16];
-    shm_cmd.right_arm.tq_desired[4] = 1e3 * cmd[17];
-    shm_cmd.right_arm.tq_desired[5] = 1e3 * cmd[18];
-    shm_cmd.right_arm.tq_desired[6] = 1e3 * cmd[19];
+    shm_cmd.right_arm.tq_desired[0] = 1e3 * cmd[12]; // right arm
+    shm_cmd.right_arm.tq_desired[1] = 1e3 * cmd[13];
+    shm_cmd.right_arm.tq_desired[2] = 1e3 * cmd[14];
+    shm_cmd.right_arm.tq_desired[3] = 1e3 * cmd[15];
+    shm_cmd.right_arm.tq_desired[4] = 1e3 * cmd[16];
+    shm_cmd.right_arm.tq_desired[5] = 1e3 * cmd[17];
+    shm_cmd.right_arm.tq_desired[6] = 1e3 * cmd[18];
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Save the timestamp in the command message (not sure if this is necessary)
     shm_cmd.timestamp = shm_status.timestamp;
-
-    CONTROLIT_INFO << "Setting command time stamp to be " << shm_cmd.timestamp;
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Write commands to shared memory
