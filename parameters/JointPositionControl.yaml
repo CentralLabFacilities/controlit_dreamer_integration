@@ -7,13 +7,13 @@ tasks:
     parameters:
       - name: kp
         type: vector
-        value: [0, 0]
+        value: [10, 10]
         # value: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         #         0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
       - name: kd
         type: vector
-        value: [0, 0]
+        value: [2, 2]
         # value: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         #         0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
