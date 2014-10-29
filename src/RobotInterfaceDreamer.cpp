@@ -293,10 +293,11 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
     // latestRobotState.setJointPosition(18, DEG_TO_RAD(shm_status.right_arm.theta[5]));
     // latestRobotState.setJointPosition(19, DEG_TO_RAD(shm_status.right_arm.theta[6]));
 
-    // Only control the two wrist joints
-    latestRobotState.setJointPosition(0, DEG_TO_RAD(shm_status.right_arm.theta[4]));
-    latestRobotState.setJointPosition(1, DEG_TO_RAD(shm_status.right_arm.theta[5]));
-    latestRobotState.setJointPosition(2, DEG_TO_RAD(shm_status.right_arm.theta[6]));
+    // Only control the elbow and three wrist joints
+    latestRobotState.setJointPosition(0, DEG_TO_RAD(shm_status.right_arm.theta[3]));
+    latestRobotState.setJointPosition(1, DEG_TO_RAD(shm_status.right_arm.theta[4]));
+    latestRobotState.setJointPosition(2, DEG_TO_RAD(shm_status.right_arm.theta[5]));
+    latestRobotState.setJointPosition(3, DEG_TO_RAD(shm_status.right_arm.theta[6]));
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Save velocity data
@@ -326,10 +327,11 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
     // latestRobotState.setJointVelocity(18, DEG_TO_RAD(shm_status.right_arm.thetadot[5]));
     // latestRobotState.setJointVelocity(19, DEG_TO_RAD(shm_status.right_arm.thetadot[6]));
 
-    // Only control the three wrist joints
-    latestRobotState.setJointVelocity(0, DEG_TO_RAD(shm_status.right_arm.thetadot[4]));
-    latestRobotState.setJointVelocity(1, DEG_TO_RAD(shm_status.right_arm.thetadot[5]));
-    latestRobotState.setJointVelocity(2, DEG_TO_RAD(shm_status.right_arm.thetadot[6]));
+    // Only control the elbow and three wrist joints
+    latestRobotState.setJointVelocity(0, DEG_TO_RAD(shm_status.right_arm.thetadot[3]));
+    latestRobotState.setJointVelocity(1, DEG_TO_RAD(shm_status.right_arm.thetadot[4]));
+    latestRobotState.setJointVelocity(2, DEG_TO_RAD(shm_status.right_arm.thetadot[5]));
+    latestRobotState.setJointVelocity(3, DEG_TO_RAD(shm_status.right_arm.thetadot[6]));
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Save effort data
@@ -359,10 +361,11 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
     // latestRobotState.setJointEffort(18, 1.0e-3 * shm_status.right_arm.torque[5]);
     // latestRobotState.setJointEffort(19, 1.0e-3 * shm_status.right_arm.torque[6]);
 
-    // Only control the three wrist joints
-    latestRobotState.setJointEffort(0, 1.0e-3 * shm_status.right_arm.torque[4]);
-    latestRobotState.setJointEffort(1, 1.0e-3 * shm_status.right_arm.torque[5]);
-    latestRobotState.setJointEffort(2, 1.0e-3 * shm_status.right_arm.torque[6]);
+    // Only control the elbow and three wrist joints
+    latestRobotState.setJointEffort(0, 1.0e-3 * shm_status.right_arm.torque[3]);
+    latestRobotState.setJointEffort(1, 1.0e-3 * shm_status.right_arm.torque[4]);
+    latestRobotState.setJointEffort(2, 1.0e-3 * shm_status.right_arm.torque[5]);
+    latestRobotState.setJointEffort(3, 1.0e-3 * shm_status.right_arm.torque[6]);
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Get and save the latest odometry data
@@ -419,10 +422,11 @@ bool RobotInterfaceDreamer::write(const ros::Time & time, const controlit::Comma
     // shm_cmd.right_arm.tq_desired[5] = 1e3 * cmd[17];
     // shm_cmd.right_arm.tq_desired[6] = 1e3 * cmd[18];
 
-    // Only control the three wrist joints
-    shm_cmd.right_arm.tq_desired[4] = 1e3 * cmd[0];
-    shm_cmd.right_arm.tq_desired[5] = 1e3 * cmd[1];
-    shm_cmd.right_arm.tq_desired[6] = 1e3 * cmd[2];
+    // Only control the elbow and three wrist joints
+    shm_cmd.right_arm.tq_desired[3] = 1e3 * cmd[0];
+    shm_cmd.right_arm.tq_desired[4] = 1e3 * cmd[1];
+    shm_cmd.right_arm.tq_desired[5] = 1e3 * cmd[2];
+    shm_cmd.right_arm.tq_desired[6] = 1e3 * cmd[3];
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Save the timestamp in the command message (not sure if this is necessary)
