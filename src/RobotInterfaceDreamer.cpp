@@ -63,6 +63,9 @@ bool RobotInterfaceDreamer::init(ros::NodeHandle & nh, RTControlModel * model)
     if (!RobotInterface::init(nh, model))
         return false;
 
+
+    lastCallTime = nano2count(rt_get_cpu_time_ns()); // temporary debug
+
     // Create the odometry receiver.
     PRINT_INFO_STATEMENT("Creating and initializing the odometry state receiver...");
     odometryStateReceiver.reset(new OdometryStateReceiverDreamer());
@@ -250,6 +253,12 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
              return false;
         }
     }
+
+    
+    RTIME currTime = rt_get_cpu_time_ns();
+    RTIME duration = currTime - lastCallTime;
+    lastCallTime = currTime;
+    CONTROLIT_INFO_RT << "duration (ns) = " << duration;
 
     // Reset the timestamp within robot state to remember when the state was obtained.
     latestRobotState.resetTimestamp();

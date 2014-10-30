@@ -124,6 +124,8 @@ private:
      * Holds a copy of the command to be written to shared memory.
      */
     M3UTATorqueShmSdsCommand shm_cmd;
+
+    RTIME lastCallTime;
 };
 
 } // namespace dreamer
