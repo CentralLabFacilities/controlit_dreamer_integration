@@ -111,7 +111,7 @@ void RobotInterfaceDreamerTester::servoInit()
 void RobotInterfaceDreamerTester::servoUpdate()
 {
     std::cout << "Calling robotInterface.read()..." << std::endl;
-    if (!robotInterface.read(ros::Time::now(), robotState))
+    if (!robotInterface.read(robotState))
     {
         std::cerr << "Problems reading from robot state." << std::endl;
     }

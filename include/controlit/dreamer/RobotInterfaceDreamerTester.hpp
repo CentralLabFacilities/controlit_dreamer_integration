@@ -75,7 +75,7 @@ public:
     /*!
      * The callback function for the Servo Clock.
      */
-    void servoUpdate(const ros::Time & time, const ros::Duration & period);
+    void servoUpdate();
 
 private:
 
