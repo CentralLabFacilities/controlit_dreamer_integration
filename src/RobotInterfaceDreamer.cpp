@@ -241,7 +241,7 @@ void RobotInterfaceDreamer::printSHMCommand()
     CONTROLIT_INFO << ss.str();
 }
 
-bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState & latestRobotState, bool block)
+bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool block)
 {
     if (!sharedMemoryReady)
     {
@@ -372,13 +372,13 @@ bool RobotInterfaceDreamer::read(const ros::Time & time, controlit::RobotState &
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Get and save the latest odometry data
-    if (!odometryStateReceiver->getOdometry(time, latestRobotState, block))
+    if (!odometryStateReceiver->getOdometry(latestRobotState, block))
         return false;
 
     return true;
 }
 
-bool RobotInterfaceDreamer::write(const ros::Time & time, const controlit::Command & command)
+bool RobotInterfaceDreamer::write(const controlit::Command & command)
 {
     // if (command.getNumDOFs() != 2)
     // {

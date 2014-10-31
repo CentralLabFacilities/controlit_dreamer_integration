@@ -149,26 +149,18 @@ void * ServoClockDreamer::rtMethod(void *)
     //////////////////////////////////////////////////
     // The servo loop.
 
-    ros::Time currTime;
-    ros::Time prevTime = ros::Time::now();
-    ros::Duration duration;
-    
     while (continueRunning) 
     {
         rt_task_wait_period();
         long long const start_time(nano2count(rt_get_cpu_time_ns()));
         
-        currTime = ros::Time::now();
-        duration = currTime - prevTime;
-        servoableClass->servoUpdate(currTime, duration);
-        prevTime = currTime;
-  
+        servoableClass->servoUpdate();
+        
         long long const end_time(nano2count(rt_get_cpu_time_ns()));
         long long const dt(end_time - start_time);
         if (dt > tickPeriod) 
         {
-
-            // The following code will actually reduce the servo frequency based on the actual period.
+            // The following code will reduce the servo frequency based on the actual period.
             //
             // CONTROLIT_WARN_RT << "Slowing period of RT task from " << count2nano(tickPeriod) << " to " << count2nano(dt);
             // tickPeriod = dt;

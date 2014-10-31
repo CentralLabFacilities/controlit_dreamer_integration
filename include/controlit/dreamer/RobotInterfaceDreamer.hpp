@@ -55,22 +55,20 @@ public:
     /*!
      * Obtains the current state of the robot.
      *
-     * \param[in] time The current time.
      * \param[out] latestRobotState The variable in which to store the
      * latest robot state.
      * \param[in] block Whether to block waiting for message to arrive.
      * \return Whether the read was successful.
      */
-    virtual bool read(const ros::Time & time, controlit::RobotState & latestRobotState, bool block = false);
+    virtual bool read(controlit::RobotState & latestRobotState, bool block = false);
 
     /*!
      * Sends a command to the robot.
      *
-     * \param[in] time The time when this method is called.
      * \param[in] command The command to send to the robot.
      * \return Whether the write was successful.
      */
-    virtual bool write(const ros::Time & time, const controlit::Command & command);
+    virtual bool write(const controlit::Command & command);
 
     /*!
      * Gets the current time in seconds.

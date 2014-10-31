@@ -64,11 +64,12 @@ void ServoClockDreamerTester::servoInit()
     std::cerr << "Servo init called!" << std::endl;
 }
 
-void ServoClockDreamerTester::servoUpdate(const ros::Time & time, const ros::Duration & period)
+void ServoClockDreamerTester::servoUpdate()
 {
-    double elapsedTimeMS = (time - prevTime).toSec() * 1000;
+    ros::Time currTime = ros::Time::now();
+    double elapsedTimeMS = (currTime - prevTime).toSec() * 1000;
     std::cerr << "Method called, elapsed time = " << elapsedTimeMS << " ms, jitter = " << (elapsedTimeMS - 1) * 1000 << " us" << std::endl;
-    prevTime = time;
+    prevTime = currTime;
 }
 
 std::string ServoClockDreamerTester::toString(std::string const& prefix) const

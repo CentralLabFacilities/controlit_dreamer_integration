@@ -43,13 +43,11 @@ public:
     /*!
      * Obtains the current odometry state.
      *
-     * \param[in] currTime The current time.
      * \param[out] latestRobotState This is where the robot's odometry state is stored.
      * \param[in] block Whether to block waiting for the odometry state to arrive.
      * \return Whether the odometry state was successfully obtained.
      */
-    virtual bool getOdometry(const ros::Time & currTime, controlit::RobotState & latestRobotState,
-        bool block = false);
+    virtual bool getOdometry(controlit::RobotState & latestRobotState, bool block = false);
 
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 private:

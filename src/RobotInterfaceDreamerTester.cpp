@@ -108,7 +108,7 @@ void RobotInterfaceDreamerTester::servoInit()
 
 
 // This is periodically called by the servo clock.
-void RobotInterfaceDreamerTester::servoUpdate(const ros::Time & time, const ros::Duration & period)
+void RobotInterfaceDreamerTester::servoUpdate()
 {
     std::cout << "Calling robotInterface.read()..." << std::endl;
     if (!robotInterface.read(ros::Time::now(), robotState))
