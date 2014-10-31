@@ -73,10 +73,18 @@ public:
     virtual bool write(const ros::Time & time, const controlit::Command & command);
 
     /*!
+     * Gets the current time in seconds.
+     *
+     * \return The current time in seconds.
+     */
+    virtual double getTime();
+
+private:
+
+    /*!
      * This is executed by the real-time thread. It initializes the connection to shared memory.
      */
     bool initSM();
-private:
 
     void printLimbSHMStatus(std::stringstream & ss, std::string prefix, 
         M3TorqueShmSdsBaseStatus & shmLimbStatus);
@@ -124,8 +132,6 @@ private:
      * Holds a copy of the command to be written to shared memory.
      */
     M3UTATorqueShmSdsCommand shm_cmd;
-
-    RTIME lastCallTime;
 };
 
 } // namespace dreamer
