@@ -451,7 +451,6 @@ double RobotInterfaceDreamer::getTime()
 {
     RTIME currTime = rt_get_cpu_time_ns();
     double result = currTime / 1e9;
-    CONTROLIT_INFO_RT << "current time = " << result;
     return result;    
 }
 
