@@ -267,6 +267,7 @@ bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool 
     rt_sem_signal(status_sem);
     PRINT_INFO_STATEMENT("Releasing lock on status semaphore...");
 
+    // CONTROLIT_INFO_RT << "seqno = " << seqno << ", shm_status.seqno = " << shm_status.seqno;
     if (seqno == shm_status.seqno)
     {
         double rtt = getTime() - seqnoSendTime;
@@ -451,6 +452,7 @@ bool RobotInterfaceDreamer::write(const controlit::Command & command)
     ///////////////////////////////////////////////////////////////////////////////////
     // Save the sequence number in the command message.  Used for measuring the RTT 
     // communication time.
+    // CONTROLIT_INFO_RT << "seqnoRcvd = " << seqnoRcvd << ", seqno = " << seqno;
     if (seqnoRcvd == seqno)
     {
         seqno++;
