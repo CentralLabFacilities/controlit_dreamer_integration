@@ -132,6 +132,7 @@ private:
     M3UTATorqueShmSdsCommand shm_cmd;
 
     int64_t seqno;
+    int64_t seqnoRcvd;
     double seqnoSendTime;
 };
 

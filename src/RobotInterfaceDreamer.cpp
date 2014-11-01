@@ -105,6 +105,7 @@ bool RobotInterfaceDreamer::initSM()
 
     // Initialize the sequence number used to calculate the round trip communication time
     seqno = 0;
+    seqnoRcvd = -1;
     seqnoSendTime = getTime();
 
     return true;
@@ -270,8 +271,7 @@ bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool 
     {
         double rtt = getTime() - seqnoSendTime;
         CONTROLIT_INFO_RT << "RTT: " << rtt;
-        seqno++;
-        seqnoSendTime = getTime();
+        seqnoRcvd = seqno;
     }
 
     // Temporary code to print everything received
@@ -451,6 +451,12 @@ bool RobotInterfaceDreamer::write(const controlit::Command & command)
     ///////////////////////////////////////////////////////////////////////////////////
     // Save the sequence number in the command message.  Used for measuring the RTT 
     // communication time.
+    if (seqnoRcvd == seqno)
+    {
+        seqno++;
+        seqnoSendTime = getTime();
+    }
+
     shm_cmd.seqno = seqno;
 
     ///////////////////////////////////////////////////////////////////////////////////
