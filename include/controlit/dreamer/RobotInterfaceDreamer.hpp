@@ -130,6 +130,9 @@ private:
      * Holds a copy of the command to be written to shared memory.
      */
     M3UTATorqueShmSdsCommand shm_cmd;
+
+    int64_t seqno;
+    double seqnoSendTime;
 };
 
 } // namespace dreamer

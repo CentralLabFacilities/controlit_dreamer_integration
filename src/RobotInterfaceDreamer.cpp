@@ -103,6 +103,10 @@ bool RobotInterfaceDreamer::initSM()
     PRINT_INFO_STATEMENT("Done initializing connection to shared memory.");
     sharedMemoryReady = true;  // Prevents this method from being called again.
 
+    // Initialize the sequence number used to calculate the round trip communication time
+    seqno = 0;
+    seqnoSendTime = getTime();
+
     return true;
 }
 
@@ -261,6 +265,14 @@ bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool 
     memcpy(&shm_status, sharedMemoryPtr->status, sizeof(shm_status));
     rt_sem_signal(status_sem);
     PRINT_INFO_STATEMENT("Releasing lock on status semaphore...");
+
+    if (seqno == shm_status.seqno)
+    {
+        double rtt = getTime() - seqnoSendTime;
+        CONTROLIT_INFO_RT << "RTT: " << rtt;
+        seqno++;
+        seqnoSendTime = getTime();
+    }
 
     // Temporary code to print everything received
     // printSHMStatus();
@@ -435,6 +447,11 @@ bool RobotInterfaceDreamer::write(const controlit::Command & command)
     ///////////////////////////////////////////////////////////////////////////////////
     // Save the timestamp in the command message (not sure if this is necessary)
     shm_cmd.timestamp = shm_status.timestamp;
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    // Save the sequence number in the command message.  Used for measuring the RTT 
+    // communication time.
+    shm_cmd.seqno = seqno;
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Write commands to shared memory
