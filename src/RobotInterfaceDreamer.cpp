@@ -279,7 +279,7 @@ bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool 
     //---------------------------------------------------------------------------------
     if (seqno == shm_status.seqno)
     {
-        double latency = getTime() - seqnoSendTime
+        double latency = getTime() - seqnoSendTime;
         publishCommLatency(latency);
     }
 
