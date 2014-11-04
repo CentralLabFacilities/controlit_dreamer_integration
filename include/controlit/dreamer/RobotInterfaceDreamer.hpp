@@ -3,19 +3,12 @@
 
 #include <controlit/addons/ros/RealTimePublisher.hpp>
 #include <controlit/RobotInterface.hpp>
-#include <thread>  // for std::mutex
+// #include <thread>  // for std::mutex
 #include <unistd.h>
-// #include <controlit_robot_interface_library/JointState.h>
 #include "m3uta/controllers/torque_shm_uta_sds.h"
-// #include <std_msgs/Int64.h>
-// #include <std_msgs/Float64.h>
-// #include <std_msgs/Float64MultiArray.h>
 #include <urdf/model.h>
 
 #include <rtai_sem.h> // for SEM
-
-// #include <shared_memory_interface/shared_memory_publisher.hpp>
-// #include <shared_memory_interface/shared_memory_subscriber.hpp>
 
 using std::chrono::high_resolution_clock;
 using std::chrono::duration_cast;
@@ -49,8 +42,6 @@ public:
      * \return Whether the initialization was successful.
      */
     virtual bool init(ros::NodeHandle & nh, RTControlModel * model);
-
-    // EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     /*!
      * Obtains the current state of the robot.
@@ -130,10 +121,6 @@ private:
      * Holds a copy of the command to be written to shared memory.
      */
     M3UTATorqueShmSdsCommand shm_cmd;
-
-    int64_t seqno;
-    int64_t seqnoRcvd;
-    double seqnoSendTime;
 };
 
 } // namespace dreamer

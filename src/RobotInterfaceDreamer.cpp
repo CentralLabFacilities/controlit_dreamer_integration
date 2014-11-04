@@ -53,17 +53,17 @@ bool RobotInterfaceDreamer::init(ros::NodeHandle & nh, RTControlModel * model)
 {
     PRINT_INFO_STATEMENT("Method called!");
 
-    // Wait until robot_description becomes available on ROS parameter server.
-    while(!nh.hasParam("/robot_description") && ros::ok())
-    {
-        ROS_WARN_THROTTLE(2.0, "RobotInterfaceDreamer is waiting for robot description.");
-    }
-
+    //---------------------------------------------------------------------------------
     // Initialize the parent class.
+    //---------------------------------------------------------------------------------
+    
     if (!RobotInterface::init(nh, model))
         return false;
 
+    //---------------------------------------------------------------------------------
     // Create the odometry receiver.
+    //---------------------------------------------------------------------------------
+
     PRINT_INFO_STATEMENT("Creating and initializing the odometry state receiver...");
     odometryStateReceiver.reset(new OdometryStateReceiverDreamer());
     return odometryStateReceiver->init(nh, model);
@@ -102,11 +102,7 @@ bool RobotInterfaceDreamer::initSM()
 
     PRINT_INFO_STATEMENT("Done initializing connection to shared memory.");
     sharedMemoryReady = true;  // Prevents this method from being called again.
-
-    // Initialize the sequence number used to calculate the round trip communication time
-    seqno = 0;
-    seqnoRcvd = -1;
-    seqnoSendTime = getTime();
+    
 
     return true;
 }
@@ -248,6 +244,10 @@ void RobotInterfaceDreamer::printSHMCommand()
 
 bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool block)
 {
+    //---------------------------------------------------------------------------------
+    // If necessary, establish the connection to shared memory.
+    //---------------------------------------------------------------------------------
+
     if (!sharedMemoryReady)
     {
         if (!initSM())
@@ -256,29 +256,40 @@ bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool 
         }
     }
 
+    //---------------------------------------------------------------------------------
     // Reset the timestamp within robot state to remember when the state was obtained.
+    //---------------------------------------------------------------------------------
+    
     latestRobotState.resetTimestamp();
 
-    ///////////////////////////////////////////////////////////////////////////////////
-    // Save the latest joint state into variable shm_status
+    //---------------------------------------------------------------------------------
+    // Read the latest joint state information from shared memory.
+    // The information is saved into member variable shm_status.
+    //---------------------------------------------------------------------------------
+
     PRINT_INFO_STATEMENT("Grabbing lock on status semaphore...");
     rt_sem_wait(status_sem);
     memcpy(&shm_status, sharedMemoryPtr->status, sizeof(shm_status));
     rt_sem_signal(status_sem);
     PRINT_INFO_STATEMENT("Releasing lock on status semaphore...");
 
+    //---------------------------------------------------------------------------------
+    // If the reflected sequence number is equal to the current sequence number,
+    // compute the round trip communication latency and publish it.
+    //---------------------------------------------------------------------------------
     if (seqno == shm_status.seqno)
     {
-        double rtt = getTime() - seqnoSendTime;
-        CONTROLIT_INFO_RT << "RTT: " << rtt;
-        seqnoRcvd = seqno;
+        double latency = getTime() - seqnoSendTime
+        publishCommLatency(latency);
     }
 
     // Temporary code to print everything received
     // printSHMStatus();
 
-    ///////////////////////////////////////////////////////////////////////////////////
-    // Save position data
+    //---------------------------------------------------------------------------------
+    // Save the joint position data.
+    //---------------------------------------------------------------------------------
+
     // // latestRobotState.setJointPosition(0, DEG_TO_RAD(shm_status.torso.theta[0])); // torso pan
     // // latestRobotState.setJointPosition(0, 0); // torso pan, fixed to zero since joint is not working as of 2014/10/16
     // latestRobotState.setJointPosition(0, DEG_TO_RAD(shm_status.torso.theta[1])); // torso_pitch_1
@@ -312,8 +323,10 @@ bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool 
     latestRobotState.setJointPosition(3, DEG_TO_RAD(shm_status.right_arm.theta[5]));
     latestRobotState.setJointPosition(4, DEG_TO_RAD(shm_status.right_arm.theta[6]));
 
-    ///////////////////////////////////////////////////////////////////////////////////
-    // Save velocity data
+    //---------------------------------------------------------------------------------
+    // Save the joint velocity data.
+    //---------------------------------------------------------------------------------
+
     // // latestRobotState.setJointVelocity(0, DEG_TO_RAD(shm_status.torso.thetadot[0])); // torso pan
     // // latestRobotState.setJointVelocity(0, 0); // torso pan, fixed to zero since joint is not working as of 2014/10/16
     // latestRobotState.setJointVelocity(0, DEG_TO_RAD(shm_status.torso.thetadot[1])); // torso_pitch_1
@@ -347,8 +360,10 @@ bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool 
     latestRobotState.setJointVelocity(3, DEG_TO_RAD(shm_status.right_arm.thetadot[5]));
     latestRobotState.setJointVelocity(4, DEG_TO_RAD(shm_status.right_arm.thetadot[6]));
 
-    ///////////////////////////////////////////////////////////////////////////////////
-    // Save effort data
+    //---------------------------------------------------------------------------------
+    // Save the joint effort data.
+    //---------------------------------------------------------------------------------
+
     // // latestRobotState.setJointEffort(0, 1.0e-3 * shm_status.torso.torque[0]); // torso pan
     // // latestRobotState.setJointEffort(0, 0); // torso pan, fixed to zero since joint is not working as of 2014/10/16
     // latestRobotState.setJointEffort(0, 1.0e-3 * shm_status.torso.torque[1]); // torso_pitch_1
@@ -382,22 +397,27 @@ bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool 
     latestRobotState.setJointEffort(3, 1.0e-3 * shm_status.right_arm.torque[5]);
     latestRobotState.setJointEffort(4, 1.0e-3 * shm_status.right_arm.torque[6]);
 
-    ///////////////////////////////////////////////////////////////////////////////////
-    // Get and save the latest odometry data
+    //---------------------------------------------------------------------------------
+    // Get and save the latest odometry data.
+    //---------------------------------------------------------------------------------
+
     if (!odometryStateReceiver->getOdometry(latestRobotState, block))
         return false;
 
-    return true;
+    //---------------------------------------------------------------------------------
+    // Call the the parent class' read method.  This causes the latestrobot state
+    // to be published.
+    //--------------------------------------------------------------------------------- 
+
+    return controlit::RobotInterface::read(latestRobotState, block);
 }
 
 bool RobotInterfaceDreamer::write(const controlit::Command & command)
 {
-    // if (command.getNumDOFs() != 2)
-    // {
-    //    CONTROLIT_ERROR << "Unexpected number of DOFs got " << command.getNumDOFs() << ", expected 2";
-    //    return false;
-    // }
- 
+    //---------------------------------------------------------------------------------
+    // If necessary, establish the connection to shared memory.
+    //---------------------------------------------------------------------------------
+
     if (!sharedMemoryReady)
     {
         if (!initSM())
@@ -409,8 +429,10 @@ bool RobotInterfaceDreamer::write(const controlit::Command & command)
 
     const Vector & cmd = command.getEffortCmd();
 
-    ///////////////////////////////////////////////////////////////////////////////////
-    // Save effort data into local variable
+    //---------------------------------------------------------------------------------
+    // Save the effort command into the outgoing message.
+    //---------------------------------------------------------------------------------
+
     // // shm_cmd.torso.tq_desired[0] = 1e3 * cmd[0]; // torso pan
     // shm_cmd.torso.tq_desired[0] = 0; // torso_yaw, fixed to zero since joint is not working as of 2014/10/16
     // shm_cmd.torso.tq_desired[1] = 1e3 * cmd[0]; // torso_pitch_1
@@ -444,30 +466,45 @@ bool RobotInterfaceDreamer::write(const controlit::Command & command)
     shm_cmd.right_arm.tq_desired[5] = 1e3 * cmd[3];
     shm_cmd.right_arm.tq_desired[6] = 1e3 * cmd[4];
 
-    ///////////////////////////////////////////////////////////////////////////////////
-    // Save the timestamp in the command message (not sure if this is necessary)
+    //---------------------------------------------------------------------------------
+    // Save the timestamp into the outgoing command message.  This is necessary for
+    // the M3 Server to know a new command was received.  If it is not set, the M3
+    // server will disable all joints.
+    //---------------------------------------------------------------------------------
+
     shm_cmd.timestamp = shm_status.timestamp;
 
-    ///////////////////////////////////////////////////////////////////////////////////
-    // Save the sequence number in the command message.  Used for measuring the RTT 
-    // communication time.
-    if (seqnoRcvd == seqno)
+    //---------------------------------------------------------------------------------
+    // If necessary, save the sequence number in the command message.  Used for 
+    // measuring the communication time between ControlIt! and the robot.
+    //---------------------------------------------------------------------------------
+    
+    if (sendSeqno)
     {
+        sendSeqno = false;
         seqno++;
         seqnoSendTime = getTime();
     }
 
     shm_cmd.seqno = seqno;
 
-    ///////////////////////////////////////////////////////////////////////////////////
-    // Write commands to shared memory
+    //---------------------------------------------------------------------------------
+    // Write the command to shared memory.  This transmits the command to the M3 
+    // Server.
+    //---------------------------------------------------------------------------------
+
     PRINT_INFO_STATEMENT("Getting lock on command semaphore...");
     rt_sem_wait(command_sem);
     memcpy(sharedMemoryPtr->cmd, &shm_cmd, sizeof(shm_cmd));      
     rt_sem_signal(command_sem);
     PRINT_INFO_STATEMENT("Releasing lock on command semaphore...");
 
-    return true;
+    //---------------------------------------------------------------------------------
+    // Call the the parent class' write method.  This causes the command to be 
+    // published.
+    //--------------------------------------------------------------------------------- 
+
+    return controlit::RobotInterface::write(command);
 }
 
 double RobotInterfaceDreamer::getTime()
