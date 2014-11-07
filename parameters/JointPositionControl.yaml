@@ -7,48 +7,47 @@ tasks:
     parameters:
       - name: kp
         type: vector
-        value: [10, 10, 10, 10, 10]
+        value: [10, 10, 10, 10, 10, 10]
         # value: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         #         0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
       - name: kd
         type: vector
-        value: [2, 2, 2, 2, 2]
+        value: [2, 2, 2, 2, 2, 2]
         # value: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         #         0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
       - name: maxVelocity
         type: vector
-        value: [1000, 1000, 1000, 1000, 1000]
+        value: [1000, 1000, 1000, 1000, 1000, 1000]
         # value: [101.00, 101.00, 101.00, 101.00, 101.00, 101.00, 101.00, 101.00, 101.00, 101.00,
         #         101.00, 101.00, 101.00, 101.00, 101.00, 101.00, 101.00, 101.00, 101.00, 101.00]
 
       - name: goalPosition
         type: vector
-        value: [0.0, 0.0, 0.0, 0.0, 0.0]
+        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         # value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
         #         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
       - name: goalVelocity
         type: vector
-        value: [0.0, 0.0, 0.0, 0.0, 0.0]
-        # value: [0.0, 0.0]
+        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
       - name: goalAcceleration
         type: vector
-        value: [0.0, 0.0, 0.0, 0.0, 0.0]
+        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
       - name: maxAcceleration
         type: real
-        value: [0.0, 0.0, 0.0, 0.0, 0.0]
+        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
       - name: error
         type: vector
-        value: [0.0, 0.0, 0.0, 0.0, 0.0]
+        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
       - name: errorDot
         type: vector
-        value: [0.0, 0.0, 0.0, 0.0, 0.0]
+        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
     events:
       - name: converged
