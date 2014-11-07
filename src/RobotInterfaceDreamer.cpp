@@ -316,12 +316,13 @@ bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool 
     // latestRobotState.setJointPosition(18, DEG_TO_RAD(shm_status.right_arm.theta[5]));
     // latestRobotState.setJointPosition(19, DEG_TO_RAD(shm_status.right_arm.theta[6]));
 
-    // Only control the right shoulder rotator, elbow and three wrist joints
-    latestRobotState.setJointPosition(0, DEG_TO_RAD(shm_status.right_arm.theta[2]));
-    latestRobotState.setJointPosition(1, DEG_TO_RAD(shm_status.right_arm.theta[3]));
-    latestRobotState.setJointPosition(2, DEG_TO_RAD(shm_status.right_arm.theta[4]));
-    latestRobotState.setJointPosition(3, DEG_TO_RAD(shm_status.right_arm.theta[5]));
-    latestRobotState.setJointPosition(4, DEG_TO_RAD(shm_status.right_arm.theta[6]));
+    // Only control the right shoulder abductor, right shoulder rotator, elbow and three wrist joints
+    latestRobotState.setJointPosition(0, DEG_TO_RAD(shm_status.right_arm.theta[1]));
+    latestRobotState.setJointPosition(1, DEG_TO_RAD(shm_status.right_arm.theta[2]));
+    latestRobotState.setJointPosition(2, DEG_TO_RAD(shm_status.right_arm.theta[3]));
+    latestRobotState.setJointPosition(3, DEG_TO_RAD(shm_status.right_arm.theta[4]));
+    latestRobotState.setJointPosition(4, DEG_TO_RAD(shm_status.right_arm.theta[5]));
+    latestRobotState.setJointPosition(5, DEG_TO_RAD(shm_status.right_arm.theta[6]));
 
     //---------------------------------------------------------------------------------
     // Save the joint velocity data.
@@ -354,11 +355,12 @@ bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool 
     // latestRobotState.setJointVelocity(19, DEG_TO_RAD(shm_status.right_arm.thetadot[6]));
 
     // Only control the right shoulder rotator, elbow and three wrist joints
-    latestRobotState.setJointVelocity(0, DEG_TO_RAD(shm_status.right_arm.thetadot[2]));
-    latestRobotState.setJointVelocity(1, DEG_TO_RAD(shm_status.right_arm.thetadot[3]));
-    latestRobotState.setJointVelocity(2, DEG_TO_RAD(shm_status.right_arm.thetadot[4]));
-    latestRobotState.setJointVelocity(3, DEG_TO_RAD(shm_status.right_arm.thetadot[5]));
-    latestRobotState.setJointVelocity(4, DEG_TO_RAD(shm_status.right_arm.thetadot[6]));
+    latestRobotState.setJointVelocity(0, DEG_TO_RAD(shm_status.right_arm.thetadot[1]));
+    latestRobotState.setJointVelocity(1, DEG_TO_RAD(shm_status.right_arm.thetadot[2]));
+    latestRobotState.setJointVelocity(2, DEG_TO_RAD(shm_status.right_arm.thetadot[3]));
+    latestRobotState.setJointVelocity(3, DEG_TO_RAD(shm_status.right_arm.thetadot[4]));
+    latestRobotState.setJointVelocity(4, DEG_TO_RAD(shm_status.right_arm.thetadot[5]));
+    latestRobotState.setJointVelocity(5, DEG_TO_RAD(shm_status.right_arm.thetadot[6]));
 
     //---------------------------------------------------------------------------------
     // Save the joint effort data.
@@ -391,11 +393,12 @@ bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool 
     // latestRobotState.setJointEffort(19, 1.0e-3 * shm_status.right_arm.torque[6]);
 
     // Only control the right shoulder rotator, elbow and three wrist joints
-    latestRobotState.setJointEffort(0, 1.0e-3 * shm_status.right_arm.torque[2]);
-    latestRobotState.setJointEffort(1, 1.0e-3 * shm_status.right_arm.torque[3]);
-    latestRobotState.setJointEffort(2, 1.0e-3 * shm_status.right_arm.torque[4]);
-    latestRobotState.setJointEffort(3, 1.0e-3 * shm_status.right_arm.torque[5]);
-    latestRobotState.setJointEffort(4, 1.0e-3 * shm_status.right_arm.torque[6]);
+    latestRobotState.setJointEffort(0, 1.0e-3 * shm_status.right_arm.torque[1]);
+    latestRobotState.setJointEffort(1, 1.0e-3 * shm_status.right_arm.torque[2]);
+    latestRobotState.setJointEffort(2, 1.0e-3 * shm_status.right_arm.torque[3]);
+    latestRobotState.setJointEffort(3, 1.0e-3 * shm_status.right_arm.torque[4]);
+    latestRobotState.setJointEffort(4, 1.0e-3 * shm_status.right_arm.torque[5]);
+    latestRobotState.setJointEffort(5, 1.0e-3 * shm_status.right_arm.torque[6]);
 
     //---------------------------------------------------------------------------------
     // Get and save the latest odometry data.
@@ -460,11 +463,12 @@ bool RobotInterfaceDreamer::write(const controlit::Command & command)
     // shm_cmd.right_arm.tq_desired[6] = 1e3 * cmd[18];
 
     // Only control the right shoulder rotator, elbow and three wrist joints
-    shm_cmd.right_arm.tq_desired[2] = 1e3 * cmd[0];
-    shm_cmd.right_arm.tq_desired[3] = 1e3 * cmd[1];
-    shm_cmd.right_arm.tq_desired[4] = 1e3 * cmd[2];
-    shm_cmd.right_arm.tq_desired[5] = 1e3 * cmd[3];
-    shm_cmd.right_arm.tq_desired[6] = 1e3 * cmd[4];
+    shm_cmd.right_arm.tq_desired[1] = 1e3 * cmd[0];
+    shm_cmd.right_arm.tq_desired[2] = 1e3 * cmd[1];
+    shm_cmd.right_arm.tq_desired[3] = 1e3 * cmd[2];
+    shm_cmd.right_arm.tq_desired[4] = 1e3 * cmd[3];
+    shm_cmd.right_arm.tq_desired[5] = 1e3 * cmd[4];
+    shm_cmd.right_arm.tq_desired[6] = 1e3 * cmd[5];
 
     //---------------------------------------------------------------------------------
     // Save the timestamp into the outgoing command message.  This is necessary for
