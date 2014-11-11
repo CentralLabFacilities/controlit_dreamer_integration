@@ -7,7 +7,7 @@
     <param name="robot_description"
            command="$(find xacro)/xacro.py '$(find dreamer_controlit)/models/dreamer_controlit/xacro/dreamer_controlit_rviz.xacro'"/>
 
-    <group ns="dreamer_controller">
+    <group ns="dreamer_controller/controlit">
         <include file="$(find controlit_dreamer_integration)/launch/dreamer_param_base.xml"/>
         <param name="parameters" textfile="$(find controlit_dreamer_integration)/parameters/JointPositionControl.yaml"/>
         <!-- <param name="sensorSet" textfile="$(find controlit_dreamer_integration)/parameters/Sensors.yaml"/> -->

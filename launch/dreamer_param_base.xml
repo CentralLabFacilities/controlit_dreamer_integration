@@ -5,26 +5,41 @@
     <param name="robot_description"
            command="$(find xacro)/xacro.py '$(find dreamer_controlit)/models/dreamer_controlit/xacro/dreamer_controlit_rviz.xacro'"/>
 
-    <!-- Specify the servo clock type. -->
-    <rosparam param="controlit_servo_clock_type">controlit_dreamer/ServoClockDreamer</rosparam>
-
-    <!-- Specify the servo clock frequency. -->
-    <rosparam param="controlit_servo_frequency">1000</rosparam>
-
-    <!-- Specify the robot interface type. -->
-    <rosparam param="controlit_robot_interface_type">controlit_dreamer/RobotInterfaceDreamer</rosparam>
-    <!-- <rosparam param="controlit_robot_interface_type">controlit_robot_interface/RobotInterfaceUDP</rosparam> -->
-
-    <!-- <rosparam param="odometry_topic">/gazebo/root_link_odom</rosparam> -->
-
-    <!-- Two types of controllers are currently supported: Torque and Impedance -->
-    <rosparam param="controlit_controller_type">Torque</rosparam>
-
+    <rosparam param="servo_clock_type">controlit_dreamer/ServoClockDreamer</rosparam>
+    
+    <rosparam param="servo_frequency">1000</rosparam>\
+    
+    <rosparam param="robot_interface_type">controlit_dreamer/RobotInterfaceDreamer</rosparam>
+    
+    <rosparam param="controller_type">Torque</rosparam>\
+    
     <rosparam param="parameter_binding_factories">["controlit_binding_factory/BindingFactoryROS", "controlit_binding_factory/BindingFactorySM"]</rosparam>
+    
+    <rosparam param="rotor_inertias">
+        [0, 0, 0, 0, 0, 0,
+            0.0000138, <!-- right_shoulder_abductor -->
+            0.0000135, <!-- right_shoulder_rotator -->
+            0.0000135, <!-- right_elbow -->
+            0.0000035, <!-- right_wrist_rotator -->
+            0.0000035, <!-- right_wrist_pitch -->
+            0.0000035  <!-- right_wrist_yaw -->
+        ]
+    </rosparam>
+    
+    <rosparam param="gear_ratios">
+        [0, 0, 0, 0, 0, 0,
+            100, <!-- right_shoulder_abductor -->
+            100, <!-- right_shoulder_rotator -->
+            100, <!-- right_elbow -->
+            100, <!-- right_wrist_rotator -->
+            50,  <!-- right_wrist_pitch -->
+            50   <!-- right_wrist_yaw -->
+        ]
+    </rosparam>
 
-    <!-- Specify the log level and the log prefix fields -->
     <rosparam param="log_level">DEBUG</rosparam>
     <rosparam param="log_fields">["package", "file", "line", "function"]</rosparam>
+
 
     <!-- The following enable/disable multi-threading in ControlIt! -->
     <!--
