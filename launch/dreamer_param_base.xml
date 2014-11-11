@@ -16,7 +16,8 @@
     <rosparam param="parameter_binding_factories">["controlit_binding_factory/BindingFactoryROS", "controlit_binding_factory/BindingFactorySM"]</rosparam>
     
     <rosparam param="rotor_inertias">
-        [0.0000138, <!-- right_shoulder_abductor -->
+        [0.0000138, <!-- right_shoulder_extensor -->
+         0.0000138, <!-- right_shoulder_abductor -->
          0.0000135, <!-- right_shoulder_rotator -->
          0.0000135, <!-- right_elbow -->
          0.0000035, <!-- right_wrist_rotator -->
@@ -25,7 +26,8 @@
     </rosparam>
     
     <rosparam param="gear_ratios">
-        [100, <!-- right_shoulder_abductor -->
+        [120, <!-- right_shoulder_extensor -->
+         100, <!-- right_shoulder_abductor -->
          100, <!-- right_shoulder_rotator -->
          100, <!-- right_elbow -->
          100, <!-- right_wrist_rotator -->
