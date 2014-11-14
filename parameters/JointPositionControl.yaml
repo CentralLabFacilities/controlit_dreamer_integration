@@ -7,7 +7,7 @@ tasks:
     parameters:
       - name: kp
         type: vector
-        value: [10, 10,                      # left arm
+        value: [100, 100,                      # left arm
                 10, 10, 20, 10, 10, 10, 10]  # right arm
         # value: [20, 20, 20, 20, 20, 20, 20]
         # value: [50, 50, 50, 50, 50, 50, 50]
@@ -16,7 +16,7 @@ tasks:
 
       - name: kd
         type: vector
-        value: [2, 2,                     # left arm
+        value: [20, 20,                     # left arm
                 2, 2, 2, 2, 2, 2, 2]      # right arm
         # value: [8, 8, 8, 8, 8, 8, 8]
         # value: [14, 14, 14, 14, 14, 14, 14]
