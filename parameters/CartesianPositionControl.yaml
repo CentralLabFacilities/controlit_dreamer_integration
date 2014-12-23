@@ -79,8 +79,10 @@ tasks:
 
       - name: goalPosition
         type: vector
-        value: [0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0,      # left arm
-                0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0]      # right arm
+        
+        # these are the values used by UTA-WBC
+        value: [0.0, 0.0, 0.0, 1.57, 0.0, 0.0, 0.0,      # left arm
+                0.0, 0.0, 0.0, 1.57, 0.0, 0.0, 0.0]      # right arm
 
       - name: goalVelocity
         type: vector
