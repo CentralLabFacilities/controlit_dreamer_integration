@@ -2,6 +2,44 @@ header:
   version: 2
   description: dreamer joint state control
 tasks:
+  - name: RightHandPosition
+    type: controlit/CartPosTask  # must match class name in sensor_plugins.xml
+    parameters:
+      - name: kp
+        type: vector
+        value: 64
+      - name: kd
+        type: real
+        value: 16
+      - name: maxVelocity
+        type: real
+        value: 1000
+      - name: bodyName  # the coordinate frame of the current position
+        type: string
+        value: right_wrist_yaw
+      - name: frameName  # the coordinate frame of the goal heading
+        type: string
+        value: world
+      - name: latchOn
+        type: real
+        value: 0
+      - name: resetLatch
+        type: real
+        value: 0
+      - name: goalPosition      # in frameName's frame
+        type: vector
+        value: [0.075, -0.35, 1.25]
+      - name: goalVelocity           # in frameName's frame
+        type: vector
+        value: [0.0, 0.0, 0.0]
+      - name: controlPoint
+        type: vector
+        value: [0.0, 0.0, 0.0] #in bodyName's  frame
+      - name: projection
+        type: matrix
+        value: [[1, 0, 0],
+                [0, 1, 0],
+                [0, 0, 1]]
   - type: controlit/JPosTaskCompWiseVel # Must Match the NAME of the task in the task_library
     name: JPosTask     # Arbitrary instance name
     parameters:
@@ -54,6 +92,72 @@ compound_task:
   type: compound_task
   name: My compound task
   bindings:
+    - parameters: [RightHandPosition.goalPosition]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64MultiArray
+        properties:
+          topic: RightHandPosition/goalPosition
+    - parameters: [RightHandPosition.kp]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Float64"
+        properties:
+          topic: RightHandPosition/kp
+    - parameters: [RightHandPosition.kd]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Float64"
+        properties:
+          topic: RightHandPosition/kd
+    - parameters: [RightFingerHeading.goalVector]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64MultiArray
+        properties:
+          topic: RightFingerHeading/goalVector
+    - parameters: [RightHandPosition.error]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64MultiArray
+        properties:
+          latched: 0
+          publish_rate: 10
+          queue_size: 1
+          topic: RightHandPosition/error
+    - parameters: [RightPalmHeading.goalVector]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64MultiArray
+        properties:
+          topic: RightPalmHeading/goalVector
+    - parameters: [RightHandPosition.error]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64MultiArray
+        properties:
+          latched: 0
+          publish_rate: 10
+          queue_size: 1
+          topic: RightHandPosition/error
+    - parameters: [JPosTask.error]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Float64MultiArray"
+        properties:
+          topic: JPosTask/error
+          publish_rate: 100.0
+          queue_size: 2
+          latched: 0
+
     - parameters: [JPosTask.error]
       direction: output
       target:
@@ -161,8 +265,11 @@ compound_task:
     - name: converged
       expression: JPosTask.converged and JPosTask.quiescent
   task_list:
-     - name: JPosTask
+     - name: RightHandPosition
        priority: 0
+       enabled: 1
+     - name: JPosTask
+       priority: 1
        enabled: 1
 constraints:
   - type: controlit/FlatContactConstraint
