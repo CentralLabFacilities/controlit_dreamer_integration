@@ -114,13 +114,6 @@ compound_task:
         dataType: "std_msgs/Float64"
         properties:
           topic: RightHandPosition/kd
-    - parameters: [RightFingerHeading.goalVector]
-      direction: input
-      target:
-        type: ROSTopic
-        dataType: std_msgs/Float64MultiArray
-        properties:
-          topic: RightFingerHeading/goalVector
     - parameters: [RightHandPosition.error]
       direction: output
       target:
@@ -131,14 +124,7 @@ compound_task:
           publish_rate: 10
           queue_size: 1
           topic: RightHandPosition/error
-    - parameters: [RightPalmHeading.goalVector]
-      direction: input
-      target:
-        type: ROSTopic
-        dataType: std_msgs/Float64MultiArray
-        properties:
-          topic: RightPalmHeading/goalVector
-    - parameters: [RightHandPosition.error]
+    - parameters: [RightHandPosition.actualWorldPosition]
       direction: output
       target:
         type: ROSTopic
@@ -147,17 +133,17 @@ compound_task:
           latched: 0
           publish_rate: 10
           queue_size: 1
-          topic: RightHandPosition/error
-    - parameters: [JPosTask.error]
+          topic: RightHandPosition/actualWorldPosition
+    - parameters: [RightHandPosition.actualPosition]
       direction: output
       target:
         type: ROSTopic
-        dataType: "std_msgs/Float64MultiArray"
+        dataType: std_msgs/Float64MultiArray
         properties:
-          topic: JPosTask/error
-          publish_rate: 100.0
-          queue_size: 2
           latched: 0
+          publish_rate: 10
+          queue_size: 1
+          topic: RightHandPosition/actualPosition
 
     - parameters: [JPosTask.error]
       direction: output
