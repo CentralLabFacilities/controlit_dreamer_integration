@@ -8,7 +8,7 @@ tasks:
       - name: kp
         type: vector
         value: [10, 10, 10, 10, 10, 100, 100, # left arm
-                10, 10, 20, 10, 10, 10,  10]  # right arm
+                10, 20, 20, 10, 10, 50, 50]   # right arm
         # value: [20, 20, 20, 20, 20, 20, 20]
         # value: [50, 50, 50, 50, 50, 50, 50]
         # value: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -17,7 +17,7 @@ tasks:
       - name: kd
         type: vector
         value: [2, 2, 2, 2, 2, 20, 20,       # left arm
-                2, 2, 2, 2, 2, 2,  2]        # right arm
+                2, 2, 2, 2, 2, 5, 5]         # right arm
         # value: [8, 8, 8, 8, 8, 8, 8]
         # value: [14, 14, 14, 14, 14, 14, 14]
         # value: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
