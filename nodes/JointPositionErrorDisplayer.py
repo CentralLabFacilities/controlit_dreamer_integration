@@ -46,7 +46,7 @@ if __name__ == '__main__':
             # rospy.loginfo("{0} {1} {2}".format(joint.key, joint.value, jointErrorMessage.data[int(joint.key)]))
             errorRad = jointErrorMessage.data[int(joint.key)]
             errorDeg = errorRad / 3.14 * 180
-            entry = [str(joint.key), joint.value, str(errorRad), str(errorDeg)]
+            entry = [joint.key, joint.value, str(errorRad), str(errorDeg)]
             resultList.append(entry)
         
         col_width = max(len(word) for row in resultList for word in row) + 2  # padding
