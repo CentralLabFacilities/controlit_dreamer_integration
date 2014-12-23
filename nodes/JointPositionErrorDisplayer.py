@@ -23,12 +23,12 @@ if __name__ == '__main__':
     # spin() simply keeps python from exiting until this node is stopped
     # rospy.spin()
 
-    rospy.loginfo("Waiting for joint error message to arrive...")
+    # rospy.loginfo("Waiting for joint error message to arrive...")
     while jointErrorMessage == 0:
         time.sleep(.01)
 
-    message = "Received joint error message:\n{0}".format(jointErrorMessage)
-    rospy.loginfo(message)
+    # message = "Received joint error message:\n{0}".format(jointErrorMessage)
+    # rospy.loginfo(message)
 
     subscriber.unregister()
 
@@ -37,8 +37,8 @@ if __name__ == '__main__':
     try:
         get_joint_indices_service = rospy.ServiceProxy('/dreamer_controller/diagnostics/getJointIndices', get_parameters)
         joint_indices_msg = get_joint_indices_service()
-        message = "Received joint indices: {0}".format(joint_indices_msg)
-        rospy.loginfo(message)
+        # message = "Received joint indices: {0}".format(joint_indices_msg)
+        # rospy.loginfo(message)
 
         resultList = [["Index", "Joint Name", "Error (rad)", "Error (deg)"]]
         resultList.append(["-----", "----------", "-----------", "-----------"])
@@ -54,7 +54,7 @@ if __name__ == '__main__':
         for row in resultList:
             resultTable = resultTable + "".join(word.ljust(col_width) for word in row)
             resultTable = resultTable + "\n"
-        rospy.loginfo(resultTable)
+        rospy.loginfo("Results:\n{0}".format(resultTable))
 
     except rospy.ServiceException, e:
         rospy.logerror("Service call failed: %s"%e)
