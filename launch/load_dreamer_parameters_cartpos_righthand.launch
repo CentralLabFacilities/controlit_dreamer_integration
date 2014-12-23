@@ -9,7 +9,7 @@
 
     <group ns="dreamer_controller/controlit">
         <include file="$(find controlit_dreamer_integration)/launch/dreamer_param_base.xml"/>
-        <param name="parameters" textfile="$(find controlit_dreamer_integration)/parameters/CartesianPositionControl.yaml"/>
+        <param name="parameters" textfile="$(find controlit_dreamer_integration)/parameters/CartesianPositionControl_RightHand.yaml"/>
         <!-- <param name="sensorSet" textfile="$(find controlit_dreamer_integration)/parameters/Sensors.yaml"/> -->
     </group>
 </launch>
