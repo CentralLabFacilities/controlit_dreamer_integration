@@ -7,11 +7,11 @@ tasks:
     parameters:
       - name: kp
         type: vector
-        value: 1
+        value: 64
         # value: 25      # used by UTA-WBC
       - name: kd
         type: real
-        value: 1       # used by UTA-WBC
+        value: 3       # used by UTA-WBC
       - name: maxVelocity
         type: real
         value: 1000
