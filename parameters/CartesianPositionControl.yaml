@@ -28,7 +28,8 @@ tasks:
         value: 0
       - name: goalPosition      # in frameName's frame
         type: vector
-        value: [0.02906213214429017, -0.19761038391020588, 0.7851485590826267]
+        value: [0.05910914740914856, -0.20988127817117105, 0.7879616040106433]   # from this task
+        # value: [0.02906213214429017, -0.19761038391020588, 0.7851485590826267] # from a sensor
         # value: [0.075, -0.35, 1.25]
       - name: goalVelocity           # in frameName's frame
         type: vector
