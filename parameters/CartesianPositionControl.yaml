@@ -28,7 +28,8 @@ tasks:
         value: 0
       - name: goalPosition      # in frameName's frame
         type: vector
-        value: [0.075, -0.35, 1.25]
+        value: [0.02906213214429017, -0.19761038391020588, 0.7851485590826267]
+        # value: [0.075, -0.35, 1.25]
       - name: goalVelocity           # in frameName's frame
         type: vector
         value: [0.0, 0.0, 0.0]
@@ -40,8 +41,8 @@ tasks:
         value: [[1, 0, 0],
                 [0, 1, 0],
                 [0, 0, 1]]
-  - type: controlit/JPosTaskCompWiseVel # Must Match the NAME of the task in the task_library
-    name: JPosTask     # Arbitrary instance name
+  - name: JPosTask     # Arbitrary instance name
+    type: controlit/JPosTaskCompWiseVel # Must Match the NAME of the task in the task_library
     parameters:
       - name: kp
         type: vector
