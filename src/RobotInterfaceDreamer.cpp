@@ -494,21 +494,21 @@ bool RobotInterfaceDreamer::write(const controlit::Command & command)
 
     // Only control the left arm, right arm, and torso pitch joints
     shm_cmd.torso.tq_desired[1]     = 1e3 * cmd[0]; // torso_pitch_1
-    shm_cmd.torso.tq_desired[2]     = 1e3 * cmd[1]; // torso_pitch_2
-    shm_cmd.left_arm.tq_desired[0]  = 1e3 * cmd[2];
-    shm_cmd.left_arm.tq_desired[1]  = 1e3 * cmd[3];
-    shm_cmd.left_arm.tq_desired[2]  = 1e3 * cmd[4];
-    shm_cmd.left_arm.tq_desired[3]  = 1e3 * cmd[5];
-    shm_cmd.left_arm.tq_desired[4]  = 1e3 * cmd[6];
-    shm_cmd.left_arm.tq_desired[5]  = 1e3 * cmd[7];
-    shm_cmd.left_arm.tq_desired[6]  = 1e3 * cmd[8];
-    shm_cmd.right_arm.tq_desired[0] = 1e3 * cmd[9];
-    shm_cmd.right_arm.tq_desired[1] = 1e3 * cmd[10];
-    shm_cmd.right_arm.tq_desired[2] = 1e3 * cmd[11];
-    shm_cmd.right_arm.tq_desired[3] = 1e3 * cmd[12];
-    shm_cmd.right_arm.tq_desired[4] = 1e3 * cmd[13];
-    shm_cmd.right_arm.tq_desired[5] = 1e3 * cmd[14];
-    shm_cmd.right_arm.tq_desired[6] = 1e3 * cmd[15];
+    shm_cmd.torso.tq_desired[2]     = 0;            // torso_pitch_2  (slave of torso_pitch_1)
+    shm_cmd.left_arm.tq_desired[0]  = 1e3 * cmd[1];
+    shm_cmd.left_arm.tq_desired[1]  = 1e3 * cmd[2];
+    shm_cmd.left_arm.tq_desired[2]  = 1e3 * cmd[3];
+    shm_cmd.left_arm.tq_desired[3]  = 1e3 * cmd[4];
+    shm_cmd.left_arm.tq_desired[4]  = 1e3 * cmd[5];
+    shm_cmd.left_arm.tq_desired[5]  = 1e3 * cmd[6];
+    shm_cmd.left_arm.tq_desired[6]  = 1e3 * cmd[7];
+    shm_cmd.right_arm.tq_desired[0] = 1e3 * cmd[8];
+    shm_cmd.right_arm.tq_desired[1] = 1e3 * cmd[9];
+    shm_cmd.right_arm.tq_desired[2] = 1e3 * cmd[10];
+    shm_cmd.right_arm.tq_desired[3] = 1e3 * cmd[11];
+    shm_cmd.right_arm.tq_desired[4] = 1e3 * cmd[12];
+    shm_cmd.right_arm.tq_desired[5] = 1e3 * cmd[13];
+    shm_cmd.right_arm.tq_desired[6] = 1e3 * cmd[14];
 
     //---------------------------------------------------------------------------------
     // Save the timestamp into the outgoing command message.  This is necessary for
