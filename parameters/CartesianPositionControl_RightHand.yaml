@@ -1,6 +1,6 @@
 header:
   version: 2
-  description: dreamer joint state control
+  description: Dreamer right hand Cartesian position control
 tasks:
   - name: RightHandPosition
     type: controlit/CartPosTask  # must match class name in sensor_plugins.xml
