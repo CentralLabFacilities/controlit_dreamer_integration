@@ -7,47 +7,47 @@ tasks:
     parameters:
       - name: kp
         type: vector
-        # value: [10, 10, 10, 10, 10, 100, 100, # left arm
-        #         10, 20, 20, 10, 10, 50, 50]   # right arm
-        value: [0, 0, 0, 0, 0, 0, 0, # left arm
-                0, 0, 0, 0, 0, 0, 0] # right arm
+        value: [30.0, 30.0,                               # torso
+                30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0, # left arm
+                30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0] # right arm
 
       - name: kd
         type: vector
-        # value: [2, 2, 2, 2, 2, 20, 20,       # left arm
-        #         2, 2, 2, 2, 2, 5, 5]         # right arm
-        value: [0, 0, 0, 0, 0, 0, 0,     # left arm
-                0, 0, 0, 0, 0, 0, 0]     # right arm
+        value: [3, 3,                    # torso
+                3, 3, 3, 3, 3, 3, 3,     # left arm
+                3, 3, 3, 3, 3, 3, 3]     # right arm
 
       - name: maxVelocity
         type: vector
-        value: [1000, 1000, 1000, 1000, 1000, 1000, 1000,    # left arm 
+        value: [1000, 1000,                                  # torso
+                1000, 1000, 1000, 1000, 1000, 1000, 1000,    # left arm 
                 1000, 1000, 1000, 1000, 1000, 1000, 1000]    # right arm
 
       - name: goalPosition
         type: vector
-        value: [0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0,      # left arm
+        value: [0.0, 0.0,                               # torso
+                0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0,      # left arm
                 0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0]      # right arm
 
       - name: goalVelocity
         type: vector
-        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
       - name: goalAcceleration
         type: vector
-        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
       - name: maxAcceleration
         type: real
-        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
       - name: error
         type: vector
-        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
       - name: errorDot
         type: vector
-        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
     events:
       - name: converged
@@ -169,8 +169,8 @@ compound_task:
        priority: 0
        enabled: 1
 constraints:
-  - type: controlit/FlatContactConstraint
-    name: ContactConstraint
+  - name: ContactConstraint
+    type: controlit/FlatContactConstraint
     parameters:
       - name: masterNodeName
         type: string
@@ -181,18 +181,18 @@ constraints:
       - name: enabled
         type: integer
         value: 1
-  # - type: controlit/TransmissionConstraint
-  #   name: J1J2Transmission
-  #   parameters:
-  #     - name: masterNodeName
-  #       type: string
-  #       value: "torso_pitch_1"
-  #     - name: slaveNodeName
-  #       type: string
-  #       value: "torso_pitch_2"
-  #     - name: transmissionRatio
-  #       type: float
-  #       value: 1.0
+  - name: TorsoTransmission
+    type: controlit/TransmissionConstraint
+    parameters:
+      - name: masterNodeName
+        type: string
+        value: "torso_lower_pitch"
+      - name: slaveNodeName
+        type: string
+        value: "torso_upper_pitch"
+      - name: transmissionRatio
+        type: float
+        value: 1.0
 constraint_set:
   type: constraint_set
   name: My Constraint Set
@@ -217,5 +217,5 @@ constraint_set:
   active_constraints:
     - name: ContactConstraint
       enabled: 1
-    # - name: J1J2Transmission
-    #   enabled: 1
+    - name: TorsoTransmission
+      enabled: 1
