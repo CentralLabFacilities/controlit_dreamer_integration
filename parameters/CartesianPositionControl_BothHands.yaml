@@ -1,0 +1,429 @@
+header:
+  version: 2
+  description: Dreamer both hands Cartesian position control
+tasks:
+  - name: RightHandPosition
+    type: controlit/CartPosTask  # must match class name in sensor_plugins.xml
+    parameters:
+      - name: kp
+        type: vector
+        value: 64
+      - name: kd
+        type: real
+        value: 3
+      - name: maxVelocity
+        type: real
+        value: 1000
+      - name: bodyName  # the coordinate frame of the current position
+        type: string
+        value: right_wrist_yaw
+      - name: frameName  # the coordinate frame of the goal heading
+        type: string
+        value: world
+      - name: latchOn
+        type: real
+        value: 0
+      - name: resetLatch
+        type: real
+        value: 0
+      - name: goalPosition      # in frameName's frame
+        type: vector
+
+        # these are the values used by UTA-WBC
+        value: [0.45, -0.25, 1.1]
+
+        # these are the Cartesian coordinates when all joints are close to zero:
+        # value: [0.05910914740914856, -0.20988127817117105, 0.7879616040106433]   # from this task
+        # value: [0.02906213214429017, -0.19761038391020588, 0.7851485590826267] # from a sensor
+        # value: [0.075, -0.35, 1.25]
+      - name: goalVelocity           # in frameName's frame
+        type: vector
+        value: [0.0, 0.0, 0.0]
+      - name: controlPoint
+        type: vector
+        value: [0.0, 0.0, 0.0] #in bodyName's  frame
+      - name: projection
+        type: matrix
+        value: [[1, 0, 0],
+                [0, 1, 0],
+                [0, 0, 1]]
+
+  - name: LeftHandPosition
+    type: controlit/CartPosTask  # must match class name in sensor_plugins.xml
+    parameters:
+      - name: kp
+        type: vector
+        value: 24
+      - name: kd
+        type: real
+        value: 1
+      - name: maxVelocity
+        type: real
+        value: 1000
+      - name: bodyName  # the coordinate frame of the current position
+        type: string
+        value: left_wrist_yaw
+      - name: frameName  # the coordinate frame of the goal heading
+        type: string
+        value: world
+      - name: latchOn
+        type: real
+        value: 0
+      - name: resetLatch
+        type: real
+        value: 0
+      - name: goalPosition      # in frameName's frame
+        type: vector
+
+        # these are the values used by UTA-WBC
+        value: [0.45, 0.25, 1.1]
+
+      - name: goalVelocity           # in frameName's frame
+        type: vector
+        value: [0.0, 0.0, 0.0]
+      - name: controlPoint
+        type: vector
+        value: [0.0, 0.0, 0.0] # in bodyName's  frame
+      - name: projection
+        type: matrix
+        value: [[1, 0, 0],
+                [0, 1, 0],
+                [0, 0, 1]]
+
+  - name: JPosTask     # Arbitrary instance name
+    type: controlit/JPosTaskCompWiseVel # Must Match the NAME of the task in the task_library
+    parameters:
+      - name: kp
+        type: vector
+
+        # these are the values used by UTA-WBC
+        value: [30.0, 30.0, 30.0, 20.0, 20.0, 30.0, 30.0,   # left arm 
+                30.0, 30.0, 30.0, 20.0, 20.0, 30.0, 30.0]   # right arm
+
+        # these are values Liang settled on doing joint-by-joint integration testing
+        #value: [10, 10, 10, 10, 10, 100, 100, # left arm
+        #        10, 20, 20, 10, 10, 50, 50]   # right arm
+
+      - name: kd
+        type: vector
+
+        # these are the values used by UTA-WBC
+        value: [3, 3, 3, 3, 3, 3, 3,   # left arm
+                3, 3, 3, 3, 3, 3, 3]   # right arm
+
+        # these are values Liang settled on doing joint-by-joint integration testing
+        # value: [2, 2, 2, 2, 2, 20, 20,       # left arm
+        #         2, 2, 2, 2, 2, 5, 5]         # right arm
+
+      - name: maxVelocity
+        type: vector
+        value: [1000, 1000, 1000, 1000, 1000, 1000, 1000,    # left arm 
+                1000, 1000, 1000, 1000, 1000, 1000, 1000]    # right arm
+
+      - name: goalPosition
+        type: vector
+
+        # these are the values used by UTA-WBC
+        value: [0.0, 0.0, 0.0, 1.57, 0.0, 0.0, 0.0,      # left arm
+                0.0, 0.0, 0.0, 1.57, 0.0, 0.0, 0.0]      # right arm
+
+      - name: goalVelocity
+        type: vector
+        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+      - name: goalAcceleration
+        type: vector
+        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+      - name: maxAcceleration
+        type: real
+        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+      - name: error
+        type: vector
+        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+      - name: errorDot
+        type: vector
+        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+    events:
+      - name: converged
+        expression: errorNorm < 55e-4 #err is a norm...it is positive
+      - name: quiescent
+        expression: errorDotNorm < 3e-2 #absolute value take in code
+compound_task:
+  type: compound_task
+  name: My compound task
+  bindings:
+    - parameters: [RightHandPosition.goalPosition]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64MultiArray
+        properties:
+          topic: RightHandPosition/goalPosition
+    - parameters: [RightHandPosition.kp]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Float64"
+        properties:
+          topic: RightHandPosition/kp
+    - parameters: [RightHandPosition.kd]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Float64"
+        properties:
+          topic: RightHandPosition/kd
+    - parameters: [RightHandPosition.error]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64MultiArray
+        properties:
+          latched: 0
+          publish_rate: 10
+          queue_size: 1
+          topic: RightHandPosition/error
+    - parameters: [RightHandPosition.actualWorldPosition]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64MultiArray
+        properties:
+          latched: 0
+          publish_rate: 10
+          queue_size: 1
+          topic: RightHandPosition/actualWorldPosition
+    - parameters: [RightHandPosition.actualPosition]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64MultiArray
+        properties:
+          latched: 0
+          publish_rate: 10
+          queue_size: 1
+          topic: RightHandPosition/actualPosition
+
+    - parameters: [LeftHandPosition.goalPosition]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64MultiArray
+        properties:
+          topic: LeftHandPosition/goalPosition
+    - parameters: [LeftHandPosition.kp]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Float64"
+        properties:
+          topic: LeftHandPosition/kp
+    - parameters: [LeftHandPosition.kd]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Float64"
+        properties:
+          topic: LeftHandPosition/kd
+    - parameters: [LeftHandPosition.error]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64MultiArray
+        properties:
+          latched: 0
+          publish_rate: 10
+          queue_size: 1
+          topic: LeftHandPosition/error
+    - parameters: [LeftHandPosition.actualWorldPosition]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64MultiArray
+        properties:
+          latched: 0
+          publish_rate: 10
+          queue_size: 1
+          topic: LeftHandPosition/actualWorldPosition
+    - parameters: [LeftHandPosition.actualPosition]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64MultiArray
+        properties:
+          latched: 0
+          publish_rate: 10
+          queue_size: 1
+          topic: LeftHandPosition/actualPosition
+
+    - parameters: [JPosTask.error]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Float64MultiArray"
+        properties:
+          topic: JPosTask/error
+          publish_rate: 100.0
+          queue_size: 2
+          latched: 0
+    - parameters: [JPosTask.errorDot]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Float64MultiArray"
+        properties:
+          topic: JPosTask/errorDot
+          publish_rate: 100.0
+          queue_size: 2
+          latched: 0
+    - parameters: [JPosTask.actualVelocity]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64MultiArray
+        properties:
+          topic: JPosTask/actualVelocity
+          publish_rate: 100.0
+          queue_size: 1
+          latched: 0
+    - parameters: [JPosTask.actualPosition]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64MultiArray
+        properties:
+          topic: JPosTask/actualPosition
+          publish_rate: 100.0
+          queue_size: 1
+          latched: 0
+    - parameters: [JPosTask.currentGoalAcceleration]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64MultiArray
+        properties:
+          topic: JPosTask/currentGoalAcceleration
+          publish_rate: 100.0
+          queue_size: 1
+          latched: 0
+    - parameters: [JPosTask.PDCommand]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64MultiArray
+        properties:
+          topic: JPosTask/PDCommand
+          publish_rate: 100.0
+          queue_size: 1
+          latched: 0
+    - parameters: [JPosTask.goalPosition]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64MultiArray
+        properties:
+          topic: JPosTask/goalPosition
+    - parameters: [JPosTask.goalVelocity]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64MultiArray
+        properties:
+          topic: JPosTask/goalVelocity
+    - parameters: [JPosTask.goalAcceleration]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64MultiArray
+        properties:
+          topic: JPosTask/goalAcceleration
+    - parameters: [JPosTask.kp]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Float64MultiArray"
+        properties:
+          topic: JPosTask/kp
+    - parameters: [JPosTask.kd]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Float64MultiArray"
+        properties:
+          topic: JPosTask/kd
+    - parameters: [JPosTask.maxVelocity]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Float64MultiArray"
+        properties:
+          topic: JPosTask/maxVelocity
+
+  events:
+    - name: converged
+      expression: JPosTask.converged and JPosTask.quiescent
+  task_list:
+     - name: RightHandPosition
+       priority: 0
+       enabled: 1
+     - name: LeftHandPosition
+       priority: 0
+       enabled: 1
+     - name: JPosTask
+       priority: 1
+       enabled: 1
+constraints:
+  - type: controlit/FlatContactConstraint
+    name: ContactConstraint
+    parameters:
+      - name: masterNodeName
+        type: string
+        value: "rigid6DoF"
+      - name: contactPoint
+        type: vector
+        value: [0, 0, 0]
+      - name: enabled
+        type: integer
+        value: 1
+  # - type: controlit/TransmissionConstraint
+  #   name: J1J2Transmission
+  #   parameters:
+  #     - name: masterNodeName
+  #       type: string
+  #       value: "torso_pitch_1"
+  #     - name: slaveNodeName
+  #       type: string
+  #       value: "torso_pitch_2"
+  #     - name: transmissionRatio
+  #       type: float
+  #       value: 1.0
+constraint_set:
+  type: constraint_set
+  name: My Constraint Set
+  # bindings:
+  #   - parameters: [RightFootContact.worldCOP]
+  #     direction: output
+  #     target:
+  #       type: ROSTopic
+  #       dataType: "std_msgs/Float64MultiArray"
+  #       properties:
+  #         topic: /RightAnkle/contact/COP
+  #         publish_rate: 100.0
+  #         queue_size: 2
+  #         latched: 0
+  #   - parameters: [RightFootContact.rxnForceCOM]
+  #     direction: input
+  #     target:
+  #       type: ROSTopic
+  #       dataType: "std_msgs/Float64MultiArray"
+  #       properties:
+  #         topic: /RightAnkle/contact/Wrench
+  active_constraints:
+    - name: ContactConstraint
+      enabled: 1
+    # - name: J1J2Transmission
+    #   enabled: 1
