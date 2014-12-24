@@ -7,7 +7,7 @@ tasks:
     parameters:
       - name: kp
         type: vector
-        value: 64
+        value: 76
       - name: kd
         type: real
         value: 3
@@ -53,10 +53,10 @@ tasks:
     parameters:
       - name: kp
         type: vector
-        value: 24
+        value: 76
       - name: kd
         type: real
-        value: 1
+        value: 3
       - name: maxVelocity
         type: real
         value: 1000
