@@ -8,10 +8,9 @@ tasks:
       - name: kp
         type: vector
         value: 64
-        # value: 25      # used by UTA-WBC
       - name: kd
         type: real
-        value: 3       # used by UTA-WBC
+        value: 3
       - name: maxVelocity
         type: real
         value: 1000
@@ -29,7 +28,7 @@ tasks:
         value: 0
       - name: goalPosition      # in frameName's frame
         type: vector
-        
+
         # these are the values used by UTA-WBC
         value: [0.45, -0.25, 1.1]
 
@@ -57,14 +56,14 @@ tasks:
         # these are the values used by UTA-WBC
         value: [30.0, 30.0, 30.0, 20.0, 20.0, 30.0, 30.0,   # left arm 
                 30.0, 30.0, 30.0, 20.0, 20.0, 30.0, 30.0]   # right arm
-        
+
         # these are values Liang settled on doing joint-by-joint integration testing
         #value: [10, 10, 10, 10, 10, 100, 100, # left arm
         #        10, 20, 20, 10, 10, 50, 50]   # right arm
 
       - name: kd
         type: vector
-        
+
         # these are the values used by UTA-WBC
         value: [3, 3, 3, 3, 3, 3, 3,   # left arm
                 3, 3, 3, 3, 3, 3, 3]   # right arm
@@ -80,7 +79,7 @@ tasks:
 
       - name: goalPosition
         type: vector
-        
+
         # these are the values used by UTA-WBC
         value: [0.0, 0.0, 0.0, 1.57, 0.0, 0.0, 0.0,      # left arm
                 0.0, 0.0, 0.0, 1.57, 0.0, 0.0, 0.0]      # right arm
