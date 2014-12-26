@@ -365,8 +365,8 @@ bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool 
     // latestRobotState.setJointVelocity(19, DEG_TO_RAD(shm_status.right_arm.thetadot[6]));
 
     // Only control the left arm, right arm, and torso pitch joints
-    latestRobotState.setJointPosition(0, DEG_TO_RAD(shm_status.torso.thetadot[1])); // torso_lower_pitch
-    latestRobotState.setJointPosition(1, DEG_TO_RAD(shm_status.torso.thetadot[2])); // torso_upper_pitch
+    latestRobotState.setJointVelocity(0, DEG_TO_RAD(shm_status.torso.thetadot[1])); // torso_lower_pitch
+    latestRobotState.setJointVelocity(1, DEG_TO_RAD(shm_status.torso.thetadot[2])); // torso_upper_pitch
     latestRobotState.setJointVelocity(2, DEG_TO_RAD(shm_status.left_arm.thetadot[0]));
     latestRobotState.setJointVelocity(3, DEG_TO_RAD(shm_status.left_arm.thetadot[1]));
     latestRobotState.setJointVelocity(4, DEG_TO_RAD(shm_status.left_arm.thetadot[2]));
