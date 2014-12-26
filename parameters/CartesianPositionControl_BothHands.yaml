@@ -97,7 +97,8 @@ tasks:
         type: vector
 
         # these are the values used by UTA-WBC
-        value: [30.0, 30.0, 30.0, 20.0, 20.0, 30.0, 30.0,   # left arm 
+        value: [30.0, 30.0,                                 # torso
+                30.0, 30.0, 30.0, 20.0, 20.0, 30.0, 30.0,   # left arm 
                 30.0, 30.0, 30.0, 20.0, 20.0, 30.0, 30.0]   # right arm
 
         # these are values Liang settled on doing joint-by-joint integration testing
@@ -108,7 +109,8 @@ tasks:
         type: vector
 
         # these are the values used by UTA-WBC
-        value: [3, 3, 3, 3, 3, 3, 3,   # left arm
+        value: [3, 3,                  # torso
+                3, 3, 3, 3, 3, 3, 3,   # left arm
                 3, 3, 3, 3, 3, 3, 3]   # right arm
 
         # these are values Liang settled on doing joint-by-joint integration testing
@@ -117,35 +119,37 @@ tasks:
 
       - name: maxVelocity
         type: vector
-        value: [1000, 1000, 1000, 1000, 1000, 1000, 1000,    # left arm 
+        value: [1000, 1000,                                  # torso
+                1000, 1000, 1000, 1000, 1000, 1000, 1000,    # left arm 
                 1000, 1000, 1000, 1000, 1000, 1000, 1000]    # right arm
 
       - name: goalPosition
         type: vector
 
         # these are the values used by UTA-WBC
-        value: [0.0, 0.0, 0.0, 1.57, 0.0, 0.0, 0.0,      # left arm
+        value: [0.0, 0.0,                                # torso
+                0.0, 0.0, 0.0, 1.57, 0.0, 0.0, 0.0,      # left arm
                 0.0, 0.0, 0.0, 1.57, 0.0, 0.0, 0.0]      # right arm
 
       - name: goalVelocity
         type: vector
-        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
       - name: goalAcceleration
         type: vector
-        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
       - name: maxAcceleration
         type: real
-        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
       - name: error
         type: vector
-        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
       - name: errorDot
         type: vector
-        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
     events:
       - name: converged
