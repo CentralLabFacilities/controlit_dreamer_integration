@@ -510,6 +510,25 @@ bool RobotInterfaceDreamer::write(const controlit::Command & command)
     shm_cmd.right_arm.tq_desired[5] = 1e3 * cmd[13];
     shm_cmd.right_arm.tq_desired[6] = 1e3 * cmd[14];
 
+    // Ensure valid commands are issued to the right hand
+    shm_cmd.right_hand.tq_desired[0] = 0;
+    shm_cmd.right_hand.tq_desired[1] = 0;
+    shm_cmd.right_hand.tq_desired[2] = 0;
+    shm_cmd.right_hand.tq_desired[3] = 0;
+    shm_cmd.right_hand.tq_desired[4] = 0;
+
+    shm_cmd.right_hand.q_desired[0] = 0;
+    shm_cmd.right_hand.q_desired[1] = 0;
+    shm_cmd.right_hand.q_desired[2] = 0;
+    shm_cmd.right_hand.q_desired[3] = 0;
+    shm_cmd.right_hand.q_desired[4] = 0;
+
+    shm_cmd.right_hand.q_stiffness[0] = 0;
+    shm_cmd.right_hand.q_stiffness[1] = 0;
+    shm_cmd.right_hand.q_stiffness[2] = 0;
+    shm_cmd.right_hand.q_stiffness[3] = 0;
+    shm_cmd.right_hand.q_stiffness[4] = 0;
+
     //---------------------------------------------------------------------------------
     // Save the timestamp into the outgoing command message.  This is necessary for
     // the M3 Server to know a new command was received.  If it is not set, the M3
