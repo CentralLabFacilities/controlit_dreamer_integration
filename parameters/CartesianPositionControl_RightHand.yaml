@@ -7,7 +7,7 @@ tasks:
     parameters:
       - name: kp
         type: vector
-        value: 10
+        value: 25
       - name: kd
         type: real
         value: 1
@@ -30,7 +30,10 @@ tasks:
         type: vector
 
         # these are the values used by UTA-WBC
-        value: [0.45, -0.25, 1.1]
+        # value: [0.45, -0.25, 1.1]
+
+        # measured Cartesian position when right hand is forward slightly
+        value: [0.129, -0.192, 0.795]
 
         # these are the Cartesian coordinates when all joints are close to zero:
         # value: [0.05910914740914856, -0.20988127817117105, 0.7879616040106433]   # from this task
@@ -53,26 +56,26 @@ tasks:
       - name: kp
         type: vector
 
-        # these are the values used by UTA-WBC
-        value: [30.0, 30.0,                                 # torso
-                30.0, 30.0, 30.0, 20.0, 20.0, 30.0, 30.0,   # left arm 
-                30.0, 30.0, 30.0, 20.0, 20.0, 30.0, 30.0]   # right arm
+        value: [20.0, 20.0,                                 # torso
+                20.0, 20.0, 20.0, 20.0, 20.0, 20.0, 20.0,   # left arm 
+                20.0, 20.0, 20.0, 20.0, 20.0, 20.0, 20.0]   # right arm
 
-        # these are values Liang settled on doing joint-by-joint integration testing
-        #value: [10, 10, 10, 10, 10, 100, 100, # left arm
-        #        10, 20, 20, 10, 10, 50, 50]   # right arm
+        # these are the values used by UTA-WBC
+        # value: [30.0, 30.0,                                 # torso
+        #         30.0, 30.0, 30.0, 20.0, 20.0, 30.0, 30.0,   # left arm 
+        #         30.0, 30.0, 30.0, 20.0, 20.0, 30.0, 30.0]   # right arm
 
       - name: kd
         type: vector
 
-        # these are the values used by UTA-WBC
-        value: [3, 3,                  # torso
-                3, 3, 3, 3, 3, 3, 3,   # left arm
-                3, 3, 3, 3, 3, 3, 3]   # right arm
+        value: [1, 1,                  # torso
+                1, 1, 1, 1, 1, 1, 1,   # left arm
+                1, 1, 1, 1, 1, 1, 1]   # right arm
 
-        # these are values Liang settled on doing joint-by-joint integration testing
-        # value: [2, 2, 2, 2, 2, 20, 20,       # left arm
-        #         2, 2, 2, 2, 2, 5, 5]         # right arm
+        # these are the values used by UTA-WBC
+        # value: [3, 3,                  # torso
+        #         3, 3, 3, 3, 3, 3, 3,   # left arm
+        #         3, 3, 3, 3, 3, 3, 3]   # right arm
 
       - name: maxVelocity
         type: vector
@@ -83,10 +86,14 @@ tasks:
       - name: goalPosition
         type: vector
 
-        # these are the values used by UTA-WBC
         value: [0.0, 0.0,                                # torso
-                0.0, 0.0, 0.0, 1.57, 0.0, 0.0, 0.0,      # left arm
-                0.0, 0.0, 0.0, 1.57, 0.0, 0.0, 0.0]      # right arm
+                0.0, 0.0, 0.0, 0.3, 0.0, 0.0, 0.0,       # left arm
+                0.0, 0.0, 0.0, 0.3, 0.0, 0.0, 0.0]       # right arm
+
+        # these are the values used by UTA-WBC
+        # value: [0.0, 0.0,                                # torso
+        #         0.0, 0.0, 0.0, 1.57, 0.0, 0.0, 0.0,      # left arm
+        #         0.0, 0.0, 0.0, 1.57, 0.0, 0.0, 0.0]      # right arm
 
       - name: goalVelocity
         type: vector
