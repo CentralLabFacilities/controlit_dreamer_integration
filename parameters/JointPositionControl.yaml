@@ -32,8 +32,8 @@ tasks:
       - name: goalPosition
         type: vector
         value: [0.0, 0.0,                               # torso
-                0.0, 0.2, 0.0, 1.57, 0.0, 0.0, 0.0,      # left arm
-                0.0, 0.2, 0.0, 1.57, 0.0, 0.0, 0.0]      # right arm
+                0.0, 0.2, 0.0, 0.3, 0.0, 0.0, 0.0,      # left arm
+                0.0, 0.2, 0.0, 0.3, 0.0, 0.0, 0.0]      # right arm
 
       - name: goalVelocity
         type: vector
