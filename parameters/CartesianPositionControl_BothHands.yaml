@@ -7,7 +7,7 @@ tasks:
     parameters:
       - name: kp
         type: vector
-        value: 76
+        value: 64
       - name: kd
         type: real
         value: 3
@@ -53,7 +53,7 @@ tasks:
     parameters:
       - name: kp
         type: vector
-        value: 76
+        value: 48
       - name: kd
         type: real
         value: 3
