@@ -290,8 +290,8 @@ compound_task:
        priority: 1
        enabled: 1
 constraints:
-  - type: controlit/FlatContactConstraint
-    name: ContactConstraint
+  - name: ContactConstraint
+    type: controlit/FlatContactConstraint
     parameters:
       - name: masterNodeName
         type: string
@@ -302,18 +302,18 @@ constraints:
       - name: enabled
         type: integer
         value: 1
-  # - type: controlit/TransmissionConstraint
-  #   name: J1J2Transmission
-  #   parameters:
-  #     - name: masterNodeName
-  #       type: string
-  #       value: "torso_pitch_1"
-  #     - name: slaveNodeName
-  #       type: string
-  #       value: "torso_pitch_2"
-  #     - name: transmissionRatio
-  #       type: float
-  #       value: 1.0
+  - name: TorsoTransmission
+    type: controlit/TransmissionConstraint
+    parameters:
+      - name: masterNodeName
+        type: string
+        value: "torso_lower_pitch"
+      - name: slaveNodeName
+        type: string
+        value: "torso_upper_pitch"
+      - name: transmissionRatio
+        type: float
+        value: 1.0
 constraint_set:
   type: constraint_set
   name: My Constraint Set
@@ -338,5 +338,5 @@ constraint_set:
   active_constraints:
     - name: ContactConstraint
       enabled: 1
-    # - name: J1J2Transmission
-    #   enabled: 1
+    - name: TorsoTransmission
+      enabled: 1
