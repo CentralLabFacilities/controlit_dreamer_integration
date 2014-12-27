@@ -413,8 +413,8 @@ bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool 
     // latestRobotState.setJointEffort(19, 1.0e-3 * shm_status.right_arm.torque[6]);
 
     // Only control the left arm, right arm, and torso pitch joints
-    latestRobotState.setJointEffort(0, DEG_TO_RAD(shm_status.torso.torque[1])); // torso_lower_pitch
-    latestRobotState.setJointEffort(1, DEG_TO_RAD(shm_status.torso.torque[2])); // torso_upper_pitch
+    latestRobotState.setJointEffort(0, 1.0e-3 * shm_status.torso.torque[1]); // torso_lower_pitch
+    latestRobotState.setJointEffort(1, 1.0e-3 * shm_status.torso.torque[2]); // torso_upper_pitch
     latestRobotState.setJointEffort(2, 1.0e-3 * shm_status.left_arm.torque[0]);
     latestRobotState.setJointEffort(3, 1.0e-3 * shm_status.left_arm.torque[1]);
     latestRobotState.setJointEffort(4, 1.0e-3 * shm_status.left_arm.torque[2]);
@@ -493,6 +493,7 @@ bool RobotInterfaceDreamer::write(const controlit::Command & command)
     // shm_cmd.right_arm.tq_desired[6] = 1e3 * cmd[18];
 
     // Only control the left arm, right arm, and torso pitch joints
+    shm_cmd.torso.tq_desired[0]     = 0;
     shm_cmd.torso.tq_desired[1]     = 1e3 * cmd[0]; // torso_pitch_1
     shm_cmd.torso.tq_desired[2]     = 0;            // torso_pitch_2  (slave of torso_pitch_1)
     shm_cmd.left_arm.tq_desired[0]  = 1e3 * cmd[1];
