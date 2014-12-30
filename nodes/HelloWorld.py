@@ -38,9 +38,9 @@ WAYPOINT_X_SWING = [0.45, 0.438, 0.375, 0.291, 0.144]
 WAYPOINT_Y_SWING = [-0.25, -0.356, -0.451, -0.508, -0.528]
 WAYPOINT_Z_SWING = [1.1, 1.106, 1.102, 1.092, 1.049]
 
-WAYPOINT_X_WAVE = [0.138, 0.140, 0.143, 0.146, 0.148, 0.150]
-WAYPOINT_Y_WAVE = [-0.578, -0.601, -0.619, -0.623, -0.601, -0.569]
-WAYPOINT_Z_WAVE = [1.127, 1.197, 1.300, 1.386, 1.471, 1.575]
+WAYPOINT_X_WAVE = [0.144, 0.138, 0.140, 0.143, 0.146, 0.148, 0.150]
+WAYPOINT_Y_WAVE = [-0.528, -0.578, -0.601, -0.619, -0.623, -0.601, -0.569]
+WAYPOINT_Z_WAVE = [1.049, 1.127, 1.197, 1.300, 1.386, 1.471, 1.575]
 
 # Define FSM States and constants
 STATE_GO_TO_START = 0
@@ -118,7 +118,7 @@ class HelloWorldDreamer:
         # return
 
         # Perform cubic spline interpolation for wave
-        tt = np.linspace(0, 60, 6)             # start, end, number of values
+        tt = np.linspace(0, 60, 7)             # start, end, number of values
         xx = np.array(WAYPOINT_X_WAVE)
         yy = np.array(WAYPOINT_Y_WAVE)
         zz = np.array(WAYPOINT_Z_WAVE)
