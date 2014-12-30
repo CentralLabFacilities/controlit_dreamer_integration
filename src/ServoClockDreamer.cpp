@@ -55,11 +55,12 @@ void ServoClockDreamer::updateLoopImpl()
     if (!normalTask)
         throw std::runtime_error("rt_task_init_schmod failed for non-RT task");
     
-    // Spawn the real-time thread
+    // Spawn the real-time thread. The real-time thread executes call_rtMethod(),
+    // which then calls ServoClockDreamer::rtMethod() that's defined below.
     PRINT_INFO_STATEMENT("Spawning RT thread...");
     rtThreadState = RT_THREAD_UNDEF;
     int rtThreadID = rt_thread_create((void*)call_rtMethod,
-                                  this,   // parameters
+                                  this,  // parameters
                                   5000); // stack size
 
     // Wait up to MAX_START_LATENCY_CYCLES for real-time thread to begin running
