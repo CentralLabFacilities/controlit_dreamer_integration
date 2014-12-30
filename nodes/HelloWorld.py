@@ -38,6 +38,19 @@ WAYPOINT_X_SWING = [0.45, 0.438, 0.375, 0.291, 0.144]
 WAYPOINT_Y_SWING = [-0.25, -0.356, -0.451, -0.508, -0.528]
 WAYPOINT_Z_SWING = [1.1, 1.106, 1.102, 1.092, 1.049]
 
+WAYPOINT_X_WAVE = [0.138, 0.140, 0.143, 0.146, 0.148, 0.150]
+WAYPOINT_Y_WAVE = [-0.578, -0.601, -0.619, -0.623, -0.601, -0.569]
+WAYPOINT_Z_WAVE = [1.127, 1.197, 1.300, 1.386, 1.471, 1.575]
+
+# Define FSM States and constants
+STATE_GO_TO_START = 0
+STATE_WAVE_UP = 1
+STATE_WAVE_DOWN = 2
+STATE_GO_TO_FINISH = 3
+
+NUM_WAVES = 3
+Y_AXIS_INDEX = 1
+
 class HelloWorldDreamer:
     def __init__(self):
 
@@ -70,15 +83,15 @@ class HelloWorldDreamer:
         leftGoalPub = rospy.Publisher("/dreamer_controller/LeftHandPosition/goalPosition", Float64MultiArray, queue_size=1)
         startTime = time.time()
 
-        # perform cubic spline interpolation
-        tt = np.linspace(0, 30, 5)
+        # Perform cubic spline interpolation for initial swing
+        tt = np.linspace(0, 30, 5)             # start, end, number of values
         xx = np.array(WAYPOINT_X_SWING)
         yy = np.array(WAYPOINT_Y_SWING)
         zz = np.array(WAYPOINT_Z_SWING)
 
-        fxx= interp1d(tt, xx, kind='cubic')    # interpolation functions
-        fyy= interp1d(tt, yy, kind='cubic')
-        fzz= interp1d(tt, zz, kind='cubic')
+        fxx = interp1d(tt, xx, kind='cubic')   # interpolation functions
+        fyy = interp1d(tt, yy, kind='cubic')
+        fzz = interp1d(tt, zz, kind='cubic')
 
         tt_interp = np.linspace(0, 30, 1000)   # interpolate 1000 data points along trajectory
         xx_interp = fxx(tt_interp)
@@ -92,10 +105,11 @@ class HelloWorldDreamer:
 
         # return
 
-        R_GOALS_INTERP = []
+        # Save the interpolated coordinates into a new datastructure
+        INITIAL_SWING_TRAJECTORY = []
         for ii in range(0, tt_interp.size):
             waypoint = [xx_interp[ii], yy_interp[ii], zz_interp[ii]]
-            R_GOALS_INTERP.append(waypoint)
+            INITIAL_SWING_TRAJECTORY.append(waypoint)
 
         # plt.plot(tt_interp, xx_interp, 'o', tt_interp, yy_interp, '-' , tt_interp, zz_interp, '--')
         # plt.legend(['x', 'y', 'z'], loc='best')
@@ -103,36 +117,104 @@ class HelloWorldDreamer:
 
         # return
 
-        goingUp = True
+        # Perform cubic spline interpolation for wave
+        tt = np.linspace(0, 60, 6)             # start, end, number of values
+        xx = np.array(WAYPOINT_X_WAVE)
+        yy = np.array(WAYPOINT_Y_WAVE)
+        zz = np.array(WAYPOINT_Z_WAVE)
+
+        fxx= interp1d(tt, xx, kind='cubic')    # interpolation functions
+        fyy= interp1d(tt, yy, kind='cubic')
+        fzz= interp1d(tt, zz, kind='cubic')
+
+        tt_interp = np.linspace(0, 60, 2000)   # interpolate 2000 data points along trajectory
+        xx_interp = fxx(tt_interp)
+        yy_interp = fyy(tt_interp)
+        zz_interp = fzz(tt_interp)
+
+        # Save the interpolated coordinates into a new datastructure
+        WAVE_TRAJECTORY = []
+        for ii in range(0, tt_interp.size):
+            waypoint = [xx_interp[ii], yy_interp[ii], zz_interp[ii]]
+            WAVE_TRAJECTORY.append(waypoint)
+
+
+        print "Starting on STATE_GO_TO_START"
+        state = STATE_GO_TO_START
         goalIndex = 0
+        numWaves = 0     # the number of times the robot has waved already
 
         while not rospy.is_shutdown():
 
-            for ii in range(0, NUM_DOFS):
-                self.rightHandGoalMsg.data[ii] = R_GOALS_INTERP[goalIndex][ii]
-                if ii == 1:
-                    self.leftHandGoalMsg.data[ii] = -1 * R_GOALS_INTERP[goalIndex][ii]
-                else:
-                    self.leftHandGoalMsg.data[ii] = R_GOALS_INTERP[goalIndex][ii]
+            if state == STATE_GO_TO_START:
+                for ii in range(0, NUM_DOFS):
+                    self.rightHandGoalMsg.data[ii] = INITIAL_SWING_TRAJECTORY[goalIndex][ii]
+                    if ii == Y_AXIS_INDEX:
+                        self.leftHandGoalMsg.data[ii] = -1 * INITIAL_SWING_TRAJECTORY[goalIndex][ii]
+                    else:
+                        self.leftHandGoalMsg.data[ii] = INITIAL_SWING_TRAJECTORY[goalIndex][ii]
+                goalIndex = goalIndex + 1
+                if goalIndex == len(INITIAL_SWING_TRAJECTORY):
+                    print "Transitioning to STATE_WAVE_UP"
+                    state = STATE_WAVE_UP
+                    goalIndex = 0
+            
+            elif state == STATE_WAVE_UP:
+                for ii in range(0, NUM_DOFS):
+                    self.rightHandGoalMsg.data[ii] = WAVE_TRAJECTORY[goalIndex][ii]
+                    if ii == Y_AXIS_INDEX:
+                        self.leftHandGoalMsg.data[ii] = -1 * WAVE_TRAJECTORY[goalIndex][ii]
+                    else:
+                        self.leftHandGoalMsg.data[ii] = WAVE_TRAJECTORY[goalIndex][ii]
+                goalIndex = goalIndex + 1
+                if goalIndex == len(WAVE_TRAJECTORY):
+                    print "Transitioning to STATE_WAVE_DOWN"
+                    state = STATE_WAVE_DOWN
+                    goalIndex = len(WAVE_TRAJECTORY) - 1
+            
+            elif state == STATE_WAVE_DOWN:
+                for ii in range(0, NUM_DOFS):
+                    self.rightHandGoalMsg.data[ii] = WAVE_TRAJECTORY[goalIndex][ii]
+                    if ii == Y_AXIS_INDEX:
+                        self.leftHandGoalMsg.data[ii] = -1 * WAVE_TRAJECTORY[goalIndex][ii]
+                    else:
+                        self.leftHandGoalMsg.data[ii] = WAVE_TRAJECTORY[goalIndex][ii]
+                goalIndex = goalIndex - 1
+                if goalIndex == -1:
+                    numWaves = numWaves + 1
+                    if numWaves == NUM_WAVES:
+                        print "Transitioning to STATE_WAVE_FINISH"
+                        state = STATE_GO_TO_FINISH
+                        numWaves = 0
+                        goalIndex = len(INITIAL_SWING_TRAJECTORY) - 1
+                    else:
+                        print "Transitioning to STATE_WAVE_UP, numWaves = {0}".format(numWaves)
+                        state = STATE_WAVE_UP
+                        goalIndex = 0
+
+            else:
+                for ii in range(0, NUM_DOFS):
+                    self.rightHandGoalMsg.data[ii] = INITIAL_SWING_TRAJECTORY[goalIndex][ii]
+                    if ii == Y_AXIS_INDEX:
+                        self.leftHandGoalMsg.data[ii] = -1 * INITIAL_SWING_TRAJECTORY[goalIndex][ii]
+                    else:
+                        self.leftHandGoalMsg.data[ii] = INITIAL_SWING_TRAJECTORY[goalIndex][ii]
+                goalIndex = goalIndex - 1
+                if goalIndex == -1:
+                    print "Transitioning to STATE_GO_TO_START"
+                    state = STATE_GO_TO_START
+                    goalIndex = 0            
 
             # print "publishing goal:\n  - left: {0}\n  - right: {1}".format(self.leftHandGoalMsg.data, self.rightHandGoalMsg.data)
-            
+
             rightGoalPub.publish(self.rightHandGoalMsg)
             leftGoalPub.publish(self.leftHandGoalMsg)
 
-            # rospy.sleep(0.03)
-            rospy.sleep(0.01)
-
-            if goalIndex == len(R_GOALS_INTERP) - 1:
-                goingUp = False
-            elif goalIndex == 0:
-                goingUp = True
-
-            if goingUp:
-                goalIndex = goalIndex + 1
+            if state == STATE_GO_TO_START or state == STATE_GO_TO_FINISH:
+                # rospy.sleep(0.03)
+                rospy.sleep(0.01)      # 10 seconds for this initial / final trajectory
             else:
-                goalIndex = goalIndex - 1
-
+                rospy.sleep(0.01)      # 20 seconds for this wave trajectory
 
 # Main method
 if __name__ == "__main__":
