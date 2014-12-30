@@ -15,9 +15,18 @@ NUM_DOFS = 3 # Cartesian goal is x, y, z
 
 # These are the right hand Cartesian goal positions.
 # Left hand goal positions simply negate the Y axis goal.
-R_GOALS = [[0.03607483951774613, -0.6034890864442964, 1.0984258963904037],
-           [0.05515703618521882, -0.6566814061330449, 1.4456665344232338],
-           [0.018828338330071966, -0.45512000705525885, 1.74547219397573]]
+R_GOALS = [[0.45, -0.25, 1.1],        # move right hand to the right
+           [0.438, -0.356, 1.106],
+           [0.375, -0.451, 1.102],
+           [0.291, -0.508, 1.092],
+           [0.144, -0.528, 1.049],
+
+           [0.13829324246419664, -0.5779865808605724, 1.1269252743334133], # move right hand up
+           [0.14043433470588146, -0.601732376320113, 1.1971891610582215],
+           [0.1434783706196868, -0.6189997526862935, 1.2998303686016914],
+           [0.14583955739422813, -0.6231028442528961, 1.3856296718569716],
+           [0.1481883320341411, -0.6013934906799016, 1.4712865537773556],
+           [0.1500215472226119, -0.568639980698996, 1.5753674402311533]]
 
 class HelloWorldDreamer:
     def __init__(self):
@@ -66,9 +75,9 @@ class HelloWorldDreamer:
             rightGoalPub.publish(self.rightHandGoalMsg)
             leftGoalPub.publish(self.leftHandGoalMsg)
 
-            rospy.sleep(10)
+            rospy.sleep(2)
 
-            if goalIndex == 2:
+            if goalIndex == len(R_GOALS) - 1:
                 goingUp = False
             elif goalIndex == 0:
                 goingUp = True
