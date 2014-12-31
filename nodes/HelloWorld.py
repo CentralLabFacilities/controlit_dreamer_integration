@@ -212,9 +212,10 @@ class HelloWorldDreamer:
 
             if state == STATE_GO_TO_START or state == STATE_GO_TO_FINISH:
                 # rospy.sleep(0.03)
-                rospy.sleep(0.01)      # 10 seconds for this initial / final trajectory
+                rospy.sleep(0.01)      # 10 seconds for initial / final trajectories
             else:
-                rospy.sleep(0.01)      # 20 seconds for this wave trajectory
+                # rospy.sleep(0.01)    # 20 seconds for up / down trajectories
+                rospy.sleep(0.005)      # 10 seconds for up / down trajectories
 
 # Main method
 if __name__ == "__main__":
