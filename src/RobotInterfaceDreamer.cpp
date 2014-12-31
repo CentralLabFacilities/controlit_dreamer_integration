@@ -530,6 +530,17 @@ bool RobotInterfaceDreamer::write(const controlit::Command & command)
     shm_cmd.right_hand.q_stiffness[3] = 0;
     shm_cmd.right_hand.q_stiffness[4] = 0;
 
+    // Send zero position commands to the neck joints
+    shm_cmd.head.q_desired[0] = 0;
+    shm_cmd.head.q_desired[1] = 0;
+    shm_cmd.head.q_desired[2] = 0;
+    shm_cmd.head.q_desired[3] = 0;
+
+    shm_cmd.head.slew_rate_q_desired[0] = 10;
+    shm_cmd.head.slew_rate_q_desired[1] = 10;
+    shm_cmd.head.slew_rate_q_desired[2] = 10;
+    shm_cmd.head.slew_rate_q_desired[3] = 10;
+
     //---------------------------------------------------------------------------------
     // Save the timestamp into the outgoing command message.  This is necessary for
     // the M3 Server to know a new command was received.  If it is not set, the M3
