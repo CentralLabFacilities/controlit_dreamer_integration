@@ -48,8 +48,8 @@ WAYPOINT_Z_WAVE = [1.049, 1.127, 1.197, 1.300, 1.386, 1.471, 1.575]
 # STATE_WAVE_DOWN = 2
 # STATE_GO_TO_FINISH = 3
 
-INIT_TRAJ_TIME = 2.5  # The number of seconds to spend traversing the initial / final trajectory
-WAVE_TRAJ_TIME = 2.5  # The number of seconds to spend traversing the wave up / down trajectory
+INIT_TRAJ_TIME = 5  # The number of seconds to spend traversing the initial / final trajectory
+WAVE_TRAJ_TIME = 1  # The number of seconds to spend traversing the wave up / down trajectory
 
 NUM_WAVES = 3
 Y_AXIS_INDEX = 1
@@ -308,8 +308,8 @@ class HelloWorldDreamer:
             rightGoalPub.publish(self.rightHandGoalMsg)
             leftGoalPub.publish(self.leftHandGoalMsg)
 
-            # time.sleep(0.01) # 100Hz 
-            time.sleep(0.1) # 10Hz 
+            time.sleep(0.01) # 100Hz 
+            # time.sleep(0.1) # 10Hz 
 
 # Main method
 if __name__ == "__main__":
