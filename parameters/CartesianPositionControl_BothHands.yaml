@@ -101,7 +101,7 @@ tasks:
         value: 3
       - name: maxVelocity
         type: real
-        value: 100.0
+        value: 1000
       - name: bodyName  # the coordinate frame of the current heading
         type: string
         value: right_wrist_yaw_link
@@ -120,6 +120,43 @@ tasks:
       - name: goalVector           # in frameName's frame
         type: vector
         value: [0.0, 0.0, 1.0]
+      - name: markerTopic
+        type: string
+        value: "RightHandOrientation/visualization_marker_array"
+
+  - name: LeftHandOrientation
+    type: controlit/OrientVectorToVectorTask
+    parameters:
+      - name: kp
+        type: real
+        value: 60
+      - name: kd
+        type: real
+        value: 1
+      - name: maxVelocity
+        type: real
+        value: 1000
+      - name: bodyName  # the coordinate frame of the current heading
+        type: string
+        value: left_wrist_yaw_link
+      - name: frameName  # the coordinate frame of the goal heading
+        type: string
+        value: world
+      - name: latchOn
+        type: real
+        value: 0
+      - name: resetLatch
+        type: real
+        value: 0
+      - name: bodyFrameVector      # in bodyName's frame
+        type: vector
+        value: [1.0, 0.0, 0.0]
+      - name: goalVector           # in frameName's frame
+        type: vector
+        value: [0.0, 0.0, 1.0]
+      - name: markerTopic
+        type: string
+        value: "LeftHandOrientation/visualization_marker_array"
 
   - name: JPosTask     # Arbitrary instance name
     type: controlit/JPosTaskCompWiseVel # Must Match the NAME of the task in the task_library
@@ -341,6 +378,52 @@ compound_task:
         properties:
           topic: RightHandOrientation/goalVector
 
+    - parameters: [LeftHandOrientation.error]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Float64MultiArray"
+        properties:
+          topic: LeftHandOrientation/error
+          publish_rate: 10
+          queue_size: 1
+          latched: 0
+    - parameters: [LeftHandOrientation.bodyName]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: std_msgs/String
+        properties:
+          topic: LeftHandOrientation/bodyName
+    - parameters: [LeftHandOrientation.enabled]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Int32
+        properties:
+          topic: LeftHandOrientation/enabled
+    - parameters: [LeftHandOrientation.kp]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64
+        properties:
+          topic: LeftHandOrientation/kp
+    - parameters: [LeftHandOrientation.kd]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64
+        properties:
+          topic: LeftHandOrientation/kd
+    - parameters: [LeftHandOrientation.goalVector]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64MultiArray
+        properties:
+          topic: LeftHandOrientation/goalVector
+
     - parameters: [JPosTask.error]
       direction: output
       target:
@@ -455,6 +538,9 @@ compound_task:
        priority: 0
        enabled: 1
      - name: RightHandOrientation
+       priority: 0
+       enabled: 0
+     - name: LeftHandOrientation
        priority: 0
        enabled: 0
      - name: JPosTask
