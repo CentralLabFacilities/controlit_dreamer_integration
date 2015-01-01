@@ -21,7 +21,7 @@ NUM_DOFS = 3 # vector goal is x, y, z
 MAX_THETA = 45.0 / 180.0 * math.pi
 MIN_THETA = -45.0 / 180.0 * math.pi
 INITIAL_THETA = 0.0
-ANGULAR_SPEED = 5.0 / 180.0 * math.pi  # 5 degrees per second
+ANGULAR_SPEED = 100.0 / 180.0 * math.pi  # 5 degrees per second
 TRAJECTORY_FREQUENCY = 100.0         # number of trajectory points to generate per second
 
 class HandFlap:
