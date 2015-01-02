@@ -18,13 +18,13 @@
     <rosparam param="rotor_inertias">
         [0.0, <!-- torso_lower_pitch -->
          0.0, <!-- torso_upper_pitch -->
-         0.0000138, <!-- left_shoulder_extensor -->
-         0.0000138, <!-- left_shoulder_abductor -->
-         0.0000135, <!-- left_shoulder_rotator -->
-         0.0000135, <!-- left_elbow -->
-         0.0000035, <!-- left_wrist_rotator -->
-         0.0000035, <!-- left_wrist_yaw -->
-         0.0000035, <!-- left_wrist_pitch -->
+         0.0000276, <!-- left_shoulder_extensor -->
+         0.0000276, <!-- left_shoulder_abductor -->
+         0.0000270, <!-- left_shoulder_rotator -->
+         0.0000270, <!-- left_elbow -->
+         0.000012, <!-- left_wrist_rotator -->
+         0.000060, <!-- left_wrist_yaw -->
+         0.000060, <!-- left_wrist_pitch -->
          0.0000300, <!-- right_shoulder_extensor -->
          0.0000138, <!-- right_shoulder_abductor -->
          0.0000135, <!-- right_shoulder_rotator -->
