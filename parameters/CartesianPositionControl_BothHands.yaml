@@ -332,6 +332,36 @@ compound_task:
           queue_size: 1
           topic: LeftHandPosition/actualPosition
 
+    - parameters: [RightHandOrientation.actualHeading]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Float64MultiArray"
+        properties:
+          topic: RightHandOrientation/actualHeading
+          publish_rate: 10
+          queue_size: 1
+          latched: 0
+    - parameters: [RightHandOrientation.goalHeading]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Float64MultiArray"
+        properties:
+          topic: RightHandOrientation/goalHeading
+          publish_rate: 10
+          queue_size: 1
+          latched: 0
+    - parameters: [RightHandOrientation.errorAngle]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Float64"
+        properties:
+          topic: RightHandOrientation/errorAngle
+          publish_rate: 100
+          queue_size: 1
+          latched: 0
     - parameters: [RightHandOrientation.error]
       direction: output
       target:
@@ -378,6 +408,36 @@ compound_task:
         properties:
           topic: RightHandOrientation/goalVector
 
+    - parameters: [LeftHandOrientation.actualHeading]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Float64MultiArray"
+        properties:
+          topic: LeftHandOrientation/actualHeading
+          publish_rate: 10
+          queue_size: 1
+          latched: 0
+    - parameters: [LeftHandOrientation.goalHeading]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Float64MultiArray"
+        properties:
+          topic: LeftHandOrientation/goalHeading
+          publish_rate: 10
+          queue_size: 1
+          latched: 0
+    - parameters: [LeftHandOrientation.errorAngle]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Float64"
+        properties:
+          topic: LeftHandOrientation/errorAngle
+          publish_rate: 100
+          queue_size: 1
+          latched: 0
     - parameters: [LeftHandOrientation.error]
       direction: output
       target:
