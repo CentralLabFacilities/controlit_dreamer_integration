@@ -14,6 +14,9 @@ namespace dreamer {
 // #define MAX_STEP_SIZE 0.1 // 5.7 degrees
 #define MAX_STEP_SIZE 0.05 // 2.35 degrees
 
+#define POWER_GRASP_ENABLED_KP 1.5
+#define POWER_GRASP_DISABLED_KP 3.0
+
 HandControllerDreamer::HandControllerDreamer() :
     powerGraspRight(false),
     powerGraspLeft(false)
@@ -32,9 +35,9 @@ bool HandControllerDreamer::init(ros::NodeHandle & nh)
     kp.setOnes(NUM_TORQUE_CONTROLLED_JOINTS);
     kd.setZero(NUM_TORQUE_CONTROLLED_JOINTS);
 
-    kp[0] = 1.5;
-
-    // Subscribe to hand goal messages
+    kp[0] = POWER_GRASP_DISABLED_KP;
+     
+     // Subscribe to hand goal messages
     // nh.subscribe("controlit/rightHand/goalPosition", 1, 
     //     & HandControllerDreamer::rightHandGoalPosCallback, this);
 
@@ -61,10 +64,12 @@ void HandControllerDreamer::getCommand(Vector & command)
 
     if (powerGraspRight)
     {
+        kp[0] = POWER_GRASP_ENABLED_KP;
         goalPosition[0] = 0; // right_thumb_cmc 90 degrees from palm
     }
     else
     {
+        kp[0] = POWER_GRASP_DISABLED_KP;
         goalPosition[0] = 1.57;  // right_thumb_cmc 180 degrees from palm
     }
     
