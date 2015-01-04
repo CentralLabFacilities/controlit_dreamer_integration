@@ -61,7 +61,7 @@ void ServoClockDreamer::updateLoopImpl()
     rtThreadState = RT_THREAD_UNDEF;
     int rtThreadID = rt_thread_create((void*)call_rtMethod,
                                   this,  // parameters
-                                  5000); // stack size
+                                  50000); // stack size
 
     // Wait up to MAX_START_LATENCY_CYCLES for real-time thread to begin running
     for (int ii = 0; ii < MAX_START_LATENCY_CYCLES; ii++) 
