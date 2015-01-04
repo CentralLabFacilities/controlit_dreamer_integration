@@ -91,6 +91,11 @@ private:
     Vector kd;
 
     Vector goalPosition;
+
+    /*!
+     * The robot state subscriber.
+     */
+    ros::Subscriber rightHandPowerGraspSubscriber;
 };
 
 } // namespace dreamer

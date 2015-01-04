@@ -41,10 +41,11 @@ bool HandControllerDreamer::init(ros::NodeHandle & nh)
     // nh.subscribe("controlit/leftHand/goalPosition", 1, 
     //     & HandControllerDreamer::leftHandGoalPosCallback, this);
 
-    CONTROLIT_INFO << "Subscribing to power grasp topic...";
-    nh.subscribe("controlit/rightHand/powerGrasp", 1, 
+    // CONTROLIT_INFO << "Subscribing to power grasp topic...";
+    rightHandPowerGraspSubscriber = nh.subscribe("controlit/rightHand/powerGrasp", 1, 
         & HandControllerDreamer::rightHandCallback, this);
 
+    // CONTROLIT_INFO << "Subscribed to topic: " << rightHandPowerGraspSubscriber.getTopic();
     return true;
 }
 
@@ -100,7 +101,7 @@ void HandControllerDreamer::getCommand(Vector & command)
 void HandControllerDreamer::rightHandCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr)
 {
     powerGraspRight = msgPtr->data;
-    CONTROLIT_INFO << "Right hand power grasp: " << (powerGraspRight ? "TRUE" : "FALSE");
+    // CONTROLIT_INFO << "Right hand power grasp: " << (powerGraspRight ? "TRUE" : "FALSE");
 }
 
 // void HandControllerDreamer::rightHandGoalPosCallback(const boost::shared_ptr<std_msgs::Float64MultiArray const> & msgPtr)
