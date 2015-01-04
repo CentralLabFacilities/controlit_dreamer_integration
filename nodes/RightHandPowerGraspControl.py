@@ -22,8 +22,8 @@ class RightHandPowerGraspControl:
 
         self.rosTopic = rosTopic
 
-        # print "Creating ROS publisher on topic {0}".format(self.rosTopic)
-        self.publisher = rospy.Publisher(self.rosTopic, Bool)
+        print "Creating ROS publisher on topic {0}".format(self.rosTopic)
+        self.publisher = rospy.Publisher(self.rosTopic, Bool, queue_size=1)
         
         # Define the power grasm command message
         self.commandMsg = Bool()
@@ -90,7 +90,7 @@ if __name__ == "__main__":
 
     done = False
     while not done:
-        index = raw_input("Power grasp state (type t, f, or q to exit): ")
+        index = raw_input("Right hand power grasp state (type t, f, or q to exit): ")
 
         if "q" == index:
             done = True
