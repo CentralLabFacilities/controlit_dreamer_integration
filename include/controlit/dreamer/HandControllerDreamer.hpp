@@ -67,7 +67,7 @@ private:
     /*!
      * The callback method for the right hand power grasp control.
      */
-    void rightHandGoalCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr);
+    void rightHandCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr);
 
     /*!
      * The callback method for updating the right hand goal joint positions.

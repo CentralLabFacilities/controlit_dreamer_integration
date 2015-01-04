@@ -42,7 +42,7 @@ bool HandControllerDreamer::init(ros::NodeHandle & nh)
     //     & HandControllerDreamer::leftHandGoalPosCallback, this);
 
     CONTROLIT_INFO << "Subscribing to power grasp topic...";
-    ros::Subscriber sub = nh.subscribe("controlit/rightHand/powerGrasp", 1, 
+    nh.subscribe("controlit/rightHand/powerGrasp", 1, 
         & HandControllerDreamer::rightHandCallback, this);
 
     return true;
