@@ -69,6 +69,12 @@ private:
      */
     void rightHandCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr);
 
+
+    /*!
+     * The callback method for the left gripper power grasp control.
+     */
+    void leftGripperCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr);
+
     /*!
      * The callback method for updating the right hand goal joint positions.
      */
@@ -92,10 +98,9 @@ private:
 
     Vector goalPosition;
 
-    /*!
-     * The robot state subscriber.
-     */
     ros::Subscriber rightHandPowerGraspSubscriber;
+
+    ros::Subscriber leftGripperPowerGraspSubscriber;
 };
 
 } // namespace dreamer

@@ -35,6 +35,7 @@ bool HandControllerDreamer::init(ros::NodeHandle & nh)
     kp.setOnes(NUM_TORQUE_CONTROLLED_JOINTS);
     kd.setZero(NUM_TORQUE_CONTROLLED_JOINTS);
 
+    // Set the Kp for the right_thumb_cmc joint
     kp[0] = POWER_GRASP_DISABLED_KP;
      
      // Subscribe to hand goal messages
@@ -47,6 +48,9 @@ bool HandControllerDreamer::init(ros::NodeHandle & nh)
     // CONTROLIT_INFO << "Subscribing to power grasp topic...";
     rightHandPowerGraspSubscriber = nh.subscribe("controlit/rightHand/powerGrasp", 1, 
         & HandControllerDreamer::rightHandCallback, this);
+
+    leftGripperPowerGraspSubscriber = nh.subscribe("controlit/leftGripper/powerGrasp", 1,
+        & HandControllerDreamer::leftGripperCallback, this);
 
     // CONTROLIT_INFO << "Subscribed to topic: " << rightHandPowerGraspSubscriber.getTopic();
     return true;
@@ -122,12 +126,21 @@ void HandControllerDreamer::getCommand(Vector & command)
 
     // compute the PD control law for right_thumb_cmc
     command[0] = kp[0] * (currGoal - currPosition[0]) - kd[0] * currVelocity[0];
+
+    // Issue command to left gripper
+    command[5] = powerGraspLeft ? 2 : -0.5;
 }
 
 void HandControllerDreamer::rightHandCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr)
 {
     powerGraspRight = msgPtr->data;
     // CONTROLIT_INFO << "Right hand power grasp: " << (powerGraspRight ? "TRUE" : "FALSE");
+}
+
+void HandControllerDreamer::leftGripperCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr)
+{
+    powerGraspLeft = msgPtr->data;
+    CONTROLIT_INFO << "Left gripper power grasp: " << (powerGraspLeft ? "TRUE" : "FALSE");
 }
 
 // void HandControllerDreamer::rightHandGoalPosCallback(const boost::shared_ptr<std_msgs::Float64MultiArray const> & msgPtr)
