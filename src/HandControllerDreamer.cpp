@@ -6,10 +6,13 @@ namespace dreamer {
 
 #define NUM_RIGHT_HAND_DOFS 5
 #define NUM_COMMAND_DOFS 6                   // Command includes both left and right hands
-#define NUM_TORQUE_CONTROLLED_JOINTS 5
+#define NUM_TORQUE_CONTROLLED_JOINTS 6
 
 #define RIGHT_THUMB_CMC_INDEX 0
 #define LEFT_GRIPPER_JOINT_INDEX 5
+
+// #define MAX_STEP_SIZE 0.1 // 5.7 degrees
+#define MAX_STEP_SIZE 0.05 // 2.35 degrees
 
 HandControllerDreamer::HandControllerDreamer()
 {
@@ -26,6 +29,8 @@ bool HandControllerDreamer::init(ros::NodeHandle & nh)
     goalPosition.setZero(NUM_COMMAND_DOFS);
     kp.setOnes(NUM_TORQUE_CONTROLLED_JOINTS);
     kd.setZero(NUM_TORQUE_CONTROLLED_JOINTS);
+
+    kp[0] = 1.5;
 
     // Subscribe to hand goal messages
     nh.subscribe("controlit/rightHand/goalPosition", 1, 
@@ -48,13 +53,32 @@ void HandControllerDreamer::getCommand(Vector & command)
     assert(command.size() == NUM_COMMAND_DOFS);
     
     // Index 0 contains the right thumb position command.
-    command[RIGHT_THUMB_CMC_INDEX] = goalPosition[RIGHT_THUMB_CMC_INDEX];
+    // command[RIGHT_THUMB_CMC_INDEX] = goalPosition[RIGHT_THUMB_CMC_INDEX];
 
     // Indices 1-4 contain the finger torque commands.
     // Index 5 contains the gripper torque command.
-    for (size_t ii = 1; ii < NUM_COMMAND_DOFS; ii++) 
+
+    for (size_t ii = 0; ii < NUM_COMMAND_DOFS; ii++) 
     {
-       command[ii] = kp[ii - 1] * (goalPosition[ii] - currPosition[ii]) - kd[ii - 1] * currVelocity[ii];
+       // create a linear trajectory
+       double currGoal = goalPosition[ii];
+
+       if (goalPosition[ii] > currPosition[ii])
+       {
+           if (goalPosition[ii] - currPosition[ii] > MAX_STEP_SIZE)
+             currGoal = currPosition[ii] + MAX_STEP_SIZE;   
+       }
+       else
+       {
+           if (currPosition[ii] - goalPosition[ii] > MAX_STEP_SIZE)
+               currGoal = currPosition[ii] - MAX_STEP_SIZE;
+       }
+
+       // compute the PD control law
+       command[ii] = kp[ii] * (currGoal - currPosition[ii]) - kd[ii] * currVelocity[ii];
+
+       if (ii > 0)
+           command[ii] = 0;  // DEBUG 
     }
 }
 

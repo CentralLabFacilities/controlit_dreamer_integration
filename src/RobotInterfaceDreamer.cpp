@@ -539,12 +539,10 @@ bool RobotInterfaceDreamer::write(const controlit::Command & command)
     // shm_cmd.right_hand.slew_rate_q_desired[0] = 10;
     // shm_cmd.right_hand.q_stiffness[0] = 1;
 
-    for (size_t ii = 1; ii < 5; ii++)
+    for (size_t ii = 0; ii < 5; ii++)
     {
-        shm_cmd.right_hand.tq_desired[ii] = 0; //1.0e3 * handCommand[ii];
+        shm_cmd.right_hand.tq_desired[ii] = 1.0e3 * handCommand[ii];
     }
-
-    shm_cmd.right_hand.tq_desired[0] = 1.0e3 * -0.2;
 
     // shm_cmd.left_hand.tq_desired[0] = handCommand[5]; // The left gripper accepts commands in Nm?
 
