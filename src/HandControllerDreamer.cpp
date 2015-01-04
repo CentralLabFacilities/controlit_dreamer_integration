@@ -72,7 +72,7 @@ void HandControllerDreamer::getCommand(Vector & command)
         // wait until right_thumb_cmc is at the zero position before curling the fingers
         if (std::abs(currPosition[0]) < 0.17)  // 0.17 radians is 10 degrees
         {
-            command[1] = 0.3;  // right_thumb_mcp
+            command[4] = command[3] = command[2] = command[1] = 0.3;  // right_thumb_mcp, right_pointer_finger_mcp, right_pointer_finger_mcp, right_pinky_mcp
         }
         else
         {
@@ -81,7 +81,7 @@ void HandControllerDreamer::getCommand(Vector & command)
     }
     else
     {
-        command[1] = -0.1;  // right_thumb_mcp
+        command[4] = command[3] = command[2] = command[1] = -0.1;  // right_thumb_mcp, right_pointer_finger_mcp, right_pointer_finger_mcp, right_pinky_mcp
         
         // wait until all fingers are relaxed before moving the right_thumb_cmc
         if (std::abs(currPosition[1]) < 0.02)
