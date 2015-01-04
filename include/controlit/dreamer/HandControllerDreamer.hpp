@@ -2,8 +2,9 @@
 #define __CONTROLIT_DREAMER_INTEGRATION_HAND_CONTROLLER_DREAMER_HPP__
 
 #include <ros/ros.h>
-#include <std_msgs/Float64.h>
-#include <std_msgs/Float64MultiArray.h>
+// #include <std_msgs/Float64.h>
+// #include <std_msgs/Float64MultiArray.h>
+#include <std_msgs/Bool.h>
 #include <controlit/addons/eigen/LinearAlgebra.hpp>
 
 using controlit::addons::eigen::Vector;
@@ -64,14 +65,22 @@ public:
 private:
 
     /*!
+     * The callback method for the right hand power grasp control.
+     */
+    void rightHandGoalCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr);
+
+    /*!
      * The callback method for updating the right hand goal joint positions.
      */
-    void rightHandGoalPosCallback(const boost::shared_ptr<std_msgs::Float64MultiArray const> & msgPtr);
+    // void rightHandGoalPosCallback(const boost::shared_ptr<std_msgs::Float64MultiArray const> & msgPtr);
 
     /*!
      * The callback method for updating the left hand goal joint positions.
      */
-    void leftHandGoalPosCallback(const boost::shared_ptr<std_msgs::Float64 const> & msgPtr);
+    // void leftHandGoalPosCallback(const boost::shared_ptr<std_msgs::Float64 const> & msgPtr);
+
+    bool powerGraspRight;
+    bool powerGraspLeft;
 
     Vector currPosition;
 

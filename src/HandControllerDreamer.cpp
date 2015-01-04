@@ -14,7 +14,9 @@ namespace dreamer {
 // #define MAX_STEP_SIZE 0.1 // 5.7 degrees
 #define MAX_STEP_SIZE 0.05 // 2.35 degrees
 
-HandControllerDreamer::HandControllerDreamer()
+HandControllerDreamer::HandControllerDreamer() :
+    powerGraspRight(false),
+    powerGraspLeft(false)
 {
 }
 
@@ -33,11 +35,15 @@ bool HandControllerDreamer::init(ros::NodeHandle & nh)
     kp[0] = 1.5;
 
     // Subscribe to hand goal messages
-    nh.subscribe("controlit/rightHand/goalPosition", 1, 
-        & HandControllerDreamer::rightHandGoalPosCallback, this);
+    // nh.subscribe("controlit/rightHand/goalPosition", 1, 
+    //     & HandControllerDreamer::rightHandGoalPosCallback, this);
 
-    nh.subscribe("controlit/leftHand/goalPosition", 1, 
-        & HandControllerDreamer::leftHandGoalPosCallback, this);
+    // nh.subscribe("controlit/leftHand/goalPosition", 1, 
+    //     & HandControllerDreamer::leftHandGoalPosCallback, this);
+
+    CONTROLIT_INFO << "Subscribing to power grasp topic...";
+    ros::Subscriber sub = nh.subscribe("controlit/rightHand/powerGrasp", 1, 
+        & HandControllerDreamer::rightHandCallback, this);
 
     return true;
 }
@@ -50,7 +56,16 @@ void HandControllerDreamer::updateState(Vector position, Vector velocity)
 
 void HandControllerDreamer::getCommand(Vector & command)
 {
-    assert(command.size() == NUM_COMMAND_DOFS);
+    // assert(command.size() == NUM_COMMAND_DOFS);
+
+    if (powerGraspRight)
+    {
+        goalPosition[0] = 0; // right_thumb_cmc 90 degrees from palm
+    }
+    else
+    {
+        goalPosition[0] = 1.57;  // right_thumb_cmc 180 degrees from palm
+    }
     
     // Index 0 contains the right thumb position command.
     // command[RIGHT_THUMB_CMC_INDEX] = goalPosition[RIGHT_THUMB_CMC_INDEX];
@@ -82,25 +97,31 @@ void HandControllerDreamer::getCommand(Vector & command)
     }
 }
 
-void HandControllerDreamer::rightHandGoalPosCallback(const boost::shared_ptr<std_msgs::Float64MultiArray const> & msgPtr)
+void HandControllerDreamer::rightHandCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr)
 {
-    if (msgPtr->layout.dim[0].size != NUM_RIGHT_HAND_DOFS)
-    {
-        CONTROLIT_ERROR << "Invalid right hand goal position message. Contained " << msgPtr->layout.dim[0].size << " values, expected " << NUM_RIGHT_HAND_DOFS;
-    }
-    else
-    {
-        for (int ii = 0; ii < NUM_RIGHT_HAND_DOFS; ii++)
-        {
-            goalPosition[ii] = msgPtr->data[ii];
-        }
-    }
+    powerGraspRight = msgPtr->data;
+    CONTROLIT_INFO << "Right hand power grasp: " << (powerGraspRight ? "TRUE" : "FALSE");
 }
 
-void HandControllerDreamer::leftHandGoalPosCallback(const boost::shared_ptr<std_msgs::Float64 const> & msgPtr)
-{
-    goalPosition[LEFT_GRIPPER_JOINT_INDEX] = msgPtr->data;
-}
+// void HandControllerDreamer::rightHandGoalPosCallback(const boost::shared_ptr<std_msgs::Float64MultiArray const> & msgPtr)
+// {
+//     if (msgPtr->layout.dim[0].size != NUM_RIGHT_HAND_DOFS)
+//     {
+//         CONTROLIT_ERROR << "Invalid right hand goal position message. Contained " << msgPtr->layout.dim[0].size << " values, expected " << NUM_RIGHT_HAND_DOFS;
+//     }
+//     else
+//     {
+//         for (int ii = 0; ii < NUM_RIGHT_HAND_DOFS; ii++)
+//         {
+//             goalPosition[ii] = msgPtr->data[ii];
+//         }
+//     }
+// }
+
+// void HandControllerDreamer::leftHandGoalPosCallback(const boost::shared_ptr<std_msgs::Float64 const> & msgPtr)
+// {
+//     goalPosition[LEFT_GRIPPER_JOINT_INDEX] = msgPtr->data;
+// }
 
 } // namespace dreamer
 } // namespace controlit
