@@ -62,15 +62,38 @@ void HandControllerDreamer::getCommand(Vector & command)
 {
     // assert(command.size() == NUM_COMMAND_DOFS);
 
+    command.setZero(6); // for debugging, reset everything to zero 
+
     if (powerGraspRight)
     {
         kp[0] = POWER_GRASP_ENABLED_KP;
         goalPosition[0] = 0; // right_thumb_cmc 90 degrees from palm
+        
+        // wait until right_thumb_cmc is at the zero position before curling the fingers
+        if (std::abs(currPosition[0]) < 0.17)  // 0.17 radians is 10 degrees
+        {
+            command[1] = 0.3;  // right_thumb_mcp
+        }
+        else
+        {
+            // CONTROLIT_INFO << "Not curling right_thumb_mcp, current position of right_thumb_cmc is " << std::abs(currPosition[0]);
+        }
     }
     else
     {
-        kp[0] = POWER_GRASP_DISABLED_KP;
-        goalPosition[0] = 1.57;  // right_thumb_cmc 180 degrees from palm
+        command[1] = -0.1;  // right_thumb_mcp
+        
+        // wait until all fingers are relaxed before moving the right_thumb_cmc
+        if (std::abs(currPosition[1]) < 0.02)
+        {
+            kp[0] = POWER_GRASP_DISABLED_KP;
+            goalPosition[0] = 1.57;  // right_thumb_cmc 180 degrees from palm
+        }
+        else
+        {
+            // CONTROLIT_INFO << "Not putting right_thumb_cmc into relax position, current positions of fingers:\n"
+            //               << "  - right_thumb_mcp: " << std::abs(currPosition[1]);
+        }
     }
     
     // Index 0 contains the right thumb position command.
@@ -79,28 +102,26 @@ void HandControllerDreamer::getCommand(Vector & command)
     // Indices 1-4 contain the finger torque commands.
     // Index 5 contains the gripper torque command.
 
-    for (size_t ii = 0; ii < NUM_COMMAND_DOFS; ii++) 
-    {
+    // for (size_t ii = 0; ii < NUM_COMMAND_DOFS; ii++) 
+    // {
        // create a linear trajectory
-       double currGoal = goalPosition[ii];
+       
+    // Do position control of right_thumb_cmc
+    double currGoal = goalPosition[0];
 
-       if (goalPosition[ii] > currPosition[ii])
-       {
-           if (goalPosition[ii] - currPosition[ii] > MAX_STEP_SIZE)
-             currGoal = currPosition[ii] + MAX_STEP_SIZE;   
-       }
-       else
-       {
-           if (currPosition[ii] - goalPosition[ii] > MAX_STEP_SIZE)
-               currGoal = currPosition[ii] - MAX_STEP_SIZE;
-       }
-
-       // compute the PD control law
-       command[ii] = kp[ii] * (currGoal - currPosition[ii]) - kd[ii] * currVelocity[ii];
-
-       if (ii > 0)
-           command[ii] = 0;  // DEBUG 
+    if (goalPosition[0] > currPosition[0])
+    {
+        if (goalPosition[0] - currPosition[0] > MAX_STEP_SIZE)
+            currGoal = currPosition[0] + MAX_STEP_SIZE;   
     }
+    else
+    {
+        if (currPosition[0] - goalPosition[0] > MAX_STEP_SIZE)
+            currGoal = currPosition[0] - MAX_STEP_SIZE;
+    }
+
+    // compute the PD control law for right_thumb_cmc
+    command[0] = kp[0] * (currGoal - currPosition[0]) - kd[0] * currVelocity[0];
 }
 
 void HandControllerDreamer::rightHandCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr)
