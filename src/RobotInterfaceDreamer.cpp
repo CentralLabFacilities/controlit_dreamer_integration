@@ -38,6 +38,7 @@ namespace dreamer {
 #define NON_REALTIME_PRIORITY 1
 
 #define DEG_TO_RAD(deg) deg / 180 * 3.14159265359
+#define RAD_TO_DEG(rad) rad / 3.14159265359 * 180
 
 RobotInterfaceDreamer::RobotInterfaceDreamer() :
     RobotInterface(),         // Call super-class' constructor
@@ -59,6 +60,15 @@ bool RobotInterfaceDreamer::init(ros::NodeHandle & nh, RTControlModel * model)
     
     if (!RobotInterface::init(nh, model))
         return false;
+
+    //---------------------------------------------------------------------------------
+    // Initialize the hand controller.
+    //---------------------------------------------------------------------------------
+
+    handController.init(nh);
+    handCommand.setZero(6);
+    handJointPositions.setZero(6);
+    handJointVelocities.setZero(6);
 
     //---------------------------------------------------------------------------------
     // Create the odometry receiver.
@@ -430,6 +440,17 @@ bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool 
     latestRobotState.setJointEffort(14, 1.0e-3 * shm_status.right_arm.torque[5]);
     latestRobotState.setJointEffort(15, 1.0e-3 * shm_status.right_arm.torque[6]);
 
+    // Get the latest hand state and update the hand controller
+    for (size_t ii = 0; ii < 5; ii++)
+    {
+        handJointPositions[ii] = shm_status.right_hand.theta[ii];
+        handJointVelocities[ii] = shm_status.right_hand.thetaDot[ii];
+    }
+    handJointPositions[5] = shm_status.left_hand.theta[ii];
+    handJointVelocities[5] = shm_status.left_hand.thetaDot[ii];
+
+    handController.updateState(handJointPositions, handVelocities);
+
     //---------------------------------------------------------------------------------
     // Get and save the latest odometry data.
     //---------------------------------------------------------------------------------
@@ -511,24 +532,36 @@ bool RobotInterfaceDreamer::write(const controlit::Command & command)
     shm_cmd.right_arm.tq_desired[5] = 1e3 * cmd[13];
     shm_cmd.right_arm.tq_desired[6] = 1e3 * cmd[14];
 
-    // Ensure valid commands are issued to the right hand
-    shm_cmd.right_hand.tq_desired[0] = 0;
-    shm_cmd.right_hand.tq_desired[1] = 0;
-    shm_cmd.right_hand.tq_desired[2] = 0;
-    shm_cmd.right_hand.tq_desired[3] = 0;
-    shm_cmd.right_hand.tq_desired[4] = 0;
+    // Send commands to the right hand
+    handController.getCommand(handCommand);
 
-    shm_cmd.right_hand.q_desired[0] = 0;
-    shm_cmd.right_hand.q_desired[1] = 0;
-    shm_cmd.right_hand.q_desired[2] = 0;
-    shm_cmd.right_hand.q_desired[3] = 0;
-    shm_cmd.right_hand.q_desired[4] = 0;
+    shm_cmd.right_hand.q_desired[0] = RAD_TO_DEG(handCommand[0]);
+    shm_cmd.right_hand.slew_rate_q_desired[0] = 10;
+    shm_cmd.right_hand.q_stiffness[0] = 1;
 
-    shm_cmd.right_hand.q_stiffness[0] = 0;
-    shm_cmd.right_hand.q_stiffness[1] = 0;
-    shm_cmd.right_hand.q_stiffness[2] = 0;
-    shm_cmd.right_hand.q_stiffness[3] = 0;
-    shm_cmd.right_hand.q_stiffness[4] = 0;
+    for (size_t ii = 1; ii < 5; ii++)
+    {
+        shm_cmd.right_hand.tq_desired[ii] = 1.0e3 * handCommand[ii];
+    }
+
+    shm_cmd.left_hand.tq_desired[0] = hand_command[5]; // The left gripper accepts commands in Nm?
+
+    // shm_cmd.right_hand.tq_desired[0] = 0;
+    // shm_cmd.right_hand.tq_desired[1] = 0;
+    // shm_cmd.right_hand.tq_desired[2] = 0;
+    // shm_cmd.right_hand.tq_desired[3] = 0;
+    // shm_cmd.right_hand.tq_desired[4] = 0;
+    
+    // shm_cmd.right_hand.q_desired[1] = 0;
+    // shm_cmd.right_hand.q_desired[2] = 0;
+    // shm_cmd.right_hand.q_desired[3] = 0;
+    // shm_cmd.right_hand.q_desired[4] = 0;
+
+    // shm_cmd.right_hand.q_stiffness[0] = 0;
+    // shm_cmd.right_hand.q_stiffness[1] = 0;
+    // shm_cmd.right_hand.q_stiffness[2] = 0;
+    // shm_cmd.right_hand.q_stiffness[3] = 0;
+    // shm_cmd.right_hand.q_stiffness[4] = 0;    
 
     // Send zero position commands to the neck joints
     shm_cmd.head.q_desired[0] = 0;

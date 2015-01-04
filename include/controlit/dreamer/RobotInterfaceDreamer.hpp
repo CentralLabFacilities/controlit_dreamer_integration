@@ -3,6 +3,8 @@
 
 #include <controlit/addons/ros/RealTimePublisher.hpp>
 #include <controlit/RobotInterface.hpp>
+#include <controlit/dreamer/HandControllerDreamer.hpp>
+
 // #include <thread>  // for std::mutex
 #include <unistd.h>
 #include "m3uta/controllers/torque_shm_uta_sds.h"
@@ -121,6 +123,26 @@ private:
      * Holds a copy of the command to be written to shared memory.
      */
     M3UTATorqueShmSdsCommand shm_cmd;
+
+    /*!
+     * The object that generates the commands for the hands.
+     */
+    HandControllerDreamer handController;
+
+    /*!
+     * The current hand joint positions.
+     */
+    Vector handJointPositions;
+
+    /*!
+     * The current hand joint velocities.
+     */
+    Vector handJointVelocities;
+
+    /*!
+     * The command to send to the hand.
+     */
+    Vector handCommand;
 };
 
 } // namespace dreamer
