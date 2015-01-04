@@ -80,7 +80,7 @@ private:
 
     Vector kd;
 
-    Vetor goalPosition;
+    Vector goalPosition;
 };
 
 } // namespace dreamer
