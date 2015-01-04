@@ -22,6 +22,7 @@ class RightHandPowerGraspControl:
 
         self.rosTopic = rosTopic
 
+        # print "Creating ROS publisher on topic {0}".format(self.rosTopic)
         self.publisher = rospy.Publisher(self.rosTopic, Bool)
         
         # Define the power grasm command message
@@ -65,7 +66,7 @@ if __name__ == "__main__":
 
     # Parse the command line arguments
     try:
-        opts, args = getopt.getopt(sys.argv[1:],"ht",["rosTopic="])
+        opts, args = getopt.getopt(sys.argv[1:],"ht:",["rosTopic="])
     except getopt.GetoptError:
        rospy.logerr(usageStr)
        sys.exit(2)
