@@ -1,4 +1,5 @@
 #include <controlit/dreamer/HandControllerDreamer.hpp>
+#include <controlit/logging/Logging.hpp>
 
 namespace controlit {
 namespace dreamer {
@@ -10,7 +11,7 @@ namespace dreamer {
 #define RIGHT_THUMB_CMC_INDEX 0
 #define LEFT_GRIPPER_JOINT_INDEX 5
 
-HandControllerDreamer::HandControllerDreamer() :
+HandControllerDreamer::HandControllerDreamer()
 {
 }
 
@@ -20,20 +21,26 @@ HandControllerDreamer::~HandControllerDreamer()
 
 bool HandControllerDreamer::init(ros::NodeHandle & nh)
 {
-    position.setZero(NUM_COMMAND_DOFS);
-    velocity.setZero(NUM_COMMAND_DOFS);
-    goalPosition.setZero(NUM_COMMAND_DOFS6);
+    currPosition.setZero(NUM_COMMAND_DOFS);
+    currVelocity.setZero(NUM_COMMAND_DOFS);
+    goalPosition.setZero(NUM_COMMAND_DOFS);
     kp.setOnes(NUM_TORQUE_CONTROLLED_JOINTS);
     kd.setZero(NUM_TORQUE_CONTROLLED_JOINTS);
 
     // Subscribe to hand goal messages
     nh.subscribe("controlit/rightHand/goalPosition", 1, 
-        HandControllerDreamer::rightHandGoalPosCallback, this);
+        & HandControllerDreamer::rightHandGoalPosCallback, this);
 
     nh.subscribe("controlit/leftHand/goalPosition", 1, 
-        HandControllerDreamer::leftHandGoalPosCallback, this);
+        & HandControllerDreamer::leftHandGoalPosCallback, this);
 
     return true;
+}
+
+void HandControllerDreamer::updateState(Vector position, Vector velocity)
+{
+    currPosition = position;
+    currVelocity = velocity;
 }
 
 void HandControllerDreamer::getCommand(Vector & command)
@@ -49,29 +56,26 @@ void HandControllerDreamer::getCommand(Vector & command)
     {
        command[ii] = kp[ii - 1] * (goalPosition[ii] - currPosition[ii]) - kd[ii - 1] * currVelocity[ii];
     }
-
-    return command;
-
 }
 
-void HandControllerDreamer::rightHandGoalPosCallback(std_msgs::Float64MultiArray::ConstPtr & msg)
+void HandControllerDreamer::rightHandGoalPosCallback(const boost::shared_ptr<std_msgs::Float64MultiArray const> & msgPtr)
 {
-    if (msg.layout.dim[0].size != NUM_RIGHT_HAND_DOFS)
+    if (msgPtr->layout.dim[0].size != NUM_RIGHT_HAND_DOFS)
     {
-        CONTROLIT_ERROR << "Invalid right hand goal position message. Contained " << msg.layout.dim[0].size << " values, expected " << NUM_RIGHT_HAND_DOFS;
+        CONTROLIT_ERROR << "Invalid right hand goal position message. Contained " << msgPtr->layout.dim[0].size << " values, expected " << NUM_RIGHT_HAND_DOFS;
     }
     else
     {
-        for (int ii == 0; ii < NUM_RIGHT_HAND_DOFS; ii++)
+        for (int ii = 0; ii < NUM_RIGHT_HAND_DOFS; ii++)
         {
-            goalPosition[ii] = msg->data[ii];
+            goalPosition[ii] = msgPtr->data[ii];
         }
     }
 }
 
-void HandControllerDreamer::leftHandGoalPosCallback(std_msgs::Float64::ConstPtr & msg)
+void HandControllerDreamer::leftHandGoalPosCallback(const boost::shared_ptr<std_msgs::Float64 const> & msgPtr)
 {
-    goalPosition[LEFT_GRIPPER_JOINT_INDEX] = msg->data;
+    goalPosition[LEFT_GRIPPER_JOINT_INDEX] = msgPtr->data;
 }
 
 } // namespace dreamer

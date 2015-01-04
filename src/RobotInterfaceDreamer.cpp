@@ -446,8 +446,8 @@ bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool 
         handJointPositions[ii] = DEG_TO_RAD(shm_status.right_hand.theta[ii]);
         handJointVelocities[ii] = DEG_TO_RAD(shm_status.right_hand.thetadot[ii]);
     }
-    handJointPositions[5] = DEG_TO_RAD(shm_status.left_hand.theta[0]);
-    handJointVelocities[5] = DEG_TO_RAD(shm_status.left_hand.thetadot[0]);
+    // handJointPositions[5] = DEG_TO_RAD(shm_status.left_hand.theta[0]);
+    // handJointVelocities[5] = DEG_TO_RAD(shm_status.left_hand.thetadot[0]);
 
     handController.updateState(handJointPositions, handJointVelocities);
 
@@ -544,7 +544,7 @@ bool RobotInterfaceDreamer::write(const controlit::Command & command)
         shm_cmd.right_hand.tq_desired[ii] = 1.0e3 * handCommand[ii];
     }
 
-    shm_cmd.left_hand.tq_desired[0] = handCommand[5]; // The left gripper accepts commands in Nm?
+    // shm_cmd.left_hand.tq_desired[0] = handCommand[5]; // The left gripper accepts commands in Nm?
 
     // shm_cmd.right_hand.tq_desired[0] = 0;
     // shm_cmd.right_hand.tq_desired[1] = 0;

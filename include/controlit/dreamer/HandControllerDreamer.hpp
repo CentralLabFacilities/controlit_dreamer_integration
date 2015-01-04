@@ -4,6 +4,11 @@
 #include <ros/ros.h>
 #include <std_msgs/Float64.h>
 #include <std_msgs/Float64MultiArray.h>
+#include <controlit/addons/eigen/LinearAlgebra.hpp>
+
+using controlit::addons::eigen::Vector;
+using controlit::addons::eigen::Matrix;
+using controlit::addons::eigen::Matrix3d;
 
 namespace controlit {
 namespace dreamer {
@@ -47,11 +52,7 @@ public:
      * 
      * \param[in] velocity The current velocity of the hand joints.
      */
-    void updateState(Vector position, Vector velocity)
-    {
-        currPosition = position;
-        currVelocity = velocity;
-    }
+    void updateState(Vector position, Vector velocity);
 
     /*!
      * Obtains the command based on the current state and current goal
@@ -65,12 +66,12 @@ private:
     /*!
      * The callback method for updating the right hand goal joint positions.
      */
-    void rightHandGoalPosCallback(std_msgs::Float64MultiArray::ConstPtr & msg);
+    void rightHandGoalPosCallback(const boost::shared_ptr<std_msgs::Float64MultiArray const> & msgPtr);
 
     /*!
      * The callback method for updating the left hand goal joint positions.
      */
-    void leftHandGoalPosCallback(std_msgs::Float64::ConstPtr & msg);
+    void leftHandGoalPosCallback(const boost::shared_ptr<std_msgs::Float64 const> & msgPtr);
 
     Vector currPosition;
 
