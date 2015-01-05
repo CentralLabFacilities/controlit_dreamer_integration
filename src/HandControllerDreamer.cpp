@@ -14,7 +14,7 @@ namespace dreamer {
 // #define MAX_STEP_SIZE 0.1 // 5.7 degrees
 #define MAX_STEP_SIZE 0.05 // 2.35 degrees
 
-#define POWER_GRASP_ENABLED_KP 1.5
+#define POWER_GRASP_ENABLED_KP 2.25
 #define POWER_GRASP_DISABLED_KP 3.0
 
 HandControllerDreamer::HandControllerDreamer() :
