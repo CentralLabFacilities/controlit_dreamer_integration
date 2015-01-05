@@ -200,6 +200,10 @@ class Demo1_ProductDisassembly:
         """
         Starts the demo 1 behavior.
         """
+        while self.postureTaskTarePublisher.get_num_connections() == 0:
+            print "Waiting for connection to ControlIt!..."
+            time.sleep(1)
+
         print "Issuing tare command to Posture task..."
         self.postureTaskTarePublisher.publish(self.tareMsg)
         time.sleep(1)
