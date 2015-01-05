@@ -25,7 +25,7 @@ class RightHandPowerGraspControl:
         print "Creating ROS publisher on topic {0}".format(self.rosTopic)
         self.publisher = rospy.Publisher(self.rosTopic, Bool, queue_size=1)
         
-        # Define the power grasm command message
+        # Define the power grasp command message
         self.commandMsg = Bool()
         self.commandMsg.data = False
 
