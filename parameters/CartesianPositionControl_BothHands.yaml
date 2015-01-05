@@ -158,6 +158,40 @@ tasks:
         type: string
         value: "LeftHandOrientation/visualization_marker_array"
 
+  - name: ChestOrientation
+    type: controlit/OrientVectorToVectorTask
+    parameters:
+      - name: kp
+        type: real
+        value: 100
+      - name: kd
+        type: real
+        value: 20
+      - name: maxVelocity
+        type: real
+        value: 1000.0
+      - name: bodyName  # the coordinate frame of the current heading
+        type: string
+        value: torso_upper_pitch_link
+      - name: frameName  # the coordinate frame of the goal heading
+        type: string
+        value: world
+      - name: latchOn
+        type: real
+        value: 0
+      - name: resetLatch
+        type: real
+        value: 0
+      - name: bodyFrameVector      # in bodyName's frame (torso_upper_pitch_link)
+        type: vector
+        value: [1.0, 0.0, 0.0]
+      - name: goalVector           # in frameName's frame (world)
+        type: vector
+        value: [1.0, 0.0, 0.0]
+      - name: markerTopic
+        type: string
+        value: "ChestOrientation/visualization_marker_array"
+
   - name: JPosTask     # Arbitrary instance name
     type: controlit/JPosTaskCompWiseVel # Must Match the NAME of the task in the task_library
     parameters:
@@ -526,6 +560,89 @@ compound_task:
         properties:
           topic: LeftHandOrientation/tare
 
+    - parameters: [ChestOrientation.actualHeading]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Float64MultiArray"
+        properties:
+          topic: ChestOrientation/actualHeading
+          publish_rate: 10
+          queue_size: 1
+          latched: 0
+    - parameters: [ChestOrientation.goalHeading]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Float64MultiArray"
+        properties:
+          topic: ChestOrientation/goalHeading
+          publish_rate: 10
+          queue_size: 1
+          latched: 0
+    - parameters: [ChestOrientation.errorAngle]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Float64"
+        properties:
+          topic: ChestOrientation/errorAngle
+          publish_rate: 100
+          queue_size: 1
+          latched: 0
+    - parameters: [ChestOrientation.error]
+      direction: output
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Float64MultiArray"
+        properties:
+          topic: ChestOrientation/error
+          publish_rate: 10
+          queue_size: 1
+          latched: 0
+    - parameters: [ChestOrientation.bodyName]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: std_msgs/String
+        properties:
+          topic: ChestOrientation/bodyName
+    - parameters: [ChestOrientation.enabled]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Int32
+        properties:
+          topic: ChestOrientation/enabled
+    - parameters: [ChestOrientation.kp]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64
+        properties:
+          topic: ChestOrientation/kp
+    - parameters: [ChestOrientation.kd]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64
+        properties:
+          topic: ChestOrientation/kd
+    - parameters: [ChestOrientation.goalVector]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Float64MultiArray
+        properties:
+          topic: ChestOrientation/goalVector
+    - parameters: [ChestOrientation.tare]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Int32
+        properties:
+          topic: ChestOrientation/tare
+
     - parameters: [JPosTask.error]
       direction: output
       target:
@@ -640,20 +757,23 @@ compound_task:
     - name: converged
       expression: JPosTask.converged and JPosTask.quiescent
   task_list:
-     - name: RightHandPosition
+     - name: ChestOrientation
        priority: 0
+       enabled: 1
+     - name: RightHandPosition
+       priority: 1
        enabled: 1
      - name: LeftHandPosition
-       priority: 0
+       priority: 1
        enabled: 1
      - name: RightHandOrientation
-       priority: 0
+       priority: 1
        enabled: 1
      - name: LeftHandOrientation
-       priority: 0
+       priority: 1
        enabled: 1
      - name: JPosTask
-       priority: 1
+       priority: 2
        enabled: 1
 constraints:
   - type: controlit/FlatContactConstraint
