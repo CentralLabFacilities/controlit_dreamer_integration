@@ -334,6 +334,7 @@ class Demo1_ProductDisassembly:
         # Define the waypoints
         # Note waypoints are formatted as: [[x, y, z], ...]
         rightHandCartesianWP = []
+        rightHandCartesianWP.append(self.currentRightCartesianPos)
         rightHandCartesianWP.append([0.034156182237965314, -0.2536961667775097, 0.7942923566248334])
         rightHandCartesianWP.append([-0.03852115301282585, -0.36702885542756375, 1.0044042662878492])
         rightHandCartesianWP.append([-0.0275400056213187, -0.4346278435022028, 1.109258357008881])
@@ -341,6 +342,7 @@ class Demo1_ProductDisassembly:
         rightHandCartesianWP.append([0.2561600552895205, -0.36355117909588747, 1.2737345840311838])
 
         rightHandOrientationWP = []
+        rightHandOrientationWP.append(self.currentRightOrientation)
         rightHandOrientationWP.append([0.9239165069202464, -0.16720064850712463, 0.34412531348200354])
         rightHandOrientationWP.append([0.7104721853318615, 0.5004153180136336, 0.4947866038678526])
         rightHandOrientationWP.append([0.5901777988221774, 0.748119163684364, 0.3033280117391358])
