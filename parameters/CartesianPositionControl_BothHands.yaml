@@ -642,16 +642,16 @@ compound_task:
   task_list:
      - name: RightHandPosition
        priority: 0
-       enabled: 0
+       enabled: 1
      - name: LeftHandPosition
        priority: 0
-       enabled: 0
+       enabled: 1
      - name: RightHandOrientation
        priority: 0
-       enabled: 0
+       enabled: 1
      - name: LeftHandOrientation
        priority: 0
-       enabled: 0
+       enabled: 1
      - name: JPosTask
        priority: 1
        enabled: 1
