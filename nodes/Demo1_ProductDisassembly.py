@@ -221,9 +221,10 @@ class Demo1_ProductDisassembly:
             index = raw_input("The current posture error is: {0}\n"\
                               "You can also check the current posture error by executing:\n\n"\
                               "   $ rostopic echo /dreamer_controller/JPosTask/error\n\n"\
-                              " If error is low, undo e-stop, otherwise type 'r' to retry or 'q' to quit.".format(self.actualPosture))
+                              " If error is low, undo e-stop, otherwise type 'r' to retry or 'q' to quit. ".format(self.actualPosture))
 
             if "q" == index:
+                print "Exiting..."
                 return
             elif "r" == index:
                 print "Issuing tare command to Posture task..."
@@ -378,8 +379,10 @@ if __name__ == "__main__":
 
     rospy.init_node('Demo1_ProductDisassembly', anonymous=True)
 
-    Demo1_ProductDisassembly = Demo1_ProductDisassembly()
-    t = threading.Thread(target=Demo1_ProductDisassembly.start)
-    t.start()
+    demo1 = Demo1_ProductDisassembly()
+    # t = threading.Thread(target=Demo1_ProductDisassembly.start)
+    # t.start()
+    demo1.start()
 
-    rospy.spin()
+
+    # rospy.spin()
