@@ -249,6 +249,13 @@ compound_task:
         dataType: "std_msgs/Float64"
         properties:
           topic: RightHandPosition/kd
+    - parameters: [RightHandPosition.enabled]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Int32"
+        properties:
+          topic: RightHandPosition/enabled
     - parameters: [RightHandPosition.error]
       direction: output
       target:
@@ -301,6 +308,13 @@ compound_task:
         dataType: "std_msgs/Float64"
         properties:
           topic: LeftHandPosition/kd
+    - parameters: [LeftHandPosition.enabled]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: "std_msgs/Int32"
+        properties:
+          topic: LeftHandPosition/enabled
     - parameters: [LeftHandPosition.error]
       direction: output
       target:
@@ -593,10 +607,10 @@ compound_task:
   task_list:
      - name: RightHandPosition
        priority: 0
-       enabled: 1
+       enabled: 0
      - name: LeftHandPosition
        priority: 0
-       enabled: 1
+       enabled: 0
      - name: RightHandOrientation
        priority: 0
        enabled: 0
