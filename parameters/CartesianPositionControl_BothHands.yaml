@@ -163,10 +163,10 @@ tasks:
     parameters:
       - name: kp
         type: real
-        value: 100
+        value: 60
       - name: kd
         type: real
-        value: 20
+        value: 1
       - name: maxVelocity
         type: real
         value: 1000.0
