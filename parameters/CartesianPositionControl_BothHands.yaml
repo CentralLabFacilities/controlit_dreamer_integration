@@ -600,6 +600,13 @@ compound_task:
         dataType: "std_msgs/Float64MultiArray"
         properties:
           topic: JPosTask/maxVelocity
+    - parameters: [JPosTask.tare]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Int32
+        properties:
+          topic: JPosTask/tare
 
   events:
     - name: converged
