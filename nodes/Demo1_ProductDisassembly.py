@@ -357,9 +357,9 @@ class Demo1_ProductDisassembly:
         rightHandCartesianTG.generateTrajectory(TOTAL_TRAVEL_TIME)
         rightHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
 
-        index = raw_input("Done generating trajectories. Ready to to go start position? y/N\n")
+        index = raw_input("Done generating trajectories. Ready to to go start position? Y/n\n")
 
-        if not (index == "y" or index == "Y"):
+        if index == "N" or index == "n":
             return False  # quit
 
         # Follow the trajectories
