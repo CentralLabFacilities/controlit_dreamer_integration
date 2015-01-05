@@ -58,23 +58,27 @@ class HelloWorldDreamer:
     def __init__(self):
 
         # Define the dimensions of the message
-        dim = MultiArrayDimension()
-        dim.size = NUM_DOFS
-        dim.label = "rightHandGoal"
-        dim.stride = 1
+        rightHandGoalDim = MultiArrayDimension()
+        rightHandGoalDim.size = NUM_DOFS
+        rightHandGoalDim.label = "rightHandGoal"
+        rightHandGoalDim.stride = 1
 
         # Define the goal messages
         self.rightHandGoalMsg = Float64MultiArray()
         for ii in range(0, NUM_DOFS):
             self.rightHandGoalMsg.data.append(0)
-        self.rightHandGoalMsg.layout.dim.append(dim)
+        self.rightHandGoalMsg.layout.dim.append(rightHandGoalDim)
         self.rightHandGoalMsg.layout.data_offset = 0
 
-        dim.label = "leftHandGoal"
+        leftHandGoalDim = MultiArrayDimension()
+        leftHandGoalDim.size = NUM_DOFS
+        leftHandGoalDim.label = "leftHandGoal"
+        leftHandGoalDim.stride = 1
+
         self.leftHandGoalMsg = Float64MultiArray()
         for ii in range(0, NUM_DOFS):
             self.leftHandGoalMsg.data.append(0)
-        self.leftHandGoalMsg.layout.dim.append(dim)
+        self.leftHandGoalMsg.layout.dim.append(leftHandGoalDim)
         self.leftHandGoalMsg.layout.data_offset = 0
 
     def linearInterpolate(self, trajectory, deltaTime):
