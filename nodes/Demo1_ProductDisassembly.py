@@ -10,7 +10,7 @@ import math
 import threading
 import rospy
 
-from std_msgs.msg import Float64MultiArray, MultiArrayDimension, Bool, Int32
+from std_msgs.msg import Float64, Float64MultiArray, MultiArrayDimension, Bool, Int32
 
 import numpy as np
 from scipy.interpolate import interp1d
@@ -113,18 +113,36 @@ class Demo1_ProductDisassembly:
         self.tareMsg.data = 1
 
         # Initialize member variables
-        self.actualPosture = None
-        self.actualRightCartesianPos = None
-        self.actualLeftCartesianPos = None
-        self.actualRightOrientation = None
-        self.actualLeftOrientation = None
+        self.currentPosture = None
+        self.postureError = None
+
+        self.currentRightCartesianPos = None
+        self.rightCartesianPosError = None
+
+        self.currentLeftCartesianPos = None
+        self.leftCartesianPosError = None
+
+        self.currentRightOrientation = None
+        self.rightOrientationError = None
+
+        self.currentLeftOrientation = None
+        self.leftOrientationError = None
 
         # Create the ROS topic subscriptions
-        self.postureTaskSubscriber      = rospy.Subscriber("/dreamer_controller/JPosTask/actualPosition",               Float64MultiArray, self.postureActualCallback)
-        self.rightCartesianSubscriber   = rospy.Subscriber("/dreamer_controller/RightHandPosition/actualWorldPosition", Float64MultiArray, self.rightCartesianActualCallback)
-        self.leftCartesianSubscriber    = rospy.Subscriber("/dreamer_controller/LeftHandPosition/actualWorldPosition",  Float64MultiArray, self.leftCartesianActualCallback)
-        self.rightOrientationSubscriber = rospy.Subscriber("/dreamer_controller/RightHandOrientation/actualHeading",    Float64MultiArray, self.rightOrientationActualCallback)
-        self.leftOrientationSubscriber  = rospy.Subscriber("/dreamer_controller/LeftHandOrientation/actualHeading",     Float64MultiArray, self.leftOrientationActualCallback)
+        self.postureTaskActualSubscriber = rospy.Subscriber("/dreamer_controller/JPosTask/actualPosition", Float64MultiArray, self.postureTaskActualCallback)
+        self.postureTaskErrorSubscriber  = rospy.Subscriber("/dreamer_controller/JPosTask/error",          Float64MultiArray, self.postureTaskErrorCallback)
+
+        self.rightCartesianTaskActualSubscriber = rospy.Subscriber("/dreamer_controller/RightHandPosition/actualWorldPosition", Float64MultiArray, self.rightCartesianTaskActualCallback)
+        self.rightCartesianTaskErrorSubscriber  = rospy.Subscriber("/dreamer_controller/RightHandPosition/error",               Float64MultiArray, self.rightCartesianTaskErrorCallback)
+
+        self.leftCartesianTaskActualSubscriber = rospy.Subscriber("/dreamer_controller/LeftHandPosition/actualWorldPosition",  Float64MultiArray, self.leftCartesianTaskActualCallback)
+        self.leftCartesianTaskErrorSubscriber  = rospy.Subscriber("/dreamer_controller/LeftHandPosition/error",                Float64MultiArray, self.leftCartesianTaskErrorCallback)
+
+        self.rightOrientationTaskActualSubscriber = rospy.Subscriber("/dreamer_controller/RightHandOrientation/actualHeading", Float64MultiArray, self.rightOrientationTaskActualCallback)
+        self.rightOrientationTaskErrorSubscriber  = rospy.Subscriber("/dreamer_controller/RightHandOrientation/errorAngle",    Float64,           self.rightOrientationTaskErrorCallback)
+
+        self.leftOrientationTaskActualSubscriber = rospy.Subscriber("/dreamer_controller/LeftHandOrientation/actualHeading", Float64MultiArray, self.leftOrientationTaskActualCallback)
+        self.leftOrientationTaskErrorSubscriber  = rospy.Subscriber("/dreamer_controller/LeftHandOrientation/errorAngle",    Float64,           self.leftOrientationTaskErrorCallback)
 
         # Create the ROS topic publishers
         self.postureTaskGoalPublisher = rospy.Publisher("/dreamer_controller/JPosTask/goalPosition", Float64MultiArray, queue_size=1)
@@ -150,20 +168,35 @@ class Demo1_ProductDisassembly:
         self.leftGripperCmdPublisher = rospy.Publisher("/dreamer_controller/controlit/leftGripper/powerGrasp", Bool, queue_size=1)
         
 
-    def postureActualCallback(self, msg):
-        self.actualPosture = msg.data
+    def postureTaskActualCallback(self, msg):
+        self.currentPosture = msg.data
 
-    def rightCartesianActualCallback(self, msg):
-        self.actualRightCartesianPos = msg.data
+    def postureTaskErrorCallback(self, msg):
+        self.postureError = msg.data
 
-    def leftCartesianActualCallback(self, msg):
-        self.actualLeftCartesianPos = msg.data
+    def rightCartesianTaskActualCallback(self, msg):
+        self.currentRightCartesianPos = msg.data
 
-    def rightOrientationActualCallback(self, msg):
-        self.actualRightOrientation = msg.data
+    def rightCartesianTaskErrorCallback(self, msg):
+        self.rightCartesianPosError = msg.data
 
-    def leftOrientationActualCallback(self, msg):
-        self.actualLeftOrientation = msg.data
+    def leftCartesianTaskActualCallback(self, msg):
+        self.currentLeftCartesianPos = msg.data
+
+    def leftCartesianTaskErrorCallback(self, msg):
+        self.leftCartesianPosError = msg.data
+
+    def rightOrientationTaskActualCallback(self, msg):
+        self.currentRightOrientation = msg.data
+
+    def rightOrientationTaskErrorCallback(self, msg):
+        self.rightOrientationError = msg.data
+
+    def leftOrientationTaskActualCallback(self, msg):
+        self.currentLeftOrientation = msg.data
+
+    def leftOrientationTaskErrorCallback(self, msg):
+        self.leftOrientationError = msg.data
 
     # def linearInterpolate(self, trajectory, deltaTime):
     #     """
@@ -196,17 +229,48 @@ class Demo1_ProductDisassembly:
         """
         return rospy.get_time()
 
-    def start(self):
-        """
-        Starts the demo 1 behavior.
-        """
-        while self.postureTaskTarePublisher.get_num_connections() == 0:
-            print "Waiting for connection to ControlIt!..."
-            time.sleep(1)
-
-        print "Issuing tare command to Posture task..."
+    def issueTareCommands(self):
+        print "Issuing tare commands..."
         self.postureTaskTarePublisher.publish(self.tareMsg)
+        self.rightCartesianTaskTarePublisher.publish(self.tareMsg)
+        self.leftCartesianTaskTarePublisher.publish(self.tareMsg)
+        self.rightOrientationTaskTarePublisher.publish(self.tareMsg)
+        self.leftOrientationTaskTarePublisher.publish(self.tareMsg)
+
         time.sleep(1)
+
+        pauseCount = 0
+        printWarning = False
+        while not rospy.is_shutdown() and (self.postureError == None or \
+              self.rightCartesianPosError == None or self.leftCartesianPosError == None or \
+              self.rightOrientationError == None or self.leftOrientationError == None):
+            time.sleep(0.5)
+            pauseCount = pauseCount + 1
+            if pauseCount > 5 and not printWarning:
+                print "Waiting for error information..."
+                printWarning = True
+
+        return not rospy.is_shutdown()
+
+    def doTare(self):
+
+        # Wait for connection to ControlIt!
+        pauseCount = 0
+        printWarning = False
+        while not rospy.is_shutdown() and (self.postureTaskTarePublisher.get_num_connections() == 0 or \
+              self.rightCartesianTaskTarePublisher.get_num_connections() == 0 or \
+              self.leftCartesianTaskTarePublisher.get_num_connections() == 0):
+            time.sleep(0.5)
+            pauseCount = pauseCount + 1
+            if pauseCount > 5 and not printWarning:
+                print "Waiting for connection to ControlIt!..."
+                printWarning = True
+
+        if rospy.is_shutdown():
+            return False
+
+        if not self.issueTareCommands():
+            return False
 
         # while not rospy.is_shutdown() and self.actualPosture == None:
         #     time.sleep(0.1) # 10Hz 
@@ -218,20 +282,58 @@ class Demo1_ProductDisassembly:
         
         done = False
         while not done:
-            index = raw_input("The current posture error is: {0}\n"\
-                              "You can also check the current posture error by executing:\n\n"\
-                              "   $ rostopic echo /dreamer_controller/JPosTask/error\n\n"\
-                              " If error is low, undo e-stop, otherwise type 'r' to retry or 'q' to quit. ".format(self.actualPosture))
+
+            resultList = [["Index", "Joint Name", "Error (rad)", "Error (deg)"]]
+            resultList.append(["-----", "----------", "-----------", "-----------"])
+            
+            JOINT_NAMES = ["torso_lower_pitch", "torso_upper_pitch",
+                           "left_shoulder_extensor", "left_shoulder_abductor", 
+                           "left_shoulder_rotator", "left_elbow",
+                           "left_wrist_rotator", "left_wrist_pitch", "left_wrist_yaw", 
+                           "right_shoulder_extensor", "right_shoulder_abductor", 
+                           "right_shoulder_rotator", "right_elbow", "right_wrist_rotator",
+                           "right_wrist_pitch", "right_wrist_yaw"]
+
+            index = 0
+            for jointError in self.postureError:
+                errorRad = jointError
+                errorDeg = errorRad / 3.14 * 180
+                entry = [str(index), JOINT_NAMES[index], str(errorRad), str(errorDeg)]
+                resultList.append(entry)
+                index = index + 1
+        
+            col_width = max(len(word) for row in resultList for word in row) + 2  # padding
+            resultTable =""
+            for row in resultList:
+                resultTable = resultTable + "\n    " + "".join(word.ljust(col_width) for word in row) 
+    
+            index = raw_input("Current errors are:\n"\
+                              " - Posture task:    {0}\n"\
+                              " - Right hand Cartesian position:\n    {1}\n"\
+                              " - Left hand Cartesian position:\n    {2}\n"\
+                              " - Right hand orientation:\n    {3}\n"\
+                              " - Left hand orientation:\n    {4}\n"\
+                              "If error is low undo e-stop then type enter, otherwise type 'r' to retry or 'q' to quit.\n".format(
+                resultTable, self.rightCartesianPosError, self.leftCartesianPosError, 
+                self.rightOrientationError, self.leftOrientationError))
 
             if "q" == index:
                 print "Exiting..."
-                return
+                return False
             elif "r" == index:
-                print "Issuing tare command to Posture task..."
-                self.postureTaskTarePublisher.publish(self.tareMsg.data)
-                time.sleep(1)
+                self.issueTareCommands()
             else:
-                print "Unknown command {0}".format(index)
+                done = True
+
+        return True
+
+    def run(self):
+        """
+        Runs the demo 1 behavior.
+        """
+
+        if not self.doTare():
+            return
 
         # rightGoalPub = rospy.Publisher("/dreamer_controller/RightHandPosition/goalPosition", Float64MultiArray, queue_size=1)
         # leftGoalPub = rospy.Publisher("/dreamer_controller/LeftHandPosition/goalPosition", Float64MultiArray, queue_size=1)
@@ -382,7 +484,7 @@ if __name__ == "__main__":
     demo1 = Demo1_ProductDisassembly()
     # t = threading.Thread(target=Demo1_ProductDisassembly.start)
     # t.start()
-    demo1.start()
+    demo1.run()
 
 
     # rospy.spin()

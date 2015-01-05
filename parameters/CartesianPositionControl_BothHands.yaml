@@ -256,6 +256,13 @@ compound_task:
         dataType: "std_msgs/Int32"
         properties:
           topic: RightHandPosition/enabled
+    - parameters: [RightHandPosition.tare]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Int32
+        properties:
+          topic: RightHandPosition/tare
     - parameters: [RightHandPosition.error]
       direction: output
       target:
@@ -315,6 +322,13 @@ compound_task:
         dataType: "std_msgs/Int32"
         properties:
           topic: LeftHandPosition/enabled
+    - parameters: [LeftHandPosition.tare]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Int32
+        properties:
+          topic: LeftHandPosition/tare
     - parameters: [LeftHandPosition.error]
       direction: output
       target:
@@ -421,6 +435,13 @@ compound_task:
         dataType: std_msgs/Float64MultiArray
         properties:
           topic: RightHandOrientation/goalVector
+    - parameters: [RightHandOrientation.tare]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Int32
+        properties:
+          topic: RightHandOrientation/tare
 
     - parameters: [LeftHandOrientation.actualHeading]
       direction: output
@@ -497,6 +518,13 @@ compound_task:
         dataType: std_msgs/Float64MultiArray
         properties:
           topic: LeftHandOrientation/goalVector
+    - parameters: [LeftHandOrientation.tare]
+      direction: input
+      target:
+        type: ROSTopic
+        dataType: std_msgs/Int32
+        properties:
+          topic: LeftHandOrientation/tare
 
     - parameters: [JPosTask.error]
       direction: output
