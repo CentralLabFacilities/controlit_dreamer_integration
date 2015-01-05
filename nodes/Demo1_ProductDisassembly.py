@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 '''
-Publishes goals to make Dreamer wave her arms.
+Implements the Demo 1 of ControlIt! and Dreamer disassembling a part.
 '''
 
 import sys, getopt     # for getting and parsing command line arguments
