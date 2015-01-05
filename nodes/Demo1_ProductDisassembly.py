@@ -101,6 +101,9 @@ class Demo1_ProductDisassembly:
         self.tareMsg = Int32()
         self.tareMsg.data = 1
 
+        self.enableMsg = Int32()
+        self.enableMsg.data = 1
+
         #-----------------------------------------------------------------------------'
 
         # Initialize member variables
@@ -312,7 +315,7 @@ class Demo1_ProductDisassembly:
 
         return True
 
-    def goToStartPosition(self):
+    def goToReadyPosition(self):
 
         # Define the waypoints
         # Note waypoints are formatted as: [[x, y, z], ...]
@@ -357,6 +360,7 @@ class Demo1_ProductDisassembly:
         # leftHandOrientationWP.append([-0.4312431770418993, -0.6624029322988932, 0.6125778950767296])
 
         jPosWP = []
+        jPosWP.append(self.currentPosture)
         jPosWP.append([-0.01794845476545489,  -0.01794845476545489,  -0.16022875682719276, -0.028366232678305438, 0.050244446934761954, 0.5154665157243641,  -0.33255119610617534, 0.05010440837726589,   -0.018253115541772363, -0.16022875682719276, -0.028366232678305438, 0.050244446934761954, 0.5154665157243641,  -0.33255119610617534, 0.05010440837726589,   -0.018253115541772363])
         jPosWP.append([-0.01835755481596669,  -0.01835755481596669,  -0.2079656207335766,  0.29357242950906004,   0.04774540078163857,  0.4028570467687516,  -0.33545312171439673, 0.02454667484846745,   -0.025739450147506372, -0.2079656207335766,  0.29357242950906004,   0.04774540078163857,  0.4028570467687516,  -0.33545312171439673, 0.02454667484846745,   -0.025739450147506372])
         jPosWP.append([-0.018392780683976415, -0.018392780683976415, -0.21536831102820064, 0.4858139216602395,    0.04752910227054589,  0.3538691456458291,  -0.2606189020877619,  0.03851699336735694,   -0.009304268906057204, -0.21536831102820064, 0.4858139216602395,    0.04752910227054589,  0.3538691456458291,  -0.2606189020877619,  0.03851699336735694,   -0.009304268906057204])
@@ -374,14 +378,14 @@ class Demo1_ProductDisassembly:
         # leftHandOrientationTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(leftHandOrientationWP)
         jPosTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(jPosWP)
 
-        TOTAL_TRAVEL_TIME = 15.0 # seconds
+        TOTAL_TRAVEL_TIME = 5.0 # seconds
         # rightHandCartesianTG.generateTrajectory(TOTAL_TRAVEL_TIME)
         # rightHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
         # leftHandCartesianTG.generateTrajectory(TOTAL_TRAVEL_TIME)
         # leftHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
         jPosTG.generateTrajectory(TOTAL_TRAVEL_TIME)
 
-        index = raw_input("Done generating trajectories. Ready to to go start position? Y/n\n")
+        index = raw_input("Go start position? Y/n\n")
         if index == "N" or index == "n":
             return False  # quit
 
@@ -430,6 +434,26 @@ class Demo1_ProductDisassembly:
         print "Done going to start position!"
         return True
 
+    def grabMetalObject():
+        """
+        Executes the trajectory that moves the right arm to be around the metal object.
+        """
+
+        index = raw_input("Enable Cartesian position and orientation tasks? Y/n\n")
+        if index == "N" or index == "n":
+            return False  # quit
+
+        # Enable the Cartesian position and orientation tasks
+        self.rightCartesianTaskEnablePublisher.publish(self.enableMsg)
+        self.leftCartesianTaskEnablePublisher.publish(self.enableMsg)
+        self.rightOrientationTaskEnablePublisher.publish(self.enableMsg)
+        self.leftOrientationTaskEnablePublisher.publish(self.enableMsg)
+
+        index = raw_input("Position hand around metal object? Y/n\n")
+        if index == "N" or index == "n":
+            return False  # quit
+
+        
 
     def run(self):
         """
@@ -439,7 +463,10 @@ class Demo1_ProductDisassembly:
         if not self.doTare():
             return
 
-        if not self.goToStartPosition():
+        if not self.goToReadyPosition():
+            return
+
+        if not self.grabMetalObject():
             return
 
         print "Demo 1 done!"
