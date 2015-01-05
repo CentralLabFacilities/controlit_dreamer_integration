@@ -69,12 +69,15 @@ class TakeSnapshot:
 
         while not done:
 
-            # Wait 10 seconds for robot to be placed into desired position
-            counter = 10
-            while counter > 0:
+            # Wait for robot to be placed into desired position
+            counter = 5
+            while not rospy.is_shutdown() and counter > 0:
                 print "Taking snapshot in {0}...".format(counter)
                 time.sleep(1)
                 counter = counter - 1
+
+            if rospy.is_shutdown():
+                return
     
             # Take the snapshot
             print "Snapshot:\n"\
@@ -86,7 +89,7 @@ class TakeSnapshot:
                                             self.currentLeftCartesianPos, self.currentLeftOrientation, 
                                             self.currentPosture)
 
-            index = raw_input("Take another snapshot? y/N")
+            index = raw_input("Take another snapshot? y/N\n")
 
             if index == "y" or index == "Y":
                 done = False
