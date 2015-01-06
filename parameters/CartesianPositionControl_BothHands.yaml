@@ -30,7 +30,8 @@ tasks:
         type: vector
 
         # these are the values used by UTA-WBC
-        value: [0.45, -0.25, 1.1]
+        # value: [0.45, -0.25, 1.1]
+        value: [0.033912978219317776, -0.29726881641499886, 0.7965277787944901]
 
         # these are the Cartesian coordinates when all joints are close to zero:
         # value: [0.05910914740914856, -0.20988127817117105, 0.7879616040106433]   # from this task
@@ -76,7 +77,9 @@ tasks:
         type: vector
 
         # these are the values used by UTA-WBC
-        value: [0.45, 0.25, 1.1]
+        # value: [0.45, 0.25, 1.1]
+
+        value: [0.033912978219317776, 0.29726881641499886, 0.7965277787944901]
 
       - name: goalVelocity           # in frameName's frame
         type: vector
@@ -132,7 +135,7 @@ tasks:
         value: 60
       - name: kd
         type: real
-        value: 1
+        value: 3
       - name: maxVelocity
         type: real
         value: 1000
@@ -198,14 +201,18 @@ tasks:
       - name: kp
         type: vector
 
-        # these are the values used by UTA-WBC
-        value: [30.0, 30.0,                                 # torso
-                30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0,   # left arm 
-                30.0, 30.0, 30.0, 20.0, 20.0, 30.0, 30.0]   # right arm
-
         # these are values Liang settled on doing joint-by-joint integration testing
         #value: [10, 10, 10, 10, 10, 100, 100, # left arm
         #        10, 20, 20, 10, 10, 50, 50]   # right arm
+
+        # these are the values used by UTA-WBC
+        # value: [30.0, 30.0,                                 # torso
+        #         30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0,   # left arm 
+        #         30.0, 30.0, 30.0, 20.0, 20.0, 30.0, 30.0]   # right arm
+
+        value: [60.0, 60.0,                                 # torso
+                60.0, 60.0, 60.0, 60.0, 60.0, 60.0, 60.0,   # left arm 
+                60.0, 60.0, 60.0, 60.0, 60.0, 60.0, 60.0]   # right arm
 
       - name: kd
         type: vector
@@ -229,9 +236,13 @@ tasks:
         type: vector
 
         # these are the values used by UTA-WBC
-        value: [0.0, 0.0,                                # torso
-                0.0, 0.0, 0.0, 1.57, 0.0, 0.0, 0.0,      # left arm
-                0.0, 0.0, 0.0, 1.57, 0.0, 0.0, 0.0]      # right arm
+        # value: [0.0, 0.0,                                # torso
+        #         0.0, 0.0, 0.0, 1.57, 0.0, 0.0, 0.0,      # left arm
+        #         0.0, 0.0, 0.0, 1.57, 0.0, 0.0, 0.0]      # right arm
+
+        value: [0.0, 0.0,                                              # torso
+                0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,     # left arm
+                0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0]     # right arm
 
       - name: goalVelocity
         type: vector
