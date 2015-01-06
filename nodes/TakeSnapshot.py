@@ -120,9 +120,9 @@ class TakeSnapshot:
                 return
 
         # Print the results
-        result = "Trajectories:"
+        result = " === Forward trajectories ==="
         
-        result = result + "\nRightHandPosition:"
+        result = result + "\n\nRightHandPosition:"
         for snapshot in snapShots:
             result = result + "\n  " 
             result = result + "{0}".format(snapshot.rightHandCartesian)
@@ -146,6 +146,14 @@ class TakeSnapshot:
         for snapshot in snapShots:
             result = result + "\n  "
             result = result + "{0}".format(snapshot.posture)
+
+        result = result + "\n\n === Reverse trajectories ==="
+        
+        result = result + "\n\nRightHandPosition:"
+        for snapshot in snapShots[::-1]:
+            result = result + "\n  " 
+            result = result + "{0}".format(snapshot.rightHandCartesian)
+
 
         print result
 
