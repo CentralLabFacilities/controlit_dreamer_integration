@@ -223,6 +223,42 @@ class Demo1_ProductDisassembly:
         """
         return rospy.get_time()
 
+    def connectToControlIt(self):
+        # Wait for connection to ControlIt!
+        pauseCount = 0
+        printWarning = False
+
+        # while not rospy.is_shutdown() and self.postureTaskTarePublisher.get_num_connections() == 0:
+        while not rospy.is_shutdown() and (self.postureTaskTarePublisher.get_num_connections() == 0 or \
+              self.rightCartesianTaskTarePublisher.get_num_connections() == 0 or \
+              self.leftCartesianTaskTarePublisher.get_num_connections() == 0 or \
+              self.rightOrientationTaskGoalPublisher.get_num_connections() == 0 or \
+              self.leftOrientationTaskGoalPublisher.get_num_connections() == 0):
+        
+            # print "Connection status: \n"\
+            #       "  - posture task: {0}\n"\
+            #       "  - right cartesian task: {1}\n"\
+            #       "  - right orientation task: {2}\n"\
+            #       "  - left Cartesian task: {3}\n"\
+            #       "  - left orientation task: {4}".format(
+            #         self.postureTaskTarePublisher.get_num_connections(),
+            #         self.rightCartesianTaskTarePublisher.get_num_connections(),
+            #         self.rightOrientationTaskGoalPublisher.get_num_connections(),
+            #         self.leftCartesianTaskTarePublisher.get_num_connections(),
+            #         self.leftOrientationTaskGoalPublisher.get_num_connections())
+
+            time.sleep(1.0)
+            pauseCount = pauseCount + 1
+            if pauseCount > 3 and not printWarning:
+                print "Waiting for connection to ControlIt!..."
+                printWarning = True
+
+        if rospy.is_shutdown():
+            return False
+
+        print "Done connecting to ControlIt!"
+        return True
+
     def issueTareCommands(self):
         print "Issuing tare commands..."
         self.postureTaskTarePublisher.publish(self.tareMsg)
@@ -248,22 +284,6 @@ class Demo1_ProductDisassembly:
         return not rospy.is_shutdown()
 
     def doTare(self):
-
-        # Wait for connection to ControlIt!
-        pauseCount = 0
-        printWarning = False
-        while not rospy.is_shutdown() and self.postureTaskTarePublisher.get_num_connections() == 0:
-        # while not rospy.is_shutdown() and (self.postureTaskTarePublisher.get_num_connections() == 0 or \
-        #       self.rightCartesianTaskTarePublisher.get_num_connections() == 0 or \
-        #       self.leftCartesianTaskTarePublisher.get_num_connections() == 0):
-            time.sleep(0.5)
-            pauseCount = pauseCount + 1
-            if pauseCount > 5 and not printWarning:
-                print "Waiting for connection to ControlIt!..."
-                printWarning = True
-
-        if rospy.is_shutdown():
-            return False
 
         if not self.issueTareCommands():
             return False
@@ -317,26 +337,46 @@ class Demo1_ProductDisassembly:
 
     def goToReadyPosition(self):
 
+        print "Generating GoToReady trajectories..."
+
         # Define the waypoints
         # Note waypoints are formatted as: [[x, y, z], ...]
-        # rightHandCartesianWP = []
-        # rightHandCartesianWP.append(self.currentRightCartesianPos)
+        rightHandCartesianWP = []
+        rightHandCartesianWP.append(self.currentRightCartesianPos)
         # rightHandCartesianWP.append([0.034156182237965314, -0.2536961667775097, 0.7942923566248334])
         # rightHandCartesianWP.append([-0.03852115301282585, -0.36702885542756375, 1.0044042662878492])
         # rightHandCartesianWP.append([-0.0275400056213187, -0.4346278435022028, 1.109258357008881])
         # rightHandCartesianWP.append([0.16786527968278075, -0.48763818929105546, 1.2849643133074693])
         # rightHandCartesianWP.append([0.2561600552895205, -0.36355117909588747, 1.2737345840311838])
+        rightHandCartesianWP.append([0.04944811734171309, -0.17368807049139126, 0.7830665782619101])
+        rightHandCartesianWP.append([0.05104967229580375, -0.28622621345964705, 0.8235857307421216])
+        rightHandCartesianWP.append([-0.010787466850287645, -0.37196865055472456, 0.9210635986304219])
+        rightHandCartesianWP.append([-0.01189084584319601, -0.3753386447151084, 1.0371488813771812])
+        rightHandCartesianWP.append([-0.022738177026843172, -0.45509912889679904, 1.0966400307913864])
+        rightHandCartesianWP.append([0.058075915022061574, -0.4913505782464393, 1.197089380528078])
+        rightHandCartesianWP.append([0.17509050734299444, -0.46449522964516066, 1.2787319186642516])
+        rightHandCartesianWP.append([0.2127883318273162, -0.386664721175835, 1.2391372452846785])
+        rightHandCartesianWP.append([0.21808685990049081, -0.3161680110530092, 1.1501767255088817])
 
-        # rightHandOrientationWP = []
-        # rightHandOrientationWP.append(self.currentRightOrientation)
+        rightHandOrientationWP = []
+        rightHandOrientationWP.append(self.currentRightOrientation)
         # rightHandOrientationWP.append([0.9239165069202464, -0.16720064850712463, 0.34412531348200354])
         # rightHandOrientationWP.append([0.7104721853318615, 0.5004153180136336, 0.4947866038678526])
         # rightHandOrientationWP.append([0.5901777988221774, 0.748119163684364, 0.3033280117391358])
         # rightHandOrientationWP.append([-0.043115032422085975, 0.9965622982370774, 0.07074376093816886])
         # rightHandOrientationWP.append([0.34390539739454545, -0.566640981750115, 0.7487636980010218])
+        rightHandOrientationWP.append([0.040121125198393746, 0.1960934800238522, 0.7844920211113905])
+        rightHandOrientationWP.append([0.040651435230446516, 0.19611804168710664, 0.7845398350743337])
+        rightHandOrientationWP.append([0.03987168755137979, 0.1961620230330922, 0.7845362568359417])
+        rightHandOrientationWP.append([0.04006043195083507, 0.19612708333961504, 0.7845435906458912])
+        rightHandOrientationWP.append([0.04012818103238443, 0.19617620512003597, 0.7845727389775176])
+        rightHandOrientationWP.append([0.04041006966922123, 0.1962569152526287, 0.7845777371132184])
+        rightHandOrientationWP.append([0.04026709890134479, 0.19619540844650024, 0.7845747506562611])
+        rightHandOrientationWP.append([0.040826701232748536, 0.19628231872516483, 0.7846337185234686])
+        rightHandOrientationWP.append([0.04049994078801549, 0.19619665038511697, 0.7845882937225995])
 
-        # leftHandCartesianWP = []
-        # leftHandCartesianWP.append(self.currentLeftCartesianPos)
+        leftHandCartesianWP = []
+        leftHandCartesianWP.append(self.currentLeftCartesianPos)
         # leftHandCartesianWP.append([0.06522162547135797, 0.2087452184746953, 0.8066377828255454])
         # leftHandCartesianWP.append([0.015620097078689351, 0.3747161583451485, 0.8287361488491304])
         # leftHandCartesianWP.append([0.0066811057812040595, 0.46860930804289314, 0.8709620294725516])
@@ -346,9 +386,18 @@ class Demo1_ProductDisassembly:
         # leftHandCartesianWP.append([0.23203580696538584, 0.5995259011103453, 1.2716484739906841])
         # leftHandCartesianWP.append([0.26654957772855264, 0.4880079098197537, 1.3033126448189423])
         # leftHandCartesianWP.append([0.32798561222658845, 0.3259907480928649, 1.2942321804350336])
+        leftHandCartesianWP.append([0.04944811734171309, 0.17368807049139126, 0.7830665782619101])
+        leftHandCartesianWP.append([0.05104967229580375, 0.28622621345964705, 0.8235857307421216])
+        leftHandCartesianWP.append([-0.010787466850287645, 0.37196865055472456, 0.9210635986304219])
+        leftHandCartesianWP.append([-0.01189084584319601, 0.3753386447151084, 1.0371488813771812])
+        leftHandCartesianWP.append([-0.022738177026843172, 0.45509912889679904, 1.0966400307913864])
+        leftHandCartesianWP.append([0.058075915022061574, 0.4913505782464393, 1.197089380528078])
+        leftHandCartesianWP.append([0.17509050734299444, 0.46449522964516066, 1.2787319186642516])
+        leftHandCartesianWP.append([0.2127883318273162, 0.386664721175835, 1.2391372452846785])
+        leftHandCartesianWP.append([0.21808685990049081, 0.3161680110530092, 1.1501767255088817])
 
-        # leftHandOrientationWP = []
-        # leftHandOrientationWP.append(self.currentLeftOrientation)
+        leftHandOrientationWP = []
+        leftHandOrientationWP.append(self.currentLeftOrientation)
         # leftHandOrientationWP.append([0.8698342557072543, -0.2710769041539282, 0.41219616644569773])
         # leftHandOrientationWP.append([0.9106065993605292, -0.3890214692723871, 0.13949164005848422])
         # leftHandOrientationWP.append([0.9295869859711186, -0.36310368089122885, 0.06343305476147368])
@@ -358,34 +407,43 @@ class Demo1_ProductDisassembly:
         # leftHandOrientationWP.append([0.19446889146452803, -0.5476779230575118, 0.813775609641852])
         # leftHandOrientationWP.append([-0.09223469751157737, -0.4569635179606584, 0.8846903999863268])
         # leftHandOrientationWP.append([-0.4312431770418993, -0.6624029322988932, 0.6125778950767296])
+        leftHandOrientationWP.append([0.040121125198393746, 0.1960934800238522, 0.7844920211113905])
+        leftHandOrientationWP.append([0.040651435230446516, 0.19611804168710664, 0.7845398350743337])
+        leftHandOrientationWP.append([0.03987168755137979, 0.1961620230330922, 0.7845362568359417])
+        leftHandOrientationWP.append([0.04006043195083507, 0.19612708333961504, 0.7845435906458912])
+        leftHandOrientationWP.append([0.04012818103238443, 0.19617620512003597, 0.7845727389775176])
+        leftHandOrientationWP.append([0.04041006966922123, 0.1962569152526287, 0.7845777371132184])
+        leftHandOrientationWP.append([0.04026709890134479, 0.19619540844650024, 0.7845747506562611])
+        leftHandOrientationWP.append([0.040826701232748536, 0.19628231872516483, 0.7846337185234686])
+        leftHandOrientationWP.append([0.04049994078801549, 0.19619665038511697, 0.7845882937225995])
 
-        jPosWP = []
-        jPosWP.append(self.currentPosture)
-        jPosWP.append([-0.01794845476545489,  -0.01794845476545489,  -0.16022875682719276, -0.028366232678305438, 0.050244446934761954, 0.5154665157243641,  -0.33255119610617534, 0.05010440837726589,   -0.018253115541772363, -0.16022875682719276, -0.028366232678305438, 0.050244446934761954, 0.5154665157243641,  -0.33255119610617534, 0.05010440837726589,   -0.018253115541772363])
-        jPosWP.append([-0.01835755481596669,  -0.01835755481596669,  -0.2079656207335766,  0.29357242950906004,   0.04774540078163857,  0.4028570467687516,  -0.33545312171439673, 0.02454667484846745,   -0.025739450147506372, -0.2079656207335766,  0.29357242950906004,   0.04774540078163857,  0.4028570467687516,  -0.33545312171439673, 0.02454667484846745,   -0.025739450147506372])
-        jPosWP.append([-0.018392780683976415, -0.018392780683976415, -0.21536831102820064, 0.4858139216602395,    0.04752910227054589,  0.3538691456458291,  -0.2606189020877619,  0.03851699336735694,   -0.009304268906057204, -0.21536831102820064, 0.4858139216602395,    0.04752910227054589,  0.3538691456458291,  -0.2606189020877619,  0.03851699336735694,   -0.009304268906057204])
-        jPosWP.append([-0.018545167893084524, -0.018545167893084524, -0.20710870565527095, 0.6401132970059965,    0.0520458328895553,   0.35399683955047895, -0.2466998343348537,  0.06426357174636058,   0.032668663438796056,  -0.20710870565527095, 0.6401132970059965,    0.0520458328895553,   0.35399683955047895, -0.2466998343348537,  0.06426357174636058,   0.032668663438796056]) 
-        jPosWP.append([-0.018356469848882423, -0.018356469848882423, -0.2162452342922192,  0.977742795946938,     0.051332200860391815, 0.3516444996185793,  0.005994626786898999, 0.06687364387429934,   0.2206448056367654,    -0.2162452342922192,  0.977742795946938,     0.051332200860391815, 0.3516444996185793,  0.005994626786898999, 0.06687364387429934,   0.2206448056367654])
-        jPosWP.append([-0.01853752101703267,  -0.01853752101703267,  -0.08381303186931051, 1.2382056770859806,    0.07604977645605294,  0.5513916485119579,  0.2032285609484162,   0.0966689738445368,    0.19508567001135413,   -0.08381303186931051, 1.2382056770859806,    0.07604977645605294,  0.5513916485119579,  0.2032285609484162,   0.0966689738445368,    0.19508567001135413])  
-        jPosWP.append([-0.018797824347083616, -0.018797824347083616, -0.05526364818674631, 1.2740213042786388,    0.1112481265579799,   1.0536733858716545,  0.6500190512067868,   0.1622132817288518,    0.47899325282370675,   -0.05526364818674631, 1.2740213042786388,    0.1112481265579799,   1.0536733858716545,  0.6500190512067868,   0.1622132817288518,    0.47899325282370675]) 
-        jPosWP.append([-0.01844421650219398,  -0.01844421650219398,  -0.04650484640324995, 1.1951713147188352,    0.16733022331087605,  1.5113547364058941,  0.7241725349346869,   0.03489648599249408,   0.4296745935913513,    -0.04650484640324995, 1.1951713147188352,    0.16733022331087605,  1.5113547364058941,  0.7241725349346869,   0.03489648599249408,   0.4296745935913513]) 
-        jPosWP.append([-0.017720064116942654, -0.017720064116942654, 0.471331735425394,    0.7301226149420205,    -0.2275738756636333,  1.683961941736368,  -0.014898011141877917, -0.034635678354951925, 0.5251207580826792,    0.471331735425394,    0.7301226149420205,    -0.2275738756636333,  1.683961941736368,  -0.014898011141877917, -0.034635678354951925, 0.5251207580826792])  
+        # jPosWP = []
+        # jPosWP.append(self.currentPosture)
+        # jPosWP.append([-0.01794845476545489,  -0.01794845476545489,  -0.16022875682719276, -0.028366232678305438, 0.050244446934761954, 0.5154665157243641,  -0.33255119610617534, 0.05010440837726589,   -0.018253115541772363, -0.16022875682719276, -0.028366232678305438, 0.050244446934761954, 0.5154665157243641,  -0.33255119610617534, 0.05010440837726589,   -0.018253115541772363])
+        # jPosWP.append([-0.01835755481596669,  -0.01835755481596669,  -0.2079656207335766,  0.29357242950906004,   0.04774540078163857,  0.4028570467687516,  -0.33545312171439673, 0.02454667484846745,   -0.025739450147506372, -0.2079656207335766,  0.29357242950906004,   0.04774540078163857,  0.4028570467687516,  -0.33545312171439673, 0.02454667484846745,   -0.025739450147506372])
+        # jPosWP.append([-0.018392780683976415, -0.018392780683976415, -0.21536831102820064, 0.4858139216602395,    0.04752910227054589,  0.3538691456458291,  -0.2606189020877619,  0.03851699336735694,   -0.009304268906057204, -0.21536831102820064, 0.4858139216602395,    0.04752910227054589,  0.3538691456458291,  -0.2606189020877619,  0.03851699336735694,   -0.009304268906057204])
+        # jPosWP.append([-0.018545167893084524, -0.018545167893084524, -0.20710870565527095, 0.6401132970059965,    0.0520458328895553,   0.35399683955047895, -0.2466998343348537,  0.06426357174636058,   0.032668663438796056,  -0.20710870565527095, 0.6401132970059965,    0.0520458328895553,   0.35399683955047895, -0.2466998343348537,  0.06426357174636058,   0.032668663438796056]) 
+        # jPosWP.append([-0.018356469848882423, -0.018356469848882423, -0.2162452342922192,  0.977742795946938,     0.051332200860391815, 0.3516444996185793,  0.005994626786898999, 0.06687364387429934,   0.2206448056367654,    -0.2162452342922192,  0.977742795946938,     0.051332200860391815, 0.3516444996185793,  0.005994626786898999, 0.06687364387429934,   0.2206448056367654])
+        # jPosWP.append([-0.01853752101703267,  -0.01853752101703267,  -0.08381303186931051, 1.2382056770859806,    0.07604977645605294,  0.5513916485119579,  0.2032285609484162,   0.0966689738445368,    0.19508567001135413,   -0.08381303186931051, 1.2382056770859806,    0.07604977645605294,  0.5513916485119579,  0.2032285609484162,   0.0966689738445368,    0.19508567001135413])  
+        # jPosWP.append([-0.018797824347083616, -0.018797824347083616, -0.05526364818674631, 1.2740213042786388,    0.1112481265579799,   1.0536733858716545,  0.6500190512067868,   0.1622132817288518,    0.47899325282370675,   -0.05526364818674631, 1.2740213042786388,    0.1112481265579799,   1.0536733858716545,  0.6500190512067868,   0.1622132817288518,    0.47899325282370675]) 
+        # jPosWP.append([-0.01844421650219398,  -0.01844421650219398,  -0.04650484640324995, 1.1951713147188352,    0.16733022331087605,  1.5113547364058941,  0.7241725349346869,   0.03489648599249408,   0.4296745935913513,    -0.04650484640324995, 1.1951713147188352,    0.16733022331087605,  1.5113547364058941,  0.7241725349346869,   0.03489648599249408,   0.4296745935913513]) 
+        # jPosWP.append([-0.017720064116942654, -0.017720064116942654, 0.471331735425394,    0.7301226149420205,    -0.2275738756636333,  1.683961941736368,  -0.014898011141877917, -0.034635678354951925, 0.5251207580826792,    0.471331735425394,    0.7301226149420205,    -0.2275738756636333,  1.683961941736368,  -0.014898011141877917, -0.034635678354951925, 0.5251207580826792])  
 
         # Create the trajectory generators
-        # rightHandCartesianTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(rightHandCartesianWP)
-        # rightHandOrientationTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(rightHandOrientationWP)
-        # leftHandCartesianTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(leftHandCartesianWP)
-        # leftHandOrientationTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(leftHandOrientationWP)
-        jPosTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(jPosWP)
+        rightHandCartesianTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(rightHandCartesianWP)
+        rightHandOrientationTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(rightHandOrientationWP)
+        leftHandCartesianTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(leftHandCartesianWP)
+        leftHandOrientationTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(leftHandOrientationWP)
+        # jPosTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(jPosWP)
 
-        TOTAL_TRAVEL_TIME = 5.0 # seconds
-        # rightHandCartesianTG.generateTrajectory(TOTAL_TRAVEL_TIME)
-        # rightHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
-        # leftHandCartesianTG.generateTrajectory(TOTAL_TRAVEL_TIME)
-        # leftHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
-        jPosTG.generateTrajectory(TOTAL_TRAVEL_TIME)
+        TOTAL_TRAVEL_TIME = 10.0 # seconds
+        rightHandCartesianTG.generateTrajectory(TOTAL_TRAVEL_TIME)
+        rightHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
+        leftHandCartesianTG.generateTrajectory(TOTAL_TRAVEL_TIME)
+        leftHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
+        # jPosTG.generateTrajectory(TOTAL_TRAVEL_TIME)
 
-        index = raw_input("Go start position? Y/n\n")
+        index = raw_input("Go ready position? Y/n\n")
         if index == "N" or index == "n":
             return False  # quit
 
@@ -396,37 +454,39 @@ class Demo1_ProductDisassembly:
         while not done and not rospy.is_shutdown():
             deltaTime = self.getTimeSeconds() - startTime
 
-            # goalRightHandCartPos = None
-            # goalRightHandOrientation = None
-            goalJPos = None
+            goalRightHandCartPos = None
+            goalRightHandOrientation = None
+            goalLeftHandCartPos = None
+            goalLeftHandOrientation = None
+            # goalJPos = None
 
             if deltaTime >= TOTAL_TRAVEL_TIME:
-                # goalRightHandCartPos = rightHandCartesianTG.getLastPoint()
-                # goalRightHandOrientation = rightHandOrientationTG.getLastPoint()
-                # goalLeftHandCartPos = leftHandCartesianTG.getLastPoint()
-                # goalLeftHandOrientation = leftHandOrientationTG.getLastPoint()
-                goalJPos = jPosTG.getLastPoint()
+                goalRightHandCartPos = rightHandCartesianTG.getLastPoint()
+                goalRightHandOrientation = rightHandOrientationTG.getLastPoint()
+                goalLeftHandCartPos = leftHandCartesianTG.getLastPoint()
+                goalLeftHandOrientation = leftHandOrientationTG.getLastPoint()
+                # goalJPos = jPosTG.getLastPoint()
                 done = True
             else:
-                # goalRightHandCartPos = rightHandCartesianTG.getPoint(deltaTime)
-                # goalRightHandOrientation = rightHandOrientationTG.getPoint(deltaTime)
-                # goalLeftHandCartPos = leftHandCartesianTG.getPoint(deltaTime)
-                # goalLeftHandOrientation = leftHandOrientationTG.getPoint(deltaTime)
-                goalJPos = jPosTG.getPoint(deltaTime)
+                goalRightHandCartPos = rightHandCartesianTG.getPoint(deltaTime)
+                goalRightHandOrientation = rightHandOrientationTG.getPoint(deltaTime)
+                goalLeftHandCartPos = leftHandCartesianTG.getPoint(deltaTime)
+                goalLeftHandOrientation = leftHandOrientationTG.getPoint(deltaTime)
+                # goalJPos = jPosTG.getPoint(deltaTime)
 
             # Save the new goals in ROS messages
-            # self.rightHandCartesianGoalMsg.data = goalRightHandCartPos
-            # self.rightHandOrientationGoalMsg.data = goalRightHandOrientation
-            # self.leftHandCartesianGoalMsg.data = goalLeftHandCartPos
-            # self.leftHandOrientationGoalMsg.data = goalLeftHandOrientation
-            self.postureGoalMsg.data = goalJPos
+            self.rightHandCartesianGoalMsg.data = goalRightHandCartPos
+            self.rightHandOrientationGoalMsg.data = goalRightHandOrientation
+            self.leftHandCartesianGoalMsg.data = goalLeftHandCartPos
+            self.leftHandOrientationGoalMsg.data = goalLeftHandOrientation
+            # self.postureGoalMsg.data = goalJPos
 
             # Publish the ROS messages
-            # self.rightCartesianTaskGoalPublisher.publish(self.rightHandCartesianGoalMsg)
-            # self.rightOrientationTaskGoalPublisher.publish(self.rightHandOrientationGoalMsg)
-            # self.leftCartesianTaskGoalPublisher.publish(self.leftHandCartesianGoalMsg)
-            # self.leftOrientationTaskGoalPublisher.publish(self.leftHandOrientationGoalMsg)
-            self.postureTaskGoalPublisher.publish(self.postureGoalMsg)
+            self.rightCartesianTaskGoalPublisher.publish(self.rightHandCartesianGoalMsg)
+            self.rightOrientationTaskGoalPublisher.publish(self.rightHandOrientationGoalMsg)
+            self.leftCartesianTaskGoalPublisher.publish(self.leftHandCartesianGoalMsg)
+            self.leftOrientationTaskGoalPublisher.publish(self.leftHandOrientationGoalMsg)
+            # self.postureTaskGoalPublisher.publish(self.postureGoalMsg)
 
             if not done:
                 rospy.sleep(0.01) # 100Hz
@@ -564,23 +624,24 @@ class Demo1_ProductDisassembly:
         Runs the demo 1 behavior.
         """
 
-        if not self.doTare():
-            return
+        if not self.connectToControlIt():
+            return;
+
+        # if not self.doTare():
+        #     return
 
         if not self.goToReadyPosition():
             return
 
-        if not self.grabMetalObject():
-            return
+        # if not self.grabMetalObject():
+        #     return
 
-        print "Demo 1 done!"
+        # index = raw_input("Release power grasp? Y/n\n")
+        # if index == "N" or index == "n":
+        #     return
 
-        index = raw_input("Release power grasp? Y/n\n")
-        if index == "N" or index == "n":
-            return
-
-        self.rightHandCmdMsg.data = False  # relax grasp
-        self.rightHandCmdPublisher.publish(self.rightHandCmdMsg)
+        # self.rightHandCmdMsg.data = False  # relax grasp
+        # self.rightHandCmdPublisher.publish(self.rightHandCmdMsg)
 
 # Main method
 if __name__ == "__main__":
@@ -592,4 +653,5 @@ if __name__ == "__main__":
     # t.start()
     demo.run()
 
+    print "Demo 1 done, waiting until ctrl+c is hit..."
     rospy.spin()  # just to prevent this node from exiting
