@@ -12,6 +12,27 @@ import rospy
 
 from std_msgs.msg import Float64MultiArray, MultiArrayDimension
 
+class Snapshot:
+    def __init__(self, rightHandCartesian, leftHandCartesian, rightHandOrientation, leftHandOrientation, posture):
+        self.rightHandCartesian = rightHandCartesian
+        self.leftHandCartesian = leftHandCartesian
+        self.rightHandOrientation = rightHandOrientation
+        self.leftHandOrientation = leftHandOrientation
+        self.posture = posture
+
+    def __str__(self):
+        return "Snapshot:\n"\
+                  "  - right hand Cartesian position: {0}\n"\
+                  "  - right hand orientation: {1}\n"\
+                  "  - left hand Cartesian position: {2}\n"\
+                  "  - left hand orientation: {3}\n"\
+                  "  - posture: {4}".format(self.rightHandCartesian, self.rightHandOrientation,
+                                            self.leftHandCartesian, self.leftHandOrientation, 
+                                            self.posture)
+
+    def __repr__(self):
+        return self.__str__()
+
 class TakeSnapshot:
     def __init__(self):
 
@@ -65,36 +86,69 @@ class TakeSnapshot:
         if rospy.is_shutdown():
             return
 
+        # Wait for robot to be placed into desired position
+        counter = 5
+        while not rospy.is_shutdown() and counter > 0:
+            print "Taking snapshot in {0}...".format(counter)
+            time.sleep(1)
+            counter = counter - 1
+
+        if rospy.is_shutdown():
+            return
+
+        snapShots = []
+
         done = False
-
         while not done:
-
-            # Wait for robot to be placed into desired position
-            counter = 5
-            while not rospy.is_shutdown() and counter > 0:
-                print "Taking snapshot in {0}...".format(counter)
-                time.sleep(1)
-                counter = counter - 1
 
             if rospy.is_shutdown():
                 return
     
             # Take the snapshot
-            print "Snapshot:\n"\
-                  "  - right hand Cartesian position: {0}\n"\
-                  "  - right hand orientation: {1}\n"\
-                  "  - left hand Cartesian position: {2}\n"\
-                  "  - left hand orientation: {3}\n"\
-                  "  - posture: {4}".format(self.currentRightCartesianPos, self.currentRightOrientation,
-                                            self.currentLeftCartesianPos, self.currentLeftOrientation, 
-                                            self.currentPosture)
+            snapShot = Snapshot(self.currentRightCartesianPos, self.currentRightOrientation,
+                                self.currentLeftCartesianPos, self.currentLeftOrientation, 
+                                self.currentPosture)
+            print snapShot
+            snapShots.append(snapShot)
 
-            index = raw_input("Take another snapshot? y/N\n")
+            index = raw_input("Take another snapshot? Y/n\n")
 
-            if index == "y" or index == "Y":
-                done = False
-            else:
+            if index == "N" or index == "n":
                 done = True
+
+            if rospy.is_shutdown():
+                return
+
+        # Print the results
+        result = "Trajectories:"
+        
+        result = result + "\nRightHandPosition:"
+        for snapshot in snapShots:
+            result = result + "\n  " 
+            result = result + "{0}".format(snapshot.rightHandCartesian)
+
+        result = result + "\nRightHandOrientation:"
+        for snapshot in snapShots:
+            result = result + "\n  "
+            result = result + "{0}".format(snapshot.rightHandOrientation)
+
+        result = result + "\nLeftHandPosition:"
+        for snapshot in snapShots:
+            result = result + "\n  "
+            result = result + "{0}".format(snapshot.leftHandCartesian)
+
+        result = result + "\nLeftHandOrientation:"
+        for snapshot in snapShots:
+            result = result + "\n  "
+            result = result + "{0}".format(snapshot.leftHandOrientation)
+
+        result = result + "\nPosture:"
+        for snapshot in snapShots:
+            result = result + "\n  "
+            result = result + "{0}".format(snapshot.posture)
+
+        print result
+
 
 # Main method
 if __name__ == "__main__":
