@@ -434,7 +434,7 @@ class Demo1_ProductDisassembly:
         print "Done going to start position!"
         return True
 
-    def grabMetalObject():
+    def grabMetalObject(self):
         """
         Executes the trajectory that moves the right arm to be around the metal object.
         """
@@ -449,11 +449,115 @@ class Demo1_ProductDisassembly:
         self.rightOrientationTaskEnablePublisher.publish(self.enableMsg)
         self.leftOrientationTaskEnablePublisher.publish(self.enableMsg)
 
+
+        # Wait for the current Cartesian position and orientation measurements to arrive
+        pauseCount = 0
+        printWarning = False
+        while not rospy.is_shutdown() and (self.currentRightCartesianPos == None or \
+            self.currentRightOrientation == None):
+            time.sleep(0.5)
+            pauseCount = pauseCount + 1
+            if pauseCount > 5 and not printWarning:
+                print "Waiting for current Cartesian position and orientation information..."
+                printWarning = True
+
+        # Create the WayPoints
+        rightHandCartesianWP = []
+        rightHandCartesianWP.append(self.currentRightCartesianPos)
+        rightHandCartesianWP.append([0.3371965661920512, -0.33373481333031946, 1.271125553140791])
+        rightHandCartesianWP.append([0.345363813886538, -0.2739238649764148, 1.1818351634211801])
+        rightHandCartesianWP.append([0.357877414527656, -0.19737573441185602, 1.0326008134961595])
+        rightHandCartesianWP.append([0.33951535715598313, -0.12704204972886532, 0.9798785163485518])
+
+        rightHandOrientationWP = []
+        rightHandOrientationWP.append(self.currentRightOrientation)
+        rightHandOrientationWP.append([0.1837842485451516, -0.8509623841363126, 0.4920227339988841])
+        rightHandOrientationWP.append([0.3620755018194659, -0.8936803420864066, 0.265022220107117])
+        rightHandOrientationWP.append([0.3661516729783743, -0.9282533016701555, -0.0654122336691895])
+        rightHandOrientationWP.append([0.38148946344697066, -0.9193971526142214, -0.09578447183027328])
+
+        # leftHandCartesianWP = []
+        # leftHandCartesianWP.append(self.currentLeftCartesianPos)
+        # leftHandCartesianWP.append([0.12134979473280522, 0.19061502601446173, 0.8151659348041115])
+        # leftHandCartesianWP.append([0.12134428914651882, 0.1905501244730116, 0.8150715027143034])
+        # leftHandCartesianWP.append([0.11869376544232381, 0.19209110501596968, 0.8122738024925454])
+        # leftHandCartesianWP.append([0.11863633128320361, 0.1921102161424108, 0.8123647135584903])
+
+        # leftHandOrientationWP = []
+        # leftHandOrientationWP.append(self.currentLeftOrientation)
+        # leftHandOrientationWP.append([0.7828717574412116, -0.5820390901168132, 0.21986884494375528])
+        # leftHandOrientationWP.append([0.7832259766760741, -0.5818424731427554, 0.21912646099212252])
+        # leftHandOrientationWP.append([0.7921354933741186, -0.5831033464573026, 0.18031041979662832])
+        # leftHandOrientationWP.append([0.791827258855825, -0.5834259433022426, 0.18062048835821184])
+
+        # Create the trajectory generators
+        rightHandCartesianTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(rightHandCartesianWP)
+        rightHandOrientationTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(rightHandOrientationWP)
+        # leftHandCartesianTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(leftHandCartesianWP)
+        # leftHandOrientationTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(leftHandOrientationWP)
+
+        TOTAL_TRAVEL_TIME = 10.0 # seconds
+        rightHandCartesianTG.generateTrajectory(TOTAL_TRAVEL_TIME)
+        rightHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
+        # leftHandCartesianTG.generateTrajectory(TOTAL_TRAVEL_TIME)
+        # leftHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
+
         index = raw_input("Position hand around metal object? Y/n\n")
         if index == "N" or index == "n":
             return False  # quit
 
-        
+        # Follow the trajectories
+        startTime = self.getTimeSeconds()
+        done = False
+
+        while not done and not rospy.is_shutdown():
+            deltaTime = self.getTimeSeconds() - startTime
+
+            goalRightHandCartPos = None
+            goalRightHandOrientation = None
+            # goalJPos = None
+
+            if deltaTime >= TOTAL_TRAVEL_TIME:
+                goalRightHandCartPos = rightHandCartesianTG.getLastPoint()
+                goalRightHandOrientation = rightHandOrientationTG.getLastPoint()
+                # goalLeftHandCartPos = leftHandCartesianTG.getLastPoint()
+                # goalLeftHandOrientation = leftHandOrientationTG.getLastPoint()
+                # goalJPos = jPosTG.getLastPoint()
+                done = True
+            else:
+                goalRightHandCartPos = rightHandCartesianTG.getPoint(deltaTime)
+                goalRightHandOrientation = rightHandOrientationTG.getPoint(deltaTime)
+                # goalLeftHandCartPos = leftHandCartesianTG.getPoint(deltaTime)
+                # goalLeftHandOrientation = leftHandOrientationTG.getPoint(deltaTime)
+                # goalJPos = jPosTG.getPoint(deltaTime)
+
+            # Save the new goals in ROS messages
+            self.rightHandCartesianGoalMsg.data = goalRightHandCartPos
+            self.rightHandOrientationGoalMsg.data = goalRightHandOrientation
+            # self.leftHandCartesianGoalMsg.data = goalLeftHandCartPos
+            # self.leftHandOrientationGoalMsg.data = goalLeftHandOrientation
+            # self.postureGoalMsg.data = goalJPos
+
+            # Publish the ROS messages
+            self.rightCartesianTaskGoalPublisher.publish(self.rightHandCartesianGoalMsg)
+            self.rightOrientationTaskGoalPublisher.publish(self.rightHandOrientationGoalMsg)
+            # self.leftCartesianTaskGoalPublisher.publish(self.leftHandCartesianGoalMsg)
+            # self.leftOrientationTaskGoalPublisher.publish(self.leftHandOrientationGoalMsg)
+            self.postureTaskGoalPublisher.publish(self.postureGoalMsg)
+
+            if not done:
+                rospy.sleep(0.01) # 100Hz
+
+        index = raw_input("Perform right hand power grasp? Y/n\n")
+        if index == "N" or index == "n":
+            return False  # quit
+
+        self.rightHandCmdMsg.data = True
+        self.rightHandCmdPublisher.publish(self.rightHandCmdMsg)
+
+
+        print "Done grabbing metal object!"
+        return True
 
     def run(self):
         """
@@ -470,6 +574,13 @@ class Demo1_ProductDisassembly:
             return
 
         print "Demo 1 done!"
+
+        index = raw_input("Release power grasp? Y/n\n")
+        if index == "N" or index == "n":
+            return
+
+        self.rightHandCmdMsg.data = False  # relax grasp
+        self.rightHandCmdPublisher.publish(self.rightHandCmdMsg)
 
 # Main method
 if __name__ == "__main__":
