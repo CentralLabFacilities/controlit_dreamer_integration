@@ -122,7 +122,7 @@ tasks:
         value: [1.0, 0.0, 0.0]
       - name: goalVector           # in frameName's frame
         type: vector
-        value: [0.0, 0.0, 1.0]
+        value: [1.0, 0.0, 0.0]
       - name: markerTopic
         type: string
         value: "RightHandOrientation/visualization_marker_array"
@@ -156,7 +156,7 @@ tasks:
         value: [1.0, 0.0, 0.0]
       - name: goalVector           # in frameName's frame
         type: vector
-        value: [0.0, 0.0, 1.0]
+        value: [1.0, 0.0, 0.0]
       - name: markerTopic
         type: string
         value: "LeftHandOrientation/visualization_marker_array"
