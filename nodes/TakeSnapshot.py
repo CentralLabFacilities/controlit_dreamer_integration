@@ -154,6 +154,25 @@ class TakeSnapshot:
             result = result + "\n  " 
             result = result + "{0}".format(snapshot.rightHandCartesian)
 
+        result = result + "\n\nRightHandOrientation:"
+        for snapshot in snapShots[::-1]:
+            result = result + "\n  " 
+            result = result + "{0}".format(snapshot.rightHandOrientation)
+
+        result = result + "\n\nLeftHandPosition:"
+        for snapshot in snapShots[::-1]:
+            result = result + "\n  " 
+            result = result + "{0}".format(snapshot.leftHandCartesian)
+
+        result = result + "\n\nnLeftHandOrientation:"
+        for snapshot in snapShots[::-1]:
+            result = result + "\n  " 
+            result = result + "{0}".format(snapshot.leftHandOrientation)
+
+        result = result + "\nPosture:"
+        for snapshot in snapShots[::-1]:
+            result = result + "\n  "
+            result = result + "{0}".format(snapshot.posture)
 
         print result
 
