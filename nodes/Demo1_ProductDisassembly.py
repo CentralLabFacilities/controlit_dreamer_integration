@@ -255,11 +255,8 @@ class Demo1_ProductDisassembly:
                 print "Waiting for connection to ControlIt!..."
                 warningPrinted = True
 
-        if rospy.is_shutdown():
-            return False
-
         print "Done connecting to ControlIt!"
-        return True
+        return not rospy.is_shutdown()
 
     def issueTareCommands(self):
         print "Issuing tare commands..."
@@ -335,7 +332,7 @@ class Demo1_ProductDisassembly:
             else:
                 done = True
 
-        return True
+        return not rospy.is_shutdown()
 
     def goToReadyPosition(self):
 
@@ -557,7 +554,7 @@ class Demo1_ProductDisassembly:
                 rospy.sleep(0.01) # 100Hz
 
         # print "Done going to ready position!"
-        return True
+        return not rospy.is_shutdown()
 
     def grabMetalObject(self):
         """
@@ -704,7 +701,7 @@ class Demo1_ProductDisassembly:
             self.rightHandCmdPublisher.publish(self.rightHandCmdMsg)
 
         # print "Done grabbing metal object!"
-        return True
+        return not rospy.is_shutdown()
 
     def grabRubberObject(self):
         """
@@ -800,7 +797,7 @@ class Demo1_ProductDisassembly:
             self.leftGripperCmdPublisher.publish(self.leftGripperCmdMsg)
 
         print "Done grabbing rubber object!"
-        return True
+        return not rospy.is_shutdown()
 
     def goToIdlePosition(self):
 
@@ -1043,10 +1040,16 @@ class Demo1_ProductDisassembly:
             self.rightHandCmdMsg.data = False  # relax grasp
             self.rightHandCmdPublisher.publish(self.rightHandCmdMsg)
 
+        if rospy.is_shutdown():
+            return False
+
         index = raw_input("Release left gripper power grasp? Y/n\n")
         if not (index == "N" or index == "n"):
             self.leftGripperCmdMsg.data = False  # relax grasp
             self.leftGripperCmdPublisher.publish(self.leftGripperCmdMsg)
+
+        if rospy.is_shutdown():
+            return False
 
         if not self.goToIdlePosition():
             return
