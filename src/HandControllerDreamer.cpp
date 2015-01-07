@@ -14,12 +14,13 @@ namespace dreamer {
 // #define MAX_STEP_SIZE 0.1 // 5.7 degrees
 #define MAX_STEP_SIZE 0.05 // 2.35 degrees
 
-#define POWER_GRASP_ENABLED_KP 2.25
+#define POWER_GRASP_ENABLED_KP 3.0
 #define POWER_GRASP_DISABLED_KP 3.0
 
 HandControllerDreamer::HandControllerDreamer() :
     powerGraspRight(false),
-    powerGraspLeft(false)
+    powerGraspLeft(false),
+    closingRightFingers(false)
 {
 }
 
@@ -70,12 +71,17 @@ void HandControllerDreamer::getCommand(Vector & command)
 
     if (powerGraspRight)
     {
-        kp[0] = POWER_GRASP_ENABLED_KP;
+        if (!closingRightFingers)
+            kp[0] = POWER_GRASP_ENABLED_KP;
+        else
+            kp[0] = 1; //POWER_GRASP_DISABLED_KP;
         goalPosition[0] = 0; // right_thumb_cmc 90 degrees from palm
         
         // wait until right_thumb_cmc is at the zero position before curling the fingers
         if (std::abs(currPosition[0]) < 0.17)  // 0.17 radians is 10 degrees
         {
+            closingRightFingers = true;
+            kp[0] = 1; //POWER_GRASP_DISABLED_KP;
             command[4] = command[3] = command[2] = command[1] = 0.3;  // right_thumb_mcp, right_pointer_finger_mcp, right_pointer_finger_mcp, right_pinky_mcp
         }
         else
@@ -85,6 +91,7 @@ void HandControllerDreamer::getCommand(Vector & command)
     }
     else
     {
+        closingRightFingers = false;
         command[4] = command[3] = command[2] = command[1] = -0.1;  // right_thumb_mcp, right_pointer_finger_mcp, right_pointer_finger_mcp, right_pinky_mcp
         
         // wait until all fingers are relaxed before moving the right_thumb_cmc
