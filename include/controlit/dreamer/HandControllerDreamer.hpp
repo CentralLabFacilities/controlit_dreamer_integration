@@ -87,6 +87,7 @@ private:
 
     bool powerGraspRight;
     bool powerGraspLeft;
+    bool closingRightFingers;
 
     Vector currPosition;
 
