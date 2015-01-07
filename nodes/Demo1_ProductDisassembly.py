@@ -914,10 +914,10 @@ class Demo1_ProductDisassembly:
 
         index = raw_input("Perform right hand power grasp? Y/n\n")
         if index == "N" or index == "n":
-            return False  # quit
-
-        self.rightHandCmdMsg.data = True
-        self.rightHandCmdPublisher.publish(self.rightHandCmdMsg)
+            return True
+        else:
+            self.rightHandCmdMsg.data = True
+            self.rightHandCmdPublisher.publish(self.rightHandCmdMsg)
 
         print "Done grabbing metal object!"
         return True
@@ -939,13 +939,10 @@ class Demo1_ProductDisassembly:
         if not self.grabMetalObject():
             return
 
-        # index = raw_input("Release power grasp? Y/n\n")
-        # if index == "N" or index == "n":
-        #     return
-
-        # self.rightHandCmdMsg.data = False  # relax grasp
-        # self.rightHandCmdPublisher.publish(self.rightHandCmdMsg)
-
+        index = raw_input("Release power grasp? Y/n\n")
+        if not (index == "N" or index == "n"):
+            self.rightHandCmdMsg.data = False  # relax grasp
+            self.rightHandCmdPublisher.publish(self.rightHandCmdMsg)
 
         if not self.goToIdlePosition():
             return
