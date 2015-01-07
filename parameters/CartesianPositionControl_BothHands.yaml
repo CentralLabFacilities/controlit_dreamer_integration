@@ -774,16 +774,16 @@ compound_task:
      #   enabled: 1
      - name: RightHandPosition
        priority: 0
-       enabled: 1
+       enabled: 0
      - name: LeftHandPosition
        priority: 0
-       enabled: 1
+       enabled: 0
      - name: RightHandOrientation
        priority: 0
-       enabled: 1
+       enabled: 0
      - name: LeftHandOrientation
        priority: 0
-       enabled: 1
+       enabled: 0
      - name: JPosTask
        priority: 1
        enabled: 1
