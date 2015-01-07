@@ -335,7 +335,7 @@ bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool 
     latestRobotState.setJointPosition(5, DEG_TO_RAD(shm_status.left_arm.theta[3]));
     latestRobotState.setJointPosition(6, DEG_TO_RAD(shm_status.left_arm.theta[4]));
     latestRobotState.setJointPosition(7, DEG_TO_RAD(shm_status.left_arm.theta[5]));
-    latestRobotState.setJointPosition(8, DEG_TO_RAD(shm_status.left_arm.theta[6]));
+    latestRobotState.setJointPosition(8, -1 * DEG_TO_RAD(shm_status.left_arm.theta[6]));
     latestRobotState.setJointPosition(9, DEG_TO_RAD(shm_status.right_arm.theta[0]));
     latestRobotState.setJointPosition(10, DEG_TO_RAD(shm_status.right_arm.theta[1]));
     latestRobotState.setJointPosition(11, DEG_TO_RAD(shm_status.right_arm.theta[2]));
@@ -383,7 +383,7 @@ bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool 
     latestRobotState.setJointVelocity(5, DEG_TO_RAD(shm_status.left_arm.thetadot[3]));
     latestRobotState.setJointVelocity(6, DEG_TO_RAD(shm_status.left_arm.thetadot[4]));
     latestRobotState.setJointVelocity(7, DEG_TO_RAD(shm_status.left_arm.thetadot[5]));
-    latestRobotState.setJointVelocity(8, DEG_TO_RAD(shm_status.left_arm.thetadot[6]));
+    latestRobotState.setJointVelocity(8, -1 * DEG_TO_RAD(shm_status.left_arm.thetadot[6]));
     latestRobotState.setJointVelocity(9, DEG_TO_RAD(shm_status.right_arm.thetadot[0]));
     latestRobotState.setJointVelocity(10, DEG_TO_RAD(shm_status.right_arm.thetadot[1]));
     latestRobotState.setJointVelocity(11, DEG_TO_RAD(shm_status.right_arm.thetadot[2]));
@@ -431,7 +431,7 @@ bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool 
     latestRobotState.setJointEffort(5, 1.0e-3 * shm_status.left_arm.torque[3]);
     latestRobotState.setJointEffort(6, 1.0e-3 * shm_status.left_arm.torque[4]);
     latestRobotState.setJointEffort(7, 1.0e-3 * shm_status.left_arm.torque[5]);
-    latestRobotState.setJointEffort(8, 1.0e-3 * shm_status.left_arm.torque[6]);
+    latestRobotState.setJointEffort(8, -1.0e-3 * shm_status.left_arm.torque[6]);
     latestRobotState.setJointEffort(9, 1.0e-3 * shm_status.right_arm.torque[0]);
     latestRobotState.setJointEffort(10, 1.0e-3 * shm_status.right_arm.torque[1]);
     latestRobotState.setJointEffort(11, 1.0e-3 * shm_status.right_arm.torque[2]);
@@ -523,7 +523,7 @@ bool RobotInterfaceDreamer::write(const controlit::Command & command)
     shm_cmd.left_arm.tq_desired[3]  = 1e3 * cmd[4];
     shm_cmd.left_arm.tq_desired[4]  = 1e3 * cmd[5];
     shm_cmd.left_arm.tq_desired[5]  = 1e3 * cmd[6];
-    shm_cmd.left_arm.tq_desired[6]  = 1e3 * cmd[7];
+    shm_cmd.left_arm.tq_desired[6]  = -1e3 * cmd[7];
     shm_cmd.right_arm.tq_desired[0] = 1e3 * cmd[8];
     shm_cmd.right_arm.tq_desired[1] = 1e3 * cmd[9];
     shm_cmd.right_arm.tq_desired[2] = 1e3 * cmd[10];
