@@ -49,7 +49,7 @@ bool HandControllerDreamer::init(ros::NodeHandle & nh)
     includeRightMiddleFingerSubscriber = nh.subscribe("controlit/rightHand/includeRightMiddleFinger", 1, 
         & HandControllerDreamer::includeRightMiddleFingerCallback, this);
 
-    includeRightPointerFingerSubscriber = nh.subscribe("controlit/rightHand/includePointerPinkyFinger", 1, 
+    includeRightPointerFingerSubscriber = nh.subscribe("controlit/rightHand/includeRightIndexFinger", 1, 
         & HandControllerDreamer::includeRightPointerFingerCallback, this);
 
     leftGripperPowerGraspSubscriber = nh.subscribe("controlit/leftGripper/powerGrasp", 1,
