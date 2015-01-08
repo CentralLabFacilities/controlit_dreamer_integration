@@ -19,6 +19,8 @@ from mpl_toolkits.mplot3d import Axes3D
 
 import TrajectoryGeneratorCubicSpline
 
+ENABLE_USER_PROMPTS = False
+
 NUM_CARTESIAN_DOFS = 3 # Cartesian goal is x, y, z
 NUM_ORIENTATION_DOFS = 3 # Orientation is defined using a x, y, z vector
 NUM_ROBOT_DOFS = 16
@@ -516,9 +518,10 @@ class Demo1_ProductDisassembly:
         # leftHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
         jPosTG.generateTrajectory(TOTAL_TRAVEL_TIME)
 
-        index = raw_input("Go ready position? Y/n\n")
-        if index == "N" or index == "n":
-            return False  # quit
+        if ENABLE_USER_PROMPTS:
+            index = raw_input("Go ready position? Y/n\n")
+            if index == "N" or index == "n":
+                return False  # quit
 
         # Follow the trajectories
         startTime = self.getTimeSeconds()
@@ -657,9 +660,10 @@ class Demo1_ProductDisassembly:
         # leftHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
         jPosTG.generateTrajectory(TOTAL_TRAVEL_TIME)
 
-        index = raw_input("Position right hand around metal object? Y/n\n")
-        if index == "N" or index == "n":
-            return False  # quit
+        if ENABLE_USER_PROMPTS:
+            index = raw_input("Position right hand around metal object? Y/n\n")
+            if index == "N" or index == "n":
+                return False  # quit
 
         # Follow the trajectories
         startTime = self.getTimeSeconds()
@@ -703,10 +707,14 @@ class Demo1_ProductDisassembly:
             if not done:
                 rospy.sleep(0.01) # 100Hz
 
-        index = raw_input("Perform right hand power grasp? Y/n\n")
-        if index == "N" or index == "n":
-            return True
-        else:
+
+        doPowerGrasp = True
+        if ENABLE_USER_PROMPTS:
+            index = raw_input("Perform right hand power grasp? Y/n\n")
+            if index == "N" or index == "n":
+                doPowerGrasp = False
+        
+        if doPowerGrasp:
             # Exclude index finger from power grasp
             self.rightIndexFingerCmdMsg.data = False
             self.selectIndexFingerPublisher.publish(self.rightHandCmdMsg)
@@ -760,9 +768,10 @@ class Demo1_ProductDisassembly:
         # leftHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
         jPosTG.generateTrajectory(TOTAL_TRAVEL_TIME)
 
-        index = raw_input("Position left hand around rubber object? Y/n\n")
-        if index == "N" or index == "n":
-            return False  # quit
+        if ENABLE_USER_PROMPTS:
+            index = raw_input("Position left hand around rubber object? Y/n\n")
+            if index == "N" or index == "n":
+                return False  # quit
 
         # Follow the trajectories
         startTime = self.getTimeSeconds()
@@ -806,10 +815,13 @@ class Demo1_ProductDisassembly:
             if not done:
                 rospy.sleep(0.01) # 100Hz
 
-        index = raw_input("Perform left gripper power grasp? Y/n\n")
-        if index == "N" or index == "n":
-            return True
-        else:
+        performGrasp = True
+        if ENABLE_USER_PROMPTS:
+            index = raw_input("Perform left gripper power grasp? Y/n\n")
+            if index == "N" or index == "n":
+                performGrasp = False
+        
+        if performGrasp:
             self.leftGripperCmdMsg.data = True
             self.leftGripperCmdPublisher.publish(self.leftGripperCmdMsg)
 
@@ -856,9 +868,10 @@ class Demo1_ProductDisassembly:
         # leftHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
         jPosTG.generateTrajectory(TOTAL_TRAVEL_TIME)
 
-        index = raw_input("Lift rubber object? Y/n\n")
-        if index == "N" or index == "n":
-            return False  # quit
+        if ENABLE_USER_PROMPTS:
+            index = raw_input("Lift rubber object? Y/n\n")
+            if index == "N" or index == "n":
+                return False  # quit
 
         # Follow the trajectories
         startTime = self.getTimeSeconds()
@@ -902,13 +915,23 @@ class Demo1_ProductDisassembly:
             if not done:
                 rospy.sleep(0.01) # 100Hz
 
-        index = raw_input("Release left gripper power grasp? Y/n\n")
-        if not (index == "N" or index == "n"):
+        releaseGripper = True
+        if ENABLE_USER_PROMPTS:
+            index = raw_input("Release left gripper power grasp? Y/n\n")
+            if index == "N" or index == "n":
+                releaseGripper = False
+
+        if releaseGripper:
             self.leftGripperCmdMsg.data = False  # relax grasp
             self.leftGripperCmdPublisher.publish(self.leftGripperCmdMsg)
 
-        index = raw_input("Add right index finger to power grasp? Y/n\n")
-        if not (index == "N" or index == "n"):
+        addRightIndexFinger = True
+        if ENABLE_USER_PROMPTS:
+            index = raw_input("Add right index finger to power grasp? Y/n\n")
+            if not (index == "N" or index == "n"):
+                addRightIndexFinger = False
+
+        if addRightIndexFinger:
             self.rightIndexFingerCmdMsg.data = True
             self.selectIndexFingerPublisher.publish(self.rightHandCmdMsg)
 
@@ -958,9 +981,10 @@ class Demo1_ProductDisassembly:
         # leftHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
         jPosTG.generateTrajectory(TOTAL_TRAVEL_TIME)
 
-        index = raw_input("Lift left arm out of box? Y/n\n")
-        if index == "N" or index == "n":
-            return False  # quit
+        if ENABLE_USER_PROMPTS:
+            index = raw_input("Lift left arm out of box? Y/n\n")
+            if index == "N" or index == "n":
+                return False  # quit
 
         # Follow the trajectories
         startTime = self.getTimeSeconds()
@@ -1050,9 +1074,10 @@ class Demo1_ProductDisassembly:
         # leftHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
         jPosTG.generateTrajectory(TOTAL_TRAVEL_TIME)
 
-        index = raw_input("Lift metal tube and place it in the box? Y/n\n")
-        if index == "N" or index == "n":
-            return False  # quit
+        if ENABLE_USER_PROMPTS:
+            index = raw_input("Lift metal tube and place it in the box? Y/n\n")
+            if index == "N" or index == "n":
+                return False  # quit
 
         # Follow the trajectories
         startTime = self.getTimeSeconds()
@@ -1096,8 +1121,14 @@ class Demo1_ProductDisassembly:
             if not done:
                 rospy.sleep(0.01) # 100Hz
 
-        index = raw_input("Release right hand power grasp? Y/n\n")
-        if not (index == "N" or index == "n"):
+        releasePowerGrasp = True
+
+        if ENABLE_USER_PROMPTS:
+            index = raw_input("Release right hand power grasp? Y/n\n")
+            if index == "N" or index == "n":
+                releasePowerGrasp = False
+
+        if releasePowerGrasp:
             self.rightHandCmdMsg.data = False  # relax grasp
             self.rightHandCmdPublisher.publish(self.rightHandCmdMsg)
 
@@ -1143,9 +1174,10 @@ class Demo1_ProductDisassembly:
         # leftHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
         jPosTG.generateTrajectory(TOTAL_TRAVEL_TIME)
 
-        index = raw_input("Remove right hand from box? Y/n\n")
-        if index == "N" or index == "n":
-            return False  # quit
+        if ENABLE_USER_PROMPTS:
+            index = raw_input("Remove right hand from box? Y/n\n")
+            if index == "N" or index == "n":
+                return False  # quit
 
         # Follow the trajectories
         startTime = self.getTimeSeconds()
@@ -1357,9 +1389,10 @@ class Demo1_ProductDisassembly:
         # leftHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
         jPosTG.generateTrajectory(TOTAL_TRAVEL_TIME)
 
-        index = raw_input("Go idle position? Y/n\n")
-        if index == "N" or index == "n":
-            return False  # quit
+        if ENABLE_USER_PROMPTS:
+            index = raw_input("Go idle position? Y/n\n")
+            if index == "N" or index == "n":
+                return False  # quit
 
         # Follow the trajectories
         startTime = self.getTimeSeconds()
