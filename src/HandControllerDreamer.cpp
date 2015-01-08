@@ -23,7 +23,10 @@ HandControllerDreamer::HandControllerDreamer() :
     closingRightFingers(false),
     includeRightPointerFinger(true),
     includeRightMiddleFinger(true),
-    includeRightPinkyFinger(true)
+    includeRightPinkyFinger(true),
+    thumbKp(POWER_GRASP_DISABLED_KP),
+    thumbKd(0),
+    thumbGoalPos(0)
 {
 }
 
@@ -35,12 +38,6 @@ bool HandControllerDreamer::init(ros::NodeHandle & nh)
 {
     currPosition.setZero(NUM_COMMAND_DOFS);
     currVelocity.setZero(NUM_COMMAND_DOFS);
-    goalPosition.setZero(NUM_COMMAND_DOFS);
-    kp.setOnes(NUM_TORQUE_CONTROLLED_JOINTS);
-    kd.setZero(NUM_TORQUE_CONTROLLED_JOINTS);
-
-    // Set the Kp for the right_thumb_cmc joint
-    kp[0] = POWER_GRASP_DISABLED_KP;
 
     // CONTROLIT_INFO << "Subscribing to power grasp topic...";
     rightHandPowerGraspSubscriber = nh.subscribe("controlit/rightHand/powerGrasp", 1, 
@@ -70,23 +67,21 @@ void HandControllerDreamer::updateState(Vector position, Vector velocity)
 
 void HandControllerDreamer::getCommand(Vector & command)
 {
-    // assert(command.size() == NUM_COMMAND_DOFS);
-
     command.setZero(6); // for debugging, reset everything to zero 
 
     if (powerGraspRight)
     {
         if (!closingRightFingers)
-            kp[0] = POWER_GRASP_ENABLED_KP;
+            thumbKp = POWER_GRASP_ENABLED_KP;
         else
-            kp[0] = 1; //POWER_GRASP_DISABLED_KP;
-        goalPosition[0] = 0; // right_thumb_cmc 90 degrees from palm
+            thumbKp = 1; //POWER_GRASP_DISABLED_KP;
+        thumbGoalPos = 0; // right_thumb_cmc 90 degrees from palm
         
         // wait until right_thumb_cmc is at the zero position before curling the fingers
         if (std::abs(currPosition[0]) < 0.2)  // 0.2 radians is 11.46 degrees
         {
             closingRightFingers = true;
-            kp[0] = 1; //POWER_GRASP_DISABLED_KP;
+            thumbKp = 1; //POWER_GRASP_DISABLED_KP;
 
             command[1] = 0.3; // close right_thumb_mcp
             command[2] = (includeRightPointerFinger ? 0.3 : -0.1); // right_pointer_finger
@@ -106,8 +101,8 @@ void HandControllerDreamer::getCommand(Vector & command)
         // wait until all fingers are relaxed before moving the right_thumb_cmc
         if (std::abs(currPosition[1]) < 0.02)
         {
-            kp[0] = POWER_GRASP_DISABLED_KP;
-            goalPosition[0] = 1.57;  // right_thumb_cmc 180 degrees from palm
+            thumbKp = POWER_GRASP_DISABLED_KP;
+            thumbGoalPos = 1.57;  // right_thumb_cmc 180 degrees from palm
         }
         else
         {
@@ -117,21 +112,21 @@ void HandControllerDreamer::getCommand(Vector & command)
     }
        
     // Do position control of right_thumb_cmc
-    double currGoal = goalPosition[0];
+    double currGoal = thumbGoalPos;
 
-    if (goalPosition[0] > currPosition[0])
+    if (thumbGoalPos > currPosition[0])
     {
-        if (goalPosition[0] - currPosition[0] > MAX_STEP_SIZE)
+        if (thumbGoalPos - currPosition[0] > MAX_STEP_SIZE)
             currGoal = currPosition[0] + MAX_STEP_SIZE;   
     }
     else
     {
-        if (currPosition[0] - goalPosition[0] > MAX_STEP_SIZE)
+        if (currPosition[0] - thumbGoalPos > MAX_STEP_SIZE)
             currGoal = currPosition[0] - MAX_STEP_SIZE;
     }
 
     // The PD control law for right_thumb_cmc
-    command[0] = kp[0] * (currGoal - currPosition[0]) - kd[0] * currVelocity[0];
+    command[0] = thumbKp * (currGoal - currPosition[0]) - thumbKd * currVelocity[0];
 
     // Issue command to left gripper
     command[5] = powerGraspLeft ? 2 : -0.5;

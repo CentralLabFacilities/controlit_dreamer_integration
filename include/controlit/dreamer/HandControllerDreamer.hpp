@@ -88,19 +88,21 @@ private:
     bool includeRightMiddleFinger;  // whether to include the right middle finger in the power grasp
     bool includeRightPinkyFinger;   // whether to include the right pinky finger in the power grasp
 
+    // Current state information
     Vector currPosition;
-
     Vector currVelocity;
 
-    Vector kp;
+    // Controller parameters
+    double thumbKp;
+    double thumbKd;
+    double thumbGoalPos;
 
-    Vector kd;
-
-    Vector goalPosition;
-
+    // ROS Subscribers
     ros::Subscriber rightHandPowerGraspSubscriber;
-
     ros::Subscriber leftGripperPowerGraspSubscriber;
+    ros::Subscriber includeRightPinkyFingerSubscriber;
+    ros::Subscriber includeRightMiddleFingerSubscriber;
+    ros::Subscriber includeRightPointerFingerSubscriber;
 };
 
 } // namespace dreamer
