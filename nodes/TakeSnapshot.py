@@ -76,13 +76,9 @@ class TakeSnapshot:
         Runs the snapshot
         """
 
-        # Wait for connection to ControlIt!
         pauseCount = 0
-        printWarning = False
+        warningPrinted = False
         while not rospy.is_shutdown() and (
-            self.currentPosture == None or \
-            self.currentRightCartesianPos == None or self.currentLeftCartesianPos == None or \
-            self.currentRightOrientation == None or self.currentLeftOrientation == None or \
             self.rightCartesianTaskEnablePublisher.get_num_connections() == 0 or \
             self.leftCartesianTaskEnablePublisher.get_num_connections() == 0 or \
             self.rightOrientationTaskEnablePublisher.get_num_connections() == 0 or \
@@ -90,9 +86,9 @@ class TakeSnapshot:
 
             time.sleep(0.5)
             pauseCount = pauseCount + 1
-            if pauseCount > 5 and not printWarning:
+            if pauseCount > 5 and not warningPrinted:
                 print "Waiting for connection to ControlIt!..."
-                printWarning = True
+                warningPrinted = True
 
         if rospy.is_shutdown():
             return
@@ -104,6 +100,36 @@ class TakeSnapshot:
         self.leftCartesianTaskEnablePublisher.publish(enableMsg)
         self.rightOrientationTaskEnablePublisher.publish(enableMsg)
         self.leftOrientationTaskEnablePublisher.publish(enableMsg)
+
+
+        # Wait for connection to ControlIt!
+        pauseCount = 0
+        warningPrinted = False
+        while not rospy.is_shutdown() and (
+            self.currentPosture == None or \
+            self.currentRightCartesianPos == None or self.currentLeftCartesianPos == None or \
+            self.currentRightOrientation == None or self.currentLeftOrientation == None):
+
+            if warningPrinted:
+                if self.currentRightCartesianPos == None:
+                    print "Still waiting on right hand position state..."
+                if self.currentRightOrientation == None:
+                    print "Still waiting on right hand orientation state..."
+                if self.currentLeftCartesianPos == None:
+                    print "Still waiting on left hand posirition state..."
+                if self.currentLeftOrientation == None:
+                    print "Still waiting on left hand orientation state..."
+                if self.currentPosture == None:
+                    print "Still waiting on posture state..."
+
+            time.sleep(0.5)
+            pauseCount = pauseCount + 1
+            if pauseCount > 5 and not warningPrinted:
+                print "Waiting for data from ControlIt!..."
+                warningPrinted = True
+
+        if rospy.is_shutdown():
+            return
 
         # Wait for robot to be placed into desired position
         counter = 5
