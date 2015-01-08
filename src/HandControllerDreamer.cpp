@@ -14,13 +14,16 @@ namespace dreamer {
 // #define MAX_STEP_SIZE 0.1 // 5.7 degrees
 #define MAX_STEP_SIZE 0.05 // 2.35 degrees
 
-#define POWER_GRASP_ENABLED_KP 3.0
+#define POWER_GRASP_ENABLED_KP 3.5
 #define POWER_GRASP_DISABLED_KP 3.0
 
 HandControllerDreamer::HandControllerDreamer() :
     powerGraspRight(false),
     powerGraspLeft(false),
-    closingRightFingers(false)
+    closingRightFingers(false),
+    includeRightPointerFinger(true),
+    includeRightMiddleFinger(true),
+    includeRightPinkyFinger(true)
 {
 }
 
@@ -38,17 +41,19 @@ bool HandControllerDreamer::init(ros::NodeHandle & nh)
 
     // Set the Kp for the right_thumb_cmc joint
     kp[0] = POWER_GRASP_DISABLED_KP;
-     
-     // Subscribe to hand goal messages
-    // nh.subscribe("controlit/rightHand/goalPosition", 1, 
-    //     & HandControllerDreamer::rightHandGoalPosCallback, this);
-
-    // nh.subscribe("controlit/leftHand/goalPosition", 1, 
-    //     & HandControllerDreamer::leftHandGoalPosCallback, this);
 
     // CONTROLIT_INFO << "Subscribing to power grasp topic...";
     rightHandPowerGraspSubscriber = nh.subscribe("controlit/rightHand/powerGrasp", 1, 
         & HandControllerDreamer::rightHandCallback, this);
+
+    includeRightPinkyFingerSubscriber = nh.subscribe("controlit/rightHand/includeRightPinkyFinger", 1, 
+        & HandControllerDreamer::includeRightPinkyFingerCallback, this);
+
+    includeRightMiddleFingerSubscriber = nh.subscribe("controlit/rightHand/includeRightMiddleFinger", 1, 
+        & HandControllerDreamer::includeRightMiddleFingerCallback, this);
+
+    includeRightPointerFingerSubscriber = nh.subscribe("controlit/rightHand/includePointerPinkyFinger", 1, 
+        & HandControllerDreamer::includeRightPointerFingerCallback, this);
 
     leftGripperPowerGraspSubscriber = nh.subscribe("controlit/leftGripper/powerGrasp", 1,
         & HandControllerDreamer::leftGripperCallback, this);
@@ -78,11 +83,15 @@ void HandControllerDreamer::getCommand(Vector & command)
         goalPosition[0] = 0; // right_thumb_cmc 90 degrees from palm
         
         // wait until right_thumb_cmc is at the zero position before curling the fingers
-        if (std::abs(currPosition[0]) < 0.17)  // 0.17 radians is 10 degrees
+        if (std::abs(currPosition[0]) < 0.2)  // 0.2 radians is 11.46 degrees
         {
             closingRightFingers = true;
             kp[0] = 1; //POWER_GRASP_DISABLED_KP;
-            command[4] = command[3] = command[2] = command[1] = 0.3;  // right_thumb_mcp, right_pointer_finger_mcp, right_pointer_finger_mcp, right_pinky_mcp
+
+            command[1] = 0.3; // close right_thumb_mcp
+            command[2] = (includeRightPointerFinger ? 0.3 : -0.1); // right_pointer_finger
+            command[3] = (includeRightMiddleFinger ? 0.3 : -0.1);  // right_middle_finger
+            command[4] = (includeRightPinkyFinger ? 0.3 : -0.1);   // right_pinky_finger
         }
         else
         {
@@ -106,16 +115,6 @@ void HandControllerDreamer::getCommand(Vector & command)
             //               << "  - right_thumb_mcp: " << std::abs(currPosition[1]);
         }
     }
-    
-    // Index 0 contains the right thumb position command.
-    // command[RIGHT_THUMB_CMC_INDEX] = goalPosition[RIGHT_THUMB_CMC_INDEX];
-
-    // Indices 1-4 contain the finger torque commands.
-    // Index 5 contains the gripper torque command.
-
-    // for (size_t ii = 0; ii < NUM_COMMAND_DOFS; ii++) 
-    // {
-       // create a linear trajectory
        
     // Do position control of right_thumb_cmc
     double currGoal = goalPosition[0];
@@ -131,7 +130,7 @@ void HandControllerDreamer::getCommand(Vector & command)
             currGoal = currPosition[0] - MAX_STEP_SIZE;
     }
 
-    // compute the PD control law for right_thumb_cmc
+    // The PD control law for right_thumb_cmc
     command[0] = kp[0] * (currGoal - currPosition[0]) - kd[0] * currVelocity[0];
 
     // Issue command to left gripper
@@ -147,28 +146,23 @@ void HandControllerDreamer::rightHandCallback(const boost::shared_ptr<std_msgs::
 void HandControllerDreamer::leftGripperCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr)
 {
     powerGraspLeft = msgPtr->data;
-    CONTROLIT_INFO << "Left gripper power grasp: " << (powerGraspLeft ? "TRUE" : "FALSE");
+    // CONTROLIT_INFO << "Left gripper power grasp: " << (powerGraspLeft ? "TRUE" : "FALSE");
 }
 
-// void HandControllerDreamer::rightHandGoalPosCallback(const boost::shared_ptr<std_msgs::Float64MultiArray const> & msgPtr)
-// {
-//     if (msgPtr->layout.dim[0].size != NUM_RIGHT_HAND_DOFS)
-//     {
-//         CONTROLIT_ERROR << "Invalid right hand goal position message. Contained " << msgPtr->layout.dim[0].size << " values, expected " << NUM_RIGHT_HAND_DOFS;
-//     }
-//     else
-//     {
-//         for (int ii = 0; ii < NUM_RIGHT_HAND_DOFS; ii++)
-//         {
-//             goalPosition[ii] = msgPtr->data[ii];
-//         }
-//     }
-// }
+void HandControllerDreamer::includeRightPinkyFingerSubscriber(const boost::shared_ptr<std_msgs::Bool const> & msgPtr)
+{
+    includeRightPinkyFinger = msgPtr->data;
+}
 
-// void HandControllerDreamer::leftHandGoalPosCallback(const boost::shared_ptr<std_msgs::Float64 const> & msgPtr)
-// {
-//     goalPosition[LEFT_GRIPPER_JOINT_INDEX] = msgPtr->data;
-// }
+void HandControllerDreamer::includeRightMiddleFingerSubscriber(const boost::shared_ptr<std_msgs::Bool const> & msgPtr)
+{
+    includeRightMiddleFinger = msgPtr->data;
+}
+
+void HandControllerDreamer::includeRightPointerFingerSubscriber(const boost::shared_ptr<std_msgs::Bool const> & msgPtr)
+{
+    includeRightPointerFinger = msgPtr->data;
+}
 
 } // namespace dreamer
 } // namespace controlit

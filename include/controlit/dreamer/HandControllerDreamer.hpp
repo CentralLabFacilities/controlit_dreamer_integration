@@ -2,8 +2,6 @@
 #define __CONTROLIT_DREAMER_INTEGRATION_HAND_CONTROLLER_DREAMER_HPP__
 
 #include <ros/ros.h>
-// #include <std_msgs/Float64.h>
-// #include <std_msgs/Float64MultiArray.h>
 #include <std_msgs/Bool.h>
 #include <controlit/addons/eigen/LinearAlgebra.hpp>
 
@@ -15,7 +13,8 @@ namespace controlit {
 namespace dreamer {
 
 /*!
- * Supplies odometry information based on shared memory.
+ * Implements controllers for both end effectors on Dreamer. This consists of a
+ * right hand and a left gripper.
  */
 class HandControllerDreamer
 {
@@ -76,18 +75,18 @@ private:
     void leftGripperCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr);
 
     /*!
-     * The callback method for updating the right hand goal joint positions.
+     * Callback methods for including individual fingers in the power grasp.
      */
-    // void rightHandGoalPosCallback(const boost::shared_ptr<std_msgs::Float64MultiArray const> & msgPtr);
-
-    /*!
-     * The callback method for updating the left hand goal joint positions.
-     */
-    // void leftHandGoalPosCallback(const boost::shared_ptr<std_msgs::Float64 const> & msgPtr);
+    void includeRightPinkyFingerSubscriber(const boost::shared_ptr<std_msgs::Bool const> & msgPtr);
+    void includeRightMiddleFingerSubscriber(const boost::shared_ptr<std_msgs::Bool const> & msgPtr);
+    void includeRightPointerFingerSubscriber(const boost::shared_ptr<std_msgs::Bool const> & msgPtr);
 
     bool powerGraspRight;
     bool powerGraspLeft;
     bool closingRightFingers;
+    bool includeRightPointerFinger; // whether to include the right pointer finger in the power grasp
+    bool includeRightMiddleFinger;  // whether to include the right middle finger in the power grasp
+    bool includeRightPinkyFinger;   // whether to include the right pinky finger in the power grasp
 
     Vector currPosition;
 
