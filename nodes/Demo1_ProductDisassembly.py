@@ -95,6 +95,9 @@ class Demo1_ProductDisassembly:
         self.rightHandCmdMsg = Bool()
         self.rightHandCmdMsg.data = False  # relax hand
 
+        self.rightIndexFingerCmdMsg = Bool()
+        self.rightIndexFingerCmdMsg.data = True # include index finger in power grasp
+
         self.leftGripperCmdMsg = Bool()
         self.leftGripperCmdMsg.data = False  # relax gripper
 
@@ -159,6 +162,10 @@ class Demo1_ProductDisassembly:
         self.leftOrientationTaskTarePublisher = rospy.Publisher("/dreamer_controller/LeftHandOrientation/tare", Int32, queue_size=1)
 
         self.rightHandCmdPublisher = rospy.Publisher("/dreamer_controller/controlit/rightHand/powerGrasp", Bool, queue_size=1)
+        self.selectIndexFingerPublisher = rospy.Publisher("/dreamer_controller/controlit/rightHand/includeRightIndexFinger", Bool, queue_size=1)
+        self.selectMiddleFingerPublisher = rospy.Publisher("/dreamer_controller/controlit/rightHand/includeRightMiddleFinger", Bool, queue_size=1)
+        self.selectPinkyFingerPublisher = rospy.Publisher("/dreamer_controller/controlit/rightHand/includeRightPinkyFinger", Bool, queue_size=1)
+
         self.leftGripperCmdPublisher = rospy.Publisher("/dreamer_controller/controlit/leftGripper/powerGrasp", Bool, queue_size=1)
         
 
@@ -697,6 +704,10 @@ class Demo1_ProductDisassembly:
         if index == "N" or index == "n":
             return True
         else:
+            # Exclude index finger from power grasp
+            self.rightIndexFingerCmdMsg.data = False
+            self.selectIndexFingerPublisher.publish(self.rightHandCmdMsg)
+
             self.rightHandCmdMsg.data = True
             self.rightHandCmdPublisher.publish(self.rightHandCmdMsg)
 
@@ -894,6 +905,11 @@ class Demo1_ProductDisassembly:
         if not (index == "N" or index == "n"):
             self.leftGripperCmdMsg.data = False  # relax grasp
             self.leftGripperCmdPublisher.publish(self.leftGripperCmdMsg)
+
+        index = raw_input("Add right index finger to power grasp? Y/n\n")
+        if not (index == "N" or index == "n"):
+            self.rightIndexFingerCmdMsg.data = True
+            self.selectIndexFingerPublisher.publish(self.rightHandCmdMsg)
 
         print "Done lifting rubber object!"
         return not rospy.is_shutdown()
@@ -1232,7 +1248,7 @@ class Demo1_ProductDisassembly:
 
         if not self.liftLeftArmOutOfBox():
             return
-            
+
         index = raw_input("Release right hand power grasp? Y/n\n")
         if not (index == "N" or index == "n"):
             self.rightHandCmdMsg.data = False  # relax grasp
