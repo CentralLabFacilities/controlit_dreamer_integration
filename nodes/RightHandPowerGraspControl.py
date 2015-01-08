@@ -12,7 +12,7 @@ import rospy
 from std_msgs.msg import Bool
 
 class RightHandPowerGraspControl:
-    def __init__(self, rosTopic):
+    def __init__(self, rosTopic, includeFingerSelect = False):
         """
         The constructor.
 
@@ -25,6 +25,11 @@ class RightHandPowerGraspControl:
         print "Creating ROS publisher on topic {0}".format(self.rosTopic)
         self.publisher = rospy.Publisher(self.rosTopic, Bool, queue_size=1)
         
+        if includeFingerSelect:
+            self.selectIndexFingerPublisher = rospy.Publisher("/dreamer_controller/controlit/rightHand/includeRightIndexFinger", Bool, queue_size=1)
+            self.selectMiddleFingerPublisher = rospy.Publisher("/dreamer_controller/controlit/rightHand/includeRightMiddleFinger", Bool, queue_size=1)
+            self.selectPinkyFingerPublisher = rospy.Publisher("/dreamer_controller/controlit/rightHand/includeRightPinkyFinger", Bool, queue_size=1)
+
         # Define the power grasp command message
         self.commandMsg = Bool()
         self.commandMsg.data = False
@@ -50,6 +55,38 @@ class RightHandPowerGraspControl:
         """
         rospy.spin() # prevent thread from exiting
 
+    def enableDisableIndexFinger(self):
+        """
+        Enables or disables the right index finger.
+        """
+        index = raw_input("Include right index finger in power grasp? Y/n\n")
+        if not (index == "N" or index == "n"):
+            self.commandMsg.data = True  # include the finger
+        else:
+            self.commandMsg.data = False
+        self.selectIndexFingerPublisher.publish(self.commandMsg)
+
+    def enableDisableMiddleFinger(self):
+        """
+        Enables or disables the right middle finger.
+        """
+        index = raw_input("Include right middle finger in power grasp? Y/n\n")
+        if not (index == "N" or index == "n"):
+            self.commandMsg.data = True  # include the finger
+        else:
+            self.commandMsg.data = False
+        self.selectMiddleFingerPublisher.publish(self.commandMsg)
+
+    def enableDisablePinkyFinger(self):
+        """
+        Enables or disables the right pinky finger.
+        """
+        index = raw_input("Include right pinky finger in power grasp? Y/n\n")
+        if not (index == "N" or index == "n"):
+            self.commandMsg.data = True  # include the finger
+        else:
+            self.commandMsg.data = False
+        self.selectPinkyFingerPublisher.publish(self.commandMsg)
 
 # Main method
 if __name__ == "__main__":
@@ -84,13 +121,13 @@ if __name__ == "__main__":
                   "  - ROS topic: {0}".format(rosTopic))
 
     # Create a RightHandPowerGraspControl object
-    rightHandPowerGraspControl = RightHandPowerGraspControl(rosTopic)
+    rightHandPowerGraspControl = RightHandPowerGraspControl(rosTopic = rosTopic, includeFingerSelect = True)
     t = threading.Thread(target=rightHandPowerGraspControl.start)
     t.start()
 
     done = False
     while not done:
-        index = raw_input("Right hand power grasp state (type t, f, or q to exit): ")
+        index = raw_input("Right hand power grasp state (type t, f, i, m, p, or q to exit): ")
 
         if "q" == index:
             done = True
@@ -98,6 +135,15 @@ if __name__ == "__main__":
             rightHandPowerGraspControl.doPowerGrasp()
         elif "f" == index:
             rightHandPowerGraspControl.relaxPowerGrasp()
+        elif "i" == index:
+            # enable / disable index finger
+            rightHandPowerGraspControl.enableDisableIndexFinger();
+        elif "m" == index:
+            # enable / disable middle finger
+            rightHandPowerGraspControl.enableDisableMiddleFinger();
+        elif "p" == index:
+            # enable / disable pinky finger
+            rightHandPowerGraspControl.enableDisablePinkyFinger();
         else:
             print "Unknown command {0}".format(index)
 
