@@ -50,6 +50,12 @@ class TakeSnapshot:
         self.rightOrientationTaskActualSubscriber = rospy.Subscriber("/dreamer_controller/RightHandOrientation/actualHeading", Float64MultiArray, self.rightOrientationTaskActualCallback)
         self.leftOrientationTaskActualSubscriber = rospy.Subscriber("/dreamer_controller/LeftHandOrientation/actualHeading", Float64MultiArray, self.leftOrientationTaskActualCallback)
 
+        # Create the ROS topic publishers
+        self.rightCartesianTaskEnablePublisher = rospy.Publisher("/dreamer_controller/RightHandPosition/enabled", Int32, queue_size=1)
+        self.leftCartesianTaskEnablePublisher = rospy.Publisher("/dreamer_controller/LeftHandPosition/enabled", Int32, queue_size=1)
+        self.rightOrientationTaskEnablePublisher = rospy.Publisher("/dreamer_controller/RightHandOrientation/enabled", Int32, queue_size=1)
+        self.leftOrientationTaskEnablePublisher = rospy.Publisher("/dreamer_controller/LeftHandOrientation/enabled", Int32, queue_size=1)
+
     def postureTaskActualCallback(self, msg):
         self.currentPosture = msg.data
 
@@ -76,7 +82,12 @@ class TakeSnapshot:
         while not rospy.is_shutdown() and (
             self.currentPosture == None or \
             self.currentRightCartesianPos == None or self.currentLeftCartesianPos == None or \
-            self.currentRightOrientation == None or self.currentLeftOrientation == None):
+            self.currentRightOrientation == None or self.currentLeftOrientation == None or \
+            self.rightCartesianTaskEnablePublisher.get_num_connections() == 0 or \
+            self.leftCartesianTaskEnablePublisher.get_num_connections() == 0 or \
+            self.rightOrientationTaskEnablePublisher.get_num_connections() == 0 or \
+            self.leftOrientationTaskEnablePublisher.get_num_connections() == 0):
+
             time.sleep(0.5)
             pauseCount = pauseCount + 1
             if pauseCount > 5 and not printWarning:
@@ -85,6 +96,14 @@ class TakeSnapshot:
 
         if rospy.is_shutdown():
             return
+
+        # Enable the Cartesian position and orientation tasks
+        enableMsg = Int32()
+        enableMsg.data = 1        
+        self.rightCartesianTaskEnablePublisher.publish(enableMsg)
+        self.leftCartesianTaskEnablePublisher.publish(enableMsg)
+        self.rightOrientationTaskEnablePublisher.publish(enableMsg)
+        self.leftOrientationTaskEnablePublisher.publish(enableMsg)
 
         # Wait for robot to be placed into desired position
         counter = 5
