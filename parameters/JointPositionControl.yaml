@@ -35,14 +35,14 @@ tasks:
       - name: goalPosition
         type: vector
         
-        # value: [0.0, 0.0,                                              # torso
-        #         0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,     # left arm
-        #         0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0]     # right arm
+        value: [0.0, 0.0,                                              # torso
+                0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,     # left arm
+                0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0]     # right arm
 
         # Elbows bent at 90 degrees (useful for testing right hand)
-        value: [0.0, 0.0,                                              # torso
-                0.0, 0.174532925, 0.0, 1.57, 0.0, 0.0, 0.0,            # left arm
-                0.0, 0.174532925, 0.0, 1.57, 1.57, 0.0, 0.0]           # right arm
+        # value: [0.0, 0.0,                                              # torso
+        #         0.0, 0.174532925, 0.0, 1.57, 0.0, 0.0, 0.0,            # left arm
+        #         0.0, 0.174532925, 0.0, 1.57, 1.57, 0.0, 0.0]           # right arm
 
       - name: goalVelocity
         type: vector
