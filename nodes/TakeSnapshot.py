@@ -10,7 +10,7 @@ import time
 # import threading
 import rospy
 
-from std_msgs.msg import Float64MultiArray, MultiArrayDimension
+from std_msgs.msg import Float64MultiArray, MultiArrayDimension, Int32
 
 class Snapshot:
     def __init__(self, rightHandCartesian, leftHandCartesian, rightHandOrientation, leftHandOrientation, posture):
@@ -84,6 +84,16 @@ class TakeSnapshot:
             self.rightOrientationTaskEnablePublisher.get_num_connections() == 0 or \
             self.leftOrientationTaskEnablePublisher.get_num_connections() == 0):
 
+            if warningPrinted:
+                if self.rightCartesianTaskEnablePublisher.get_num_connections() == 0:
+                    print "Still waiting on right cartesian enable subscriber..."
+                if self.leftCartesianTaskEnablePublisher.get_num_connections() == 0:
+                    print "Still waiting on left cartesian enable subscriber..."
+                if self.rightOrientationTaskEnablePublisher.get_num_connections() == 0:
+                    print "Still waiting on right orientation enable subscriber..."
+                if self.leftOrientationTaskEnablePublisher.get_num_connections() == 0:
+                    print "Still waiting on left orientation enable subscriber..."
+                    
             time.sleep(0.5)
             pauseCount = pauseCount + 1
             if pauseCount > 5 and not warningPrinted:
