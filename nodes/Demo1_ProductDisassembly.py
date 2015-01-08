@@ -818,16 +818,16 @@ class Demo1_ProductDisassembly:
 
         jPosWP.append([0.10580113260054594, 0.10580113260054594, 
                        0.23979689653764183, 0.5366671561387937, -0.24028499984085533, 1.9690385406401882, 0.4610325861244941, -0.01797598419331518, -1.0919871103215044, 
-                       0.012809411208893836, -0.016642624760683615, -0.20391627595411646, 0.3770471061605853, 0.06988565065546737, -0.040256669731236386, 0.15113517821698957])
+                       0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377]) # right arm
         jPosWP.append([0.105459767394544, 0.105459767394544, 
                        0.6906767499136286, 0.41385749135856686, -0.03285041562768612, 1.640803065788199, 0.52732519608718, -0.01748961748122057, -1.0923600305447438, 
-                       0.016949480450565595, -0.016624950353126847, -0.20415327082062046, 0.3768242755149427, 0.0700852786486334, -0.04037466283042568, 0.15063201983288108])
+                       0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377]) # right arm
         jPosWP.append([0.10545244652292243, 0.10545244652292243, 
                        1.011134048992465, 0.37656249916293216, 0.06403932455903373, 1.2390040299773695, -0.2878908639092968, -0.4295398542143753, -0.7719594438307211, 
-                       0.016827052485560937, -0.017204858692910677, -0.20404139323093992, 0.37669365641011626, 0.0700002167274717, -0.040356128001983196, 0.15060731748479958])
+                       0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377]) # right arm
         jPosWP.append([0.1059528459107981, 0.1059528459107981, 
                        1.1823048236038691, 0.4227435883156559, 0.03803891004078773, 0.6072615761362916, -0.32622157205509805, -0.39518622920297136, -0.7588162298258935, 
-                       0.017162424099643726, -0.017100179007230387, -0.20400712896126347, 0.37669602802987157, 0.06989656572575195, -0.040370041937159214, 0.15064705432760625])
+                       0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377]) # right arm
 
         
         # Create the trajectory generators
@@ -896,6 +896,99 @@ class Demo1_ProductDisassembly:
             self.leftGripperCmdPublisher.publish(self.leftGripperCmdMsg)
 
         print "Done lifting rubber object!"
+        return not rospy.is_shutdown()
+
+    def liftLeftArmOutOfBox(self):
+        """
+        Executes the trajectory lifting the left arm out of the box
+        """
+
+        jPosWP = []
+        jPosWP.append(self.currentPosture)
+
+        # This is the last configuration of the liftRubberObject trajectory
+        jPosWP.append([0.1059528459107981, 0.1059528459107981, 
+                       1.1823048236038691, 0.4227435883156559, 0.03803891004078773, 0.6072615761362916, -0.32622157205509805, -0.39518622920297136, -0.7588162298258935, 
+                       0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377]) # right arm
+
+        jPosWP.append([0.10619477867763813, 0.10619477867763813, 
+                       1.2202454432859893, 0.05738140848539306, 0.3189522271170663, 0.7232510537980966, -0.1726463028864427, -0.6028618209841994, 0.24500111186631893, 
+                       0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377]) # right arm
+        jPosWP.append([0.10643665665219065, 0.10643665665219065, 
+                       1.5285064325031241, 0.12098014955475167, 0.29442826231308566, 0.9381167644779234, -0.33959274258259425, -0.9185511712204342, 0.10626589612738678, 
+                       0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377]) # right arm
+        jPosWP.append([0.10626453436778832, 0.10626453436778832, 
+                       0.661416424392025, 0.1485420097610339, 0.3287541049538422, 1.8674898940472466, -0.13103595620300554, -0.9935935620370674, -0.21511362204881762, 
+                       0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377]) # right arm
+        jPosWP.append([0.10583243639915946, 0.10583243639915946, 
+                       0.11249207204916184, 0.10479901770041052, 0.3332522844950901, 2.3037089105630066, -0.20471605919890376, -0.9940708398968128, -0.3071054312567586, 
+                       0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377]) # right arm
+        jPosWP.append([0.1059981788687132, 0.1059981788687132,
+                       0.055975443762288614, -0.005876388217591141, 0.30103619726669223, 2.0797926209567303, 0.10425306276346165, -0.8026267888701227, -0.7932278546960052, 
+                       0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377]) # right arm
+
+        
+        # Create the trajectory generators
+        # rightHandCartesianTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(rightHandCartesianWP)
+        # rightHandOrientationTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(rightHandOrientationWP)
+        # leftHandCartesianTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(leftHandCartesianWP)
+        # leftHandOrientationTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(leftHandOrientationWP)
+        jPosTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(jPosWP)
+
+        TOTAL_TRAVEL_TIME = 5.0 # seconds
+        # rightHandCartesianTG.generateTrajectory(TOTAL_TRAVEL_TIME)
+        # rightHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
+        # leftHandCartesianTG.generateTrajectory(TOTAL_TRAVEL_TIME)
+        # leftHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
+        jPosTG.generateTrajectory(TOTAL_TRAVEL_TIME)
+
+        index = raw_input("Lift left arm out of box? Y/n\n")
+        if index == "N" or index == "n":
+            return False  # quit
+
+        # Follow the trajectories
+        startTime = self.getTimeSeconds()
+        done = False
+
+        while not done and not rospy.is_shutdown():
+            deltaTime = self.getTimeSeconds() - startTime
+
+            # goalRightHandCartPos = None
+            # goalRightHandOrientation = None
+            # goalJPos = None
+
+            if deltaTime >= TOTAL_TRAVEL_TIME:
+                # goalRightHandCartPos = rightHandCartesianTG.getLastPoint()
+                # goalRightHandOrientation = rightHandOrientationTG.getLastPoint()
+                # goalLeftHandCartPos = leftHandCartesianTG.getLastPoint()
+                # goalLeftHandOrientation = leftHandOrientationTG.getLastPoint()
+                goalJPos = jPosTG.getLastPoint()
+                done = True
+            else:
+                # goalRightHandCartPos = rightHandCartesianTG.getPoint(deltaTime)
+                # goalRightHandOrientation = rightHandOrientationTG.getPoint(deltaTime)
+                # goalLeftHandCartPos = leftHandCartesianTG.getPoint(deltaTime)
+                # goalLeftHandOrientation = leftHandOrientationTG.getPoint(deltaTime)
+                goalJPos = jPosTG.getPoint(deltaTime)
+
+            # Save the new goals in ROS messages
+            # self.rightHandCartesianGoalMsg.data = goalRightHandCartPos
+            # self.rightHandOrientationGoalMsg.data = goalRightHandOrientation
+            # self.leftHandCartesianGoalMsg.data = goalLeftHandCartPos
+            # self.leftHandOrientationGoalMsg.data = goalLeftHandOrientation
+            self.postureGoalMsg.data = goalJPos
+
+            # Publish the ROS messages
+            # self.rightCartesianTaskGoalPublisher.publish(self.rightHandCartesianGoalMsg)
+            # self.rightOrientationTaskGoalPublisher.publish(self.rightHandOrientationGoalMsg)
+            # self.leftCartesianTaskGoalPublisher.publish(self.leftHandCartesianGoalMsg)
+            # self.leftOrientationTaskGoalPublisher.publish(self.leftHandOrientationGoalMsg)
+            self.postureTaskGoalPublisher.publish(self.postureGoalMsg)
+
+            if not done:
+                rospy.sleep(0.01) # 100Hz
+
+        print "Done lifting left arm out of box!"
         return not rospy.is_shutdown()
 
     def goToIdlePosition(self):
@@ -1023,10 +1116,10 @@ class Demo1_ProductDisassembly:
         jPosWP = []
         # jPosWP.append(self.currentPosture)  # commented this out since current goal should be the same as the first waypoint below
 
-        # This is the last position of the LiftRubberObject trajectory
-        jPosWP.append([0.1059528459107981, 0.1059528459107981, 
-                       1.1823048236038691, 0.4227435883156559, 0.03803891004078773, 0.6072615761362916, -0.32622157205509805, -0.39518622920297136, -0.7588162298258935, 
-                       0.017162424099643726, -0.017100179007230387, -0.20400712896126347, 0.37669602802987157, 0.06989656572575195, -0.040370041937159214, 0.15064705432760625])
+        # This is the last position of the LeftLeftArm trajectory
+        jPosWP.append([0.1059981788687132, 0.1059981788687132,
+                       0.055975443762288614, -0.005876388217591141, 0.30103619726669223, 2.0797926209567303, 0.10425306276346165, -0.8026267888701227, -0.7932278546960052, 
+                       0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377]) # right arm
 
         # 2015.01.05 Trajectory
         # jPosWP.append([-0.01794845476545489,  -0.01794845476545489,  -0.16022875682719276, -0.028366232678305438, 0.050244446934761954, 0.5154665157243641,  -0.33255119610617534, 0.05010440837726589,   -0.018253115541772363, -0.16022875682719276, -0.028366232678305438, 0.050244446934761954, 0.5154665157243641,  -0.33255119610617534, 0.05010440837726589,   -0.018253115541772363])
@@ -1137,6 +1230,9 @@ class Demo1_ProductDisassembly:
         if not self.liftRubberObject():
             return
 
+        if not self.liftLeftArmOutOfBox():
+            return
+            
         index = raw_input("Release right hand power grasp? Y/n\n")
         if not (index == "N" or index == "n"):
             self.rightHandCmdMsg.data = False  # relax grasp
