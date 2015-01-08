@@ -77,9 +77,9 @@ private:
     /*!
      * Callback methods for including individual fingers in the power grasp.
      */
-    void includeRightPinkyFingerSubscriber(const boost::shared_ptr<std_msgs::Bool const> & msgPtr);
-    void includeRightMiddleFingerSubscriber(const boost::shared_ptr<std_msgs::Bool const> & msgPtr);
-    void includeRightPointerFingerSubscriber(const boost::shared_ptr<std_msgs::Bool const> & msgPtr);
+    void includeRightPinkyFingerCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr);
+    void includeRightMiddleFingerCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr);
+    void includeRightPointerFingerCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr);
 
     bool powerGraspRight;
     bool powerGraspLeft;
