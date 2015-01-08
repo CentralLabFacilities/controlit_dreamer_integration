@@ -144,17 +144,17 @@ void HandControllerDreamer::leftGripperCallback(const boost::shared_ptr<std_msgs
     // CONTROLIT_INFO << "Left gripper power grasp: " << (powerGraspLeft ? "TRUE" : "FALSE");
 }
 
-void HandControllerDreamer::includeRightPinkyFingerSubscriber(const boost::shared_ptr<std_msgs::Bool const> & msgPtr)
+void HandControllerDreamer::includeRightPinkyFingerCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr)
 {
     includeRightPinkyFinger = msgPtr->data;
 }
 
-void HandControllerDreamer::includeRightMiddleFingerSubscriber(const boost::shared_ptr<std_msgs::Bool const> & msgPtr)
+void HandControllerDreamer::includeRightMiddleFingerCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr)
 {
     includeRightMiddleFinger = msgPtr->data;
 }
 
-void HandControllerDreamer::includeRightPointerFingerSubscriber(const boost::shared_ptr<std_msgs::Bool const> & msgPtr)
+void HandControllerDreamer::includeRightPointerFingerCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr)
 {
     includeRightPointerFinger = msgPtr->data;
 }
