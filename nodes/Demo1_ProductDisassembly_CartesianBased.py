@@ -26,14 +26,14 @@ NUM_ORIENTATION_DOFS = 3 # Orientation is defined using a x, y, z vector
 NUM_ROBOT_DOFS = 16
 
 # Shoulder abductors about 10 degrees away from body and elbows bent 90 degrees
-DEFAULT_POSTURE = [0.0, 0.0,                                    # torso
-                   0.0, 0.174532925, 0.0, 1.57, 0.0, 0.0, 0.0,  # left arm
-                   0.0, 0.174532925, 0.0, 1.57, 0.0, 0.0, 0.0]  # right arm
+# DEFAULT_POSTURE = [0.0, 0.0,                                    # torso
+#                    0.0, 0.174532925, 0.0, 1.57, 0.0, 0.0, 0.0,  # left arm
+#                    0.0, 0.174532925, 0.0, 1.57, 0.0, 0.0, 0.0]  # right arm
 
 # Shoulder abductors and elbows at about 10 degrees
-# DEFAULT_POSTURE = [0.0, 0.0,                                    # torso
-#                    0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,  # left arm
-#                    0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0]  # right arm
+DEFAULT_POSTURE = [0.0, 0.0,                                    # torso
+                   0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,  # left arm
+                   0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0]  # right arm
 
 class Demo1_ProductDisassembly:
     def __init__(self):
@@ -309,12 +309,11 @@ class Demo1_ProductDisassembly:
         jPosWP = []
 
         # These are the initial values as specified in the YAML ControlIt! configuration file
-        rightHandCartesianWP.append([0.033912978219317776, -0.29726881641499886, 0.7965277787944901])
+        rightHandCartesianWP.append([0.033912978219317776, -0.29726881641499886, 0.82])
         rightHandOrientationWP.append([1.0, 0.0, 0.0])
-        leftHandCartesianWP.append([0.033912978219317776, 0.29726881641499886, 0.7965277787944901])
+        leftHandCartesianWP.append([0.033912978219317776, 0.29726881641499886, 0.82])
         leftHandOrientationWP.append([1.0, 0.0, 0.0])
         jPosWP.append(DEFAULT_POSTURE)
-
         
         # 2015.01.06 Trajectory
         rightHandCartesianWP.append([0.019903910090688474, -0.28423307267223147, 0.9179288590591458])
