@@ -415,7 +415,7 @@ class Demo1_ProductDisassembly:
             self.rightOrientationTaskGoalPublisher.publish(self.rightHandOrientationGoalMsg)
             self.leftCartesianTaskGoalPublisher.publish(self.leftHandCartesianGoalMsg)
             self.leftOrientationTaskGoalPublisher.publish(self.leftHandOrientationGoalMsg)
-            # self.postureTaskGoalPublisher.publish(self.postureGoalMsg)
+            self.postureTaskGoalPublisher.publish(self.postureGoalMsg)
 
             if not done:
                 rospy.sleep(0.01) # 100Hz
@@ -1165,28 +1165,28 @@ class Demo1_ProductDisassembly:
                 goalRightHandOrientation = rightHandOrientationTG.getLastPoint()
                 goalLeftHandCartPos = leftHandCartesianTG.getLastPoint()
                 goalLeftHandOrientation = leftHandOrientationTG.getLastPoint()
-                # goalJPos = jPosTG.getLastPoint()
+                goalJPos = jPosTG.getLastPoint()
                 done = True
             else:
                 goalRightHandCartPos = rightHandCartesianTG.getPoint(deltaTime)
                 goalRightHandOrientation = rightHandOrientationTG.getPoint(deltaTime)
                 goalLeftHandCartPos = leftHandCartesianTG.getPoint(deltaTime)
                 goalLeftHandOrientation = leftHandOrientationTG.getPoint(deltaTime)
-                # goalJPos = jPosTG.getPoint(deltaTime)
+                goalJPos = jPosTG.getPoint(deltaTime)
 
             # Save the new goals in ROS messages
             self.rightHandCartesianGoalMsg.data = goalRightHandCartPos
             self.rightHandOrientationGoalMsg.data = goalRightHandOrientation
             self.leftHandCartesianGoalMsg.data = goalLeftHandCartPos
             self.leftHandOrientationGoalMsg.data = goalLeftHandOrientation
-            # self.postureGoalMsg.data = goalJPos
+            self.postureGoalMsg.data = goalJPos
 
             # Publish the ROS messages
             self.rightCartesianTaskGoalPublisher.publish(self.rightHandCartesianGoalMsg)
             self.rightOrientationTaskGoalPublisher.publish(self.rightHandOrientationGoalMsg)
             self.leftCartesianTaskGoalPublisher.publish(self.leftHandCartesianGoalMsg)
             self.leftOrientationTaskGoalPublisher.publish(self.leftHandOrientationGoalMsg)
-            # self.postureTaskGoalPublisher.publish(self.postureGoalMsg)
+            self.postureTaskGoalPublisher.publish(self.postureGoalMsg)
 
             if not done:
                 rospy.sleep(0.01) # 100Hz
