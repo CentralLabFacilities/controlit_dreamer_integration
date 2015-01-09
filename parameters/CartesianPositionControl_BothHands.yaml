@@ -32,7 +32,7 @@ tasks:
         # these are the values used by UTA-WBC
         # value: [0.45, -0.25, 1.1]
         
-        value: [0.033912978219317776, -0.29726881641499886, 0.86] #0.7965277787944901]
+        value: [0.033912978219317776, -0.29726881641499886, 0.82] #0.7965277787944901]
 
         # these are the Cartesian coordinates when all joints are close to zero:
         # value: [0.05910914740914856, -0.20988127817117105, 0.7879616040106433]   # from this task
@@ -80,7 +80,7 @@ tasks:
         # these are the values used by UTA-WBC
         # value: [0.45, 0.25, 1.1]
 
-        value: [0.033912978219317776, 0.29726881641499886, 0.86] # 0.7965277787944901]
+        value: [0.033912978219317776, 0.29726881641499886, 0.82] # 0.7965277787944901]
 
       - name: goalVelocity           # in frameName's frame
         type: vector
