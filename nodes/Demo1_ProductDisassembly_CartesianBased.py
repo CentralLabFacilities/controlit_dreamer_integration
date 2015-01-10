@@ -558,42 +558,66 @@ class Demo1_ProductDisassembly:
         Executes the trajectory that moves the left hand to be around a position where it can grab the rubber object.
         """
 
+        rightHandCartesianWP = []
+        rightHandOrientationWP = []
+        leftHandCartesianWP = []
+        leftHandOrientationWP = []
         jPosWP = []
 
         # This is the last configuration of the grabMetalTube trajectory
-        jPosWP.append([0.09590536736161434, 0.09590536736161434,  # torso
-                      -0.08569654146540764, 0.07021124925432169, 0,                    1.7194162945362514, 1.51,   -0.07, -0.18,  # left arm
-                      0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377]) # right arm
+        rightHandCartesianWP.append([0.28664480323526653, -0.1614844904659368, 0.9597645035426976])
+        rightHandOrientationWP.append([0.830926574184253, -0.5512666962638427, -0.07527322169782114])
+        leftHandCartesianWP.append([0.25822435038901964, 0.1895604971725577, 1.0461857180093073])
+        leftHandOrientationWP.append([0.5409881394605172, 0.8191390472602035, 0.19063854336595773])
+        jPosWP.append([0.09590536736161434, 0.09590536736161434, 
+                       -0.08569654146540764, 0.07021124925432169, 0,                    1.7194162945362514, 1.51, -0.07, -0.18,  # left arm
+                       0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377])
 
-        jPosWP.append([0.09786450853415542, 0.09786450853415542, 
-                       -0.15114015512345808, 0.6757263833050331, -0.1512750672164876, 1.9078665565670625, 0.20486719263640862, 0.09583174147398679, -0.5754068224606331, 
-                       0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377]) # right arm
-        jPosWP.append([0.09743864922855709, 0.09743864922855709, 
-                       -0.13966183280088498, 0.4723217587608189, -0.17997921407313958, 1.8670358353680174, 0.1170707192657332, 0.11627257977324582, -0.6470561008686319, 
-                       0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377]) # right arm
-        jPosWP.append([0.09806632964321212, 0.09806632964321212, 
-                       0.03507646845214241, 0.32010870159025234, -0.18088026181707248, 1.6732313049447447, 0.06210729345798295, 0.1827444704387443, -0.9045072348249086, 
-                       0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377]) # right arm
-        jPosWP.append([0.09787089476255822, 0.09787089476255822, 
-                       0.002794296425643595, 0.2835844757183357, -0.18807469031404708, 1.6100747424098305, 0.11839413877386204, 0.248941084731985, -0.9437127120955863, 
-                       0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377]) # right arm
+        rightHandCartesianWP.append([0.28664480323526653, -0.1614844904659368, 0.9597645035426976])
+        rightHandCartesianWP.append([0.28664480323526653, -0.1614844904659368, 0.9597645035426976])
+        rightHandCartesianWP.append([0.28664480323526653, -0.1614844904659368, 0.9597645035426976])
+        rightHandCartesianWP.append([0.28664480323526653, -0.1614844904659368, 0.9597645035426976])
 
-        jPosWP.append([0.10548164996775973, 0.10548164996775973, 
-                       -0.16854400148191434, 0.4167463016338474, -0.2701796881433479, 1.83259571, 0.11149895105568859, 0.2956444253241622, -0.7240388727126355,            # left arm
-                       0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377]) # right arm
+        rightHandOrientationWP.append([0.830926574184253, -0.5512666962638427, -0.07527322169782114])
+        rightHandOrientationWP.append([0.830926574184253, -0.5512666962638427, -0.07527322169782114])
+        rightHandOrientationWP.append([0.830926574184253, -0.5512666962638427, -0.07527322169782114])
+        rightHandOrientationWP.append([0.830926574184253, -0.5512666962638427, -0.07527322169782114])
+
+        leftHandCartesianWP.append([0.2558247304604975, 0.2949244102085959, 1.1042523046819483])
+        leftHandCartesianWP.append([0.24986753716571164, 0.2597244717600235, 1.075447863944082])
+        leftHandCartesianWP.append([0.29308174503554474, 0.24554806065234056, 1.0515318016118187])
+        leftHandCartesianWP.append([0.2808559231427563, 0.2393468245212046, 1.0249428672824978])
+        
+        leftHandOrientationWP.append([-0.06355664672818866, -0.3507624169373639, 0.9343052389454567])
+        leftHandOrientationWP.append([-0.05743278073528967, -0.24859633215529697, 0.9669029627299452])
+        leftHandOrientationWP.append([-0.11088559335760977, -0.1963599862969318, 0.9742418287915992])
+        leftHandOrientationWP.append([-0.0688185464892449, -0.10737620829573602, 0.9918338356555186])
+
+        jPosWP.append([0.09590536736161434, 0.09590536736161434, 
+            -0.15114015512345808, 0.6757263833050331, -0.1512750672164876, 1.9078665565670625, 0.20486719263640862, 0.09583174147398679, -0.5754068224606331, 
+            0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377])
+        jPosWP.append([0.09590536736161434, 0.09590536736161434,  
+            -0.13966183280088498, 0.4723217587608189, -0.17997921407313958, 1.8670358353680174, 0.1170707192657332, 0.11627257977324582, -0.6470561008686319, 
+            0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377])
+        jPosWP.append([0.09590536736161434, 0.09590536736161434,  
+            0.03507646845214241, 0.32010870159025234, -0.18088026181707248, 1.6732313049447447, 0.06210729345798295, 0.1827444704387443, -0.9045072348249086, 
+            0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377])
+        jPosWP.append([0.09590536736161434, 0.09590536736161434, 
+            0.002794296425643595, 0.2835844757183357, -0.18807469031404708, 1.6100747424098305, 0.11839413877386204, 0.248941084731985, -0.9437127120955863, 
+            0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377])
 
         # Create the trajectory generators
-        # rightHandCartesianTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(rightHandCartesianWP)
-        # rightHandOrientationTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(rightHandOrientationWP)
-        # leftHandCartesianTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(leftHandCartesianWP)
-        # leftHandOrientationTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(leftHandOrientationWP)
+        rightHandCartesianTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(rightHandCartesianWP)
+        rightHandOrientationTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(rightHandOrientationWP)
+        leftHandCartesianTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(leftHandCartesianWP)
+        leftHandOrientationTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(leftHandOrientationWP)
         jPosTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(jPosWP)
 
         TOTAL_TRAVEL_TIME = 5.0 # seconds
-        # rightHandCartesianTG.generateTrajectory(TOTAL_TRAVEL_TIME)
-        # rightHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
-        # leftHandCartesianTG.generateTrajectory(TOTAL_TRAVEL_TIME)
-        # leftHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
+        rightHandCartesianTG.generateTrajectory(TOTAL_TRAVEL_TIME)
+        rightHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
+        leftHandCartesianTG.generateTrajectory(TOTAL_TRAVEL_TIME)
+        leftHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
         jPosTG.generateTrajectory(TOTAL_TRAVEL_TIME)
 
         if ENABLE_USER_PROMPTS:
@@ -608,36 +632,32 @@ class Demo1_ProductDisassembly:
         while not done and not rospy.is_shutdown():
             deltaTime = self.getTimeSeconds() - startTime
 
-            # goalRightHandCartPos = None
-            # goalRightHandOrientation = None
-            # goalJPos = None
-
             if deltaTime >= TOTAL_TRAVEL_TIME:
-                # goalRightHandCartPos = rightHandCartesianTG.getLastPoint()
-                # goalRightHandOrientation = rightHandOrientationTG.getLastPoint()
-                # goalLeftHandCartPos = leftHandCartesianTG.getLastPoint()
-                # goalLeftHandOrientation = leftHandOrientationTG.getLastPoint()
+                goalRightHandCartPos = rightHandCartesianTG.getLastPoint()
+                goalRightHandOrientation = rightHandOrientationTG.getLastPoint()
+                goalLeftHandCartPos = leftHandCartesianTG.getLastPoint()
+                goalLeftHandOrientation = leftHandOrientationTG.getLastPoint()
                 goalJPos = jPosTG.getLastPoint()
                 done = True
             else:
-                # goalRightHandCartPos = rightHandCartesianTG.getPoint(deltaTime)
-                # goalRightHandOrientation = rightHandOrientationTG.getPoint(deltaTime)
-                # goalLeftHandCartPos = leftHandCartesianTG.getPoint(deltaTime)
-                # goalLeftHandOrientation = leftHandOrientationTG.getPoint(deltaTime)
+                goalRightHandCartPos = rightHandCartesianTG.getPoint(deltaTime)
+                goalRightHandOrientation = rightHandOrientationTG.getPoint(deltaTime)
+                goalLeftHandCartPos = leftHandCartesianTG.getPoint(deltaTime)
+                goalLeftHandOrientation = leftHandOrientationTG.getPoint(deltaTime)
                 goalJPos = jPosTG.getPoint(deltaTime)
 
             # Save the new goals in ROS messages
-            # self.rightHandCartesianGoalMsg.data = goalRightHandCartPos
-            # self.rightHandOrientationGoalMsg.data = goalRightHandOrientation
-            # self.leftHandCartesianGoalMsg.data = goalLeftHandCartPos
-            # self.leftHandOrientationGoalMsg.data = goalLeftHandOrientation
+            self.rightHandCartesianGoalMsg.data = goalRightHandCartPos
+            self.rightHandOrientationGoalMsg.data = goalRightHandOrientation
+            self.leftHandCartesianGoalMsg.data = goalLeftHandCartPos
+            self.leftHandOrientationGoalMsg.data = goalLeftHandOrientation
             self.postureGoalMsg.data = goalJPos
 
             # Publish the ROS messages
-            # self.rightCartesianTaskGoalPublisher.publish(self.rightHandCartesianGoalMsg)
-            # self.rightOrientationTaskGoalPublisher.publish(self.rightHandOrientationGoalMsg)
-            # self.leftCartesianTaskGoalPublisher.publish(self.leftHandCartesianGoalMsg)
-            # self.leftOrientationTaskGoalPublisher.publish(self.leftHandOrientationGoalMsg)
+            self.rightCartesianTaskGoalPublisher.publish(self.rightHandCartesianGoalMsg)
+            self.rightOrientationTaskGoalPublisher.publish(self.rightHandOrientationGoalMsg)
+            self.leftCartesianTaskGoalPublisher.publish(self.leftHandCartesianGoalMsg)
+            self.leftOrientationTaskGoalPublisher.publish(self.leftHandOrientationGoalMsg)
             self.postureTaskGoalPublisher.publish(self.postureGoalMsg)
 
             if not done:
@@ -1201,8 +1221,8 @@ class Demo1_ProductDisassembly:
         if not self.grabMetalTube():
             return
 
-        # if not self.grabRubberObject():
-        #     return
+        if not self.grabRubberObject():
+            return
 
         # if not self.liftRubberObject():
         #     return
