@@ -19,7 +19,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 import TrajectoryGeneratorCubicSpline
 
-ENABLE_USER_PROMPTS = True
+ENABLE_USER_PROMPTS = False
 
 NUM_CARTESIAN_DOFS = 3 # Cartesian goal is x, y, z
 NUM_ORIENTATION_DOFS = 3 # Orientation is defined using a x, y, z vector
@@ -698,6 +698,8 @@ class Demo1_ProductDisassembly:
         if addMiddleFinger:
             self.rightMiddleFingerCmdMsg.data = True
             self.selectMiddleFingerPublisher.publish(self.rightMiddleFingerCmdMsg)
+
+            rospy.sleep(3) # three seconds to allow middle finger to grasp tube
 
         print "Done grabbing rubber object!"
         return not rospy.is_shutdown()
