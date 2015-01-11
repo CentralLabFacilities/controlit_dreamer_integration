@@ -335,7 +335,7 @@ class Demo1_ProductDisassembly:
         leftHandCartesianWP.append([-0.03366873622218044, 0.40992725074781894, 1.1144948070701866])
         leftHandCartesianWP.append([0.11866831717348489, 0.4101100845056917, 1.209699047600146])
         leftHandCartesianWP.append([0.21649227857092893, 0.3006839904787592, 1.1140502834793191])
-        leftHandCartesianWP.append([0.25822435038901964, 0.1895604971725577, 1.0461857180093073])
+        leftHandCartesianWP.append([0.25822435038901964, 0.24,               1.0461857180093073])
 
         leftHandOrientationWP.append([0.8950968852599132, -0.26432788250814326, 0.3590714922223199])
         leftHandOrientationWP.append([0.8944226954968388, -0.33098423072776184, 0.3007615015086225])
@@ -434,10 +434,14 @@ class Demo1_ProductDisassembly:
         leftHandOrientationWP = []
         jPosWP = []
 
+        # Left hand does not move
+        leftHandPosition = [0.25822435038901964, 0.24, 1.0461857180093073]
+        leftHandOrientation = [0.5409881394605172, 0.8191390472602035, 0.19063854336595773]
+
         # This is the last configuration of the gotToReady trajectory
         rightHandCartesianWP.append([0.25822435038901964, -0.1895604971725577, 1.0461857180093073])
         rightHandOrientationWP.append([0.5409881394605172, -0.8191390472602035, 0.19063854336595773])
-        leftHandCartesianWP.append([0.25822435038901964, 0.1895604971725577, 1.0461857180093073])
+        leftHandCartesianWP.append(leftHandPosition)
         leftHandOrientationWP.append([0.5409881394605172, 0.8191390472602035, 0.19063854336595773])
         jPosWP.append([0.06796522908004803, 0.06796522908004803,                                                                   # torso
                        -0.08569654146540764, 0.07021124925432169, 0,                    1.7194162945362514, 1.51, -0.07, -0.18,  # left arm
@@ -454,15 +458,15 @@ class Demo1_ProductDisassembly:
         rightHandOrientationWP.append([0.8206856971797751, -0.5665754546656667, -0.0739407912788299])
         rightHandOrientationWP.append([0.830926574184253, -0.5512666962638427, -0.07527322169782114])
 
-        leftHandCartesianWP.append([0.25822435038901964, 0.1895604971725577, 1.0461857180093073])  # left hand does not translate
-        leftHandCartesianWP.append([0.25822435038901964, 0.1895604971725577, 1.0461857180093073])
-        leftHandCartesianWP.append([0.25822435038901964, 0.1895604971725577, 1.0461857180093073])
-        leftHandCartesianWP.append([0.25822435038901964, 0.1895604971725577, 1.0461857180093073])
+        leftHandCartesianWP.append(leftHandPosition)
+        leftHandCartesianWP.append(leftHandPosition)
+        leftHandCartesianWP.append(leftHandPosition)
+        leftHandCartesianWP.append(leftHandPosition)
 
-        leftHandOrientationWP.append([0.5409881394605172, 0.8191390472602035, 0.19063854336595773]) # left hand does not rotate
-        leftHandOrientationWP.append([0.5409881394605172, 0.8191390472602035, 0.19063854336595773])
-        leftHandOrientationWP.append([0.5409881394605172, 0.8191390472602035, 0.19063854336595773])
-        leftHandOrientationWP.append([0.5409881394605172, 0.8191390472602035, 0.19063854336595773])
+        leftHandOrientationWP.append(leftHandOrientation)
+        leftHandOrientationWP.append(leftHandOrientation)
+        leftHandOrientationWP.append(leftHandOrientation)
+        leftHandOrientationWP.append(leftHandOrientation)
 
        
         jPosWP.append([0.09594703765058178, 0.09594703765058178, 
@@ -564,24 +568,28 @@ class Demo1_ProductDisassembly:
         leftHandOrientationWP = []
         jPosWP = []
 
+        # Right hand does not move
+        rightHandPosition = [0.28664480323526653, -0.1614844904659368, 0.9597645035426976]
+        rightHandOrientation = [0.830926574184253, -0.5512666962638427, -0.07527322169782114]
+
         # This is the last configuration of the grabMetalTube trajectory
-        rightHandCartesianWP.append([0.28664480323526653, -0.1614844904659368, 0.9597645035426976])
-        rightHandOrientationWP.append([0.830926574184253, -0.5512666962638427, -0.07527322169782114])
-        leftHandCartesianWP.append([0.25822435038901964, 0.1895604971725577, 1.0461857180093073])
+        rightHandCartesianWP.append(rightHandPosition)
+        rightHandOrientationWP.append(rightHandOrientation)
+        leftHandCartesianWP.append([0.25822435038901964, 0.24, 1.0461857180093073])
         leftHandOrientationWP.append([0.5409881394605172, 0.8191390472602035, 0.19063854336595773])
         jPosWP.append([0.09590536736161434, 0.09590536736161434, 
                        -0.08569654146540764, 0.07021124925432169, 0,                    1.7194162945362514, 1.51, -0.07, -0.18,  # left arm
                        0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377])
 
-        rightHandCartesianWP.append([0.28664480323526653, -0.1614844904659368, 0.9597645035426976])
-        rightHandCartesianWP.append([0.28664480323526653, -0.1614844904659368, 0.9597645035426976])
-        rightHandCartesianWP.append([0.28664480323526653, -0.1614844904659368, 0.9597645035426976])
-        rightHandCartesianWP.append([0.28664480323526653, -0.1614844904659368, 0.9597645035426976])
+        rightHandCartesianWP.append(rightHandPosition)
+        rightHandCartesianWP.append(rightHandPosition)
+        rightHandCartesianWP.append(rightHandPosition)
+        rightHandCartesianWP.append(rightHandPosition)
 
-        rightHandOrientationWP.append([0.830926574184253, -0.5512666962638427, -0.07527322169782114])
-        rightHandOrientationWP.append([0.830926574184253, -0.5512666962638427, -0.07527322169782114])
-        rightHandOrientationWP.append([0.830926574184253, -0.5512666962638427, -0.07527322169782114])
-        rightHandOrientationWP.append([0.830926574184253, -0.5512666962638427, -0.07527322169782114])
+        rightHandOrientationWP.append(rightHandOrientation)
+        rightHandOrientationWP.append(rightHandOrientation)
+        rightHandOrientationWP.append(rightHandOrientation)
+        rightHandOrientationWP.append(rightHandOrientation)
 
         leftHandCartesianWP.append([0.2558247304604975, 0.2949244102085959, 1.1042523046819483])
         leftHandCartesianWP.append([0.24986753716571164, 0.2597244717600235, 1.075447863944082])
@@ -621,7 +629,7 @@ class Demo1_ProductDisassembly:
         jPosTG.generateTrajectory(TOTAL_TRAVEL_TIME)
 
         if ENABLE_USER_PROMPTS:
-            index = raw_input("Position left hand around rubber object? Y/n\n")
+            index = raw_input("Position left hand around rubber valve? Y/n\n")
             if index == "N" or index == "n":
                 return False  # quit
 
