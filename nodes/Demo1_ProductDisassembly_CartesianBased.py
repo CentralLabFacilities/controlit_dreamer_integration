@@ -594,7 +594,7 @@ class Demo1_ProductDisassembly:
         leftHandCartesianWP.append([0.2558247304604975, 0.2949244102085959, 1.1042523046819483])
         leftHandCartesianWP.append([0.24986753716571164, 0.2597244717600235, 1.075447863944082])
         leftHandCartesianWP.append([0.29308174503554474, 0.24554806065234056, 1.0515318016118187])
-        leftHandCartesianWP.append([0.2808559231427563, 0.26, 1.055])
+        leftHandCartesianWP.append([0.27, 0.26, 1.055])
         
         leftHandOrientationWP.append([-0.06355664672818866, -0.3507624169373639, 0.9343052389454567])
         leftHandOrientationWP.append([-0.05743278073528967, -0.24859633215529697, 0.9669029627299452])
@@ -1113,7 +1113,7 @@ class Demo1_ProductDisassembly:
         # This is the last configuration of the grabRubberValve trajectory
         rightHandCartesianWP.append([0.28664480323526653, -0.1614844904659368, 0.9597645035426976])
         rightHandOrientationWP.append([0.830926574184253, -0.5512666962638427, -0.07527322169782114])
-        leftHandCartesianWP.append([0.2808559231427563, 0.26, 1.055])
+        leftHandCartesianWP.append([0.27, 0.26, 1.055])
         leftHandOrientationWP.append([-0.0688185464892449, -0.10737620829573602, 0.9918338356555186])
         jPosWP.append([0.09590536736161434, 0.09590536736161434, 
             0.002794296425643595, 0.2835844757183357, -0.18807469031404708, 1.6100747424098305, 0.11839413877386204, 0.248941084731985, -0.9437127120955863, 
