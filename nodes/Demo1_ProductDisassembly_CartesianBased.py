@@ -689,16 +689,13 @@ class Demo1_ProductDisassembly:
             self.leftGripperCmdPublisher.publish(self.leftGripperCmdMsg)
 
 
-        doFullRightHandPowerGrasp = True
+        addMiddleFinger = True
         if ENABLE_USER_PROMPTS:
-            index = raw_input("Perform full right hand power grasp? Y/n\n")
+            index = raw_input("Add middle finger to right hand power grasp? Y/n\n")
             if index == "N" or index == "n":
-                doFullRightHandPowerGrasp = False
+                addMiddleFinger = False
 
-        if doFullRightHandPowerGrasp:
-            self.rightIndexFingerCmdMsg.data = True
-            self.selectIndexFingerPublisher.publish(self.rightIndexFingerCmdMsg)
-
+        if addMiddleFinger:
             self.rightMiddleFingerCmdMsg.data = True
             self.selectMiddleFingerPublisher.publish(self.rightMiddleFingerCmdMsg)
 
@@ -830,6 +827,16 @@ class Demo1_ProductDisassembly:
         if releaseGripper:
             self.leftGripperCmdMsg.data = False  # relax grasp
             self.leftGripperCmdPublisher.publish(self.leftGripperCmdMsg)
+
+        addIndexFinger = True
+        if ENABLE_USER_PROMPTS:
+            index = raw_input("Add index finger to right hand power grasp? Y/n\n")
+            if index == "N" or index == "n":
+                addIndexFinger = False
+
+        if addIndexFinger:
+            self.rightIndexFingerCmdMsg.data = True
+            self.selectIndexFingerPublisher.publish(self.rightIndexFingerCmdMsg)
 
         print "Done lifting rubber valve!"
         return not rospy.is_shutdown()
