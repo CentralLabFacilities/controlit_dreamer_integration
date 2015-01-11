@@ -553,7 +553,7 @@ class Demo1_ProductDisassembly:
         # print "Done grabbing metal object!"
         return not rospy.is_shutdown()
 
-    def grabRubberObject(self):
+    def grabRubberValve(self):
         """
         Executes the trajectory that moves the left hand to be around a position where it can grab the rubber object.
         """
@@ -683,7 +683,7 @@ class Demo1_ProductDisassembly:
 
         jPosWP = []
 
-        # This is the last configuration of the grabRubberObject trajectory
+        # This is the last configuration of the grabRubberValve trajectory
         jPosWP.append([0.10548164996775973, 0.10548164996775973, 
                        -0.16854400148191434, 0.4167463016338474, -0.2701796881433479, 1.83259571, 0.11149895105568859, 0.2956444253241622, -0.7240388727126355,            # left arm
                        0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377]) # right arm
@@ -1094,14 +1094,23 @@ class Demo1_ProductDisassembly:
         #                -0.08569654146540764, 0.07021124925432169, -0.15649686418494702, 1.7194162945362514, 1.51, -0.07, -0.18])   # right arm
 
         # This is the last configuration of the grabMetalTube trajectory
+        # rightHandCartesianWP.append([0.28664480323526653, -0.1614844904659368, 0.9597645035426976])
+        # rightHandOrientationWP.append([0.830926574184253, -0.5512666962638427, -0.07527322169782114])
+        # leftHandCartesianWP.append([0.25822435038901964, 0.1895604971725577, 1.0461857180093073])
+        # leftHandOrientationWP.append([0.5409881394605172, 0.8191390472602035, 0.19063854336595773])
+        # jPosWP.append([0.09590536736161434, 0.09590536736161434, 
+        #                -0.08569654146540764, 0.07021124925432169, 0,                    1.7194162945362514, 1.51, -0.07, -0.18,  # left arm
+        #                0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377])
+
+        # This is the last configuration of the grabRubberValve trajectory
         rightHandCartesianWP.append([0.28664480323526653, -0.1614844904659368, 0.9597645035426976])
         rightHandOrientationWP.append([0.830926574184253, -0.5512666962638427, -0.07527322169782114])
-        leftHandCartesianWP.append([0.25822435038901964, 0.1895604971725577, 1.0461857180093073])
-        leftHandOrientationWP.append([0.5409881394605172, 0.8191390472602035, 0.19063854336595773])
+        leftHandCartesianWP.append([0.2808559231427563, 0.2393468245212046, 1.0249428672824978])
+        leftHandOrientationWP.append([-0.0688185464892449, -0.10737620829573602, 0.9918338356555186])
         jPosWP.append([0.09590536736161434, 0.09590536736161434, 
-                       -0.08569654146540764, 0.07021124925432169, 0,                    1.7194162945362514, 1.51, -0.07, -0.18,  # left arm
-                       0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377])
-
+            0.002794296425643595, 0.2835844757183357, -0.18807469031404708, 1.6100747424098305, 0.11839413877386204, 0.248941084731985, -0.9437127120955863, 
+            0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377])
+        
         # 2015.01.06 Trajectory
         rightHandCartesianWP.append([0.25822435038901964, -0.1895604971725577, 1.0461857180093073])
         rightHandCartesianWP.append([0.21649227857092893, -0.3006839904787592, 1.1140502834793191])
@@ -1221,7 +1230,7 @@ class Demo1_ProductDisassembly:
         if not self.grabMetalTube():
             return
 
-        if not self.grabRubberObject():
+        if not self.grabRubberValve():
             return
 
         # if not self.liftRubberObject():
