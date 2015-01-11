@@ -110,6 +110,9 @@ class Demo1_ProductDisassembly:
         self.rightIndexFingerCmdMsg = Bool()
         self.rightIndexFingerCmdMsg.data = True # include index finger in power grasp
 
+        self.rightMiddleFingerCmdMsg = Bool()
+        self.rightMiddleFingerCmdMsg.data = True # include middle finger in power grasp        
+
         self.leftGripperCmdMsg = Bool()
         self.leftGripperCmdMsg.data = False  # relax gripper
 
@@ -549,7 +552,11 @@ class Demo1_ProductDisassembly:
         if doPowerGrasp:
             # Exclude index finger from power grasp
             self.rightIndexFingerCmdMsg.data = False
-            self.selectIndexFingerPublisher.publish(self.rightHandCmdMsg)
+            self.selectIndexFingerPublisher.publish(self.rightIndexFingerCmdMsg)
+
+            # Exclude midle finger from power grasp
+            self.rightMiddleFingerCmdMsg.data = False
+            self.selectMiddleFingerPublisher.publish(self.rightMiddleFingerCmdMsg)
 
             self.rightHandCmdMsg.data = True
             self.rightHandCmdPublisher.publish(self.rightHandCmdMsg)
@@ -789,7 +796,7 @@ class Demo1_ProductDisassembly:
 
         if addRightIndexFinger:
             self.rightIndexFingerCmdMsg.data = True
-            self.selectIndexFingerPublisher.publish(self.rightHandCmdMsg)
+            self.selectIndexFingerPublisher.publish(self.rightIndexFingerCmdMsg)
 
         print "Done lifting rubber object!"
         return not rospy.is_shutdown()
