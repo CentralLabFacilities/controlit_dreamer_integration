@@ -43,7 +43,8 @@ DEFAULT_POSTURE = [0.0, 0.0,                                    # torso
 # PIPE_LOCATION = [0.48, -0.16, 1.3]  # displacement 5
 # PIPE_LOCATION = [0.0, -0.16, 1.15]  # displacement 6
 # PIPE_LOCATION = [0.28, -0.3, 1.0]  # displacement 7
-PIPE_LOCATION = [0.28, -0.3, 1.2]  # displacement 8
+# PIPE_LOCATION = [0.28, -0.3, 1.2]  # displacement 8
+PIPE_LOCATION = [0.35, -0.35, 1.1]  # displacement 9
 
 class Demo2_ChangingObjectPositions:
     def __init__(self):
