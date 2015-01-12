@@ -35,6 +35,9 @@ DEFAULT_POSTURE = [0.0, 0.0,                                    # torso
                    0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,  # left arm
                    0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0]  # right arm
 
+PIPE_DISPLACEMENT = [0.28664480323526653, -0.1614844904659368, 0.9597645035426976]  # no dispacement
+PIPE_DISPLACEMENT = [0.33, -0.2, 0.9597645035426976]  # displacement 1
+
 class Demo2_ChangingObjectPositions:
     def __init__(self):
 
@@ -331,14 +334,16 @@ class Demo2_ChangingObjectPositions:
                        -0.08569654146540764, 0.07021124925432169, -0.15649686418494702, 1.7194162945362514, 1.51, -0.07, -0.18])   # right arm
 
         # Create the WayPoints
-        rightHandCartesianWP.append([0.3137686413286708, -0.26659865390759796, 1.0541700108404664])
-        rightHandCartesianWP.append([0.2926328098812538, -0.22212659727858264, 0.9685956358633105])
-        rightHandCartesianWP.append([0.28750632029946943, -0.17027266952524717, 0.9597899484960192])
-        rightHandCartesianWP.append([0.28664480323526653, -0.1614844904659368, 0.9597645035426976])
+        # rightHandCartesianWP.append([0.3137686413286708, -0.26659865390759796, 1.0541700108404664])
+        # rightHandCartesianWP.append([0.2926328098812538, -0.22212659727858264, 0.9685956358633105])
+        # rightHandCartesianWP.append([0.28750632029946943, -0.17027266952524717, 0.9597899484960192])
+        # rightHandCartesianWP.append([0.28664480323526653, -0.1614844904659368, 0.9597645035426976])
 
-        rightHandOrientationWP.append([0.6030193813610835, -0.6721560435204502, 0.42962062201648427])
-        rightHandOrientationWP.append([0.6847262101203426, -0.7283419844816242, 0.025845131371348223])
-        rightHandOrientationWP.append([0.8206856971797751, -0.5665754546656667, -0.0739407912788299])
+        rightHandCartesianWP.append(PIPE_DISPLACEMENT) # displacement 1
+
+        # rightHandOrientationWP.append([0.6030193813610835, -0.6721560435204502, 0.42962062201648427])
+        # rightHandOrientationWP.append([0.6847262101203426, -0.7283419844816242, 0.025845131371348223])
+        # rightHandOrientationWP.append([0.8206856971797751, -0.5665754546656667, -0.0739407912788299])
         rightHandOrientationWP.append([0.830926574184253, -0.5512666962638427, -0.07527322169782114])
 
        
@@ -453,7 +458,7 @@ class Demo2_ChangingObjectPositions:
         #                -0.08569654146540764, 0.07021124925432169, -0.15649686418494702, 1.7194162945362514, 1.51, -0.07, -0.18])   # right arm
 
         # This is the last configuration of the grabMetalTube trajectory
-        rightHandCartesianWP.append([0.28664480323526653, -0.1614844904659368, 0.9597645035426976])
+        rightHandCartesianWP.append(PIPE_DISPLACEMENT)
         rightHandOrientationWP.append([0.830926574184253, -0.5512666962638427, -0.07527322169782114])
         jPosWP.append([0.09590536736161434, 0.09590536736161434, 
                        0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,     # left arm
