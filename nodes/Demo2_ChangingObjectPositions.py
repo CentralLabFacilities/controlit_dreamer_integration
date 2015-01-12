@@ -35,8 +35,8 @@ DEFAULT_POSTURE = [0.0, 0.0,                                    # torso
                    0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,  # left arm
                    0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0]  # right arm
 
-PIPE_DISPLACEMENT = [0.28664480323526653, -0.1614844904659368, 0.9597645035426976]  # no dispacement
-PIPE_DISPLACEMENT = [0.33, -0.2, 0.9597645035426976]  # displacement 1
+# PIPE_LOCATION = [0.28664480323526653, -0.1614844904659368, 0.9597645035426976]  # original
+PIPE_LOCATION = [0.33, -0.2, 0.9597645035426976]  # displacement 1
 
 class Demo2_ChangingObjectPositions:
     def __init__(self):
@@ -326,49 +326,67 @@ class Demo2_ChangingObjectPositions:
         rightHandOrientationWP = []
         jPosWP = []
 
+        originalCartesianPoint = [0.25822435038901964, -0.1895604971725577, 1.0461857180093073]
+
         # This is the last configuration of the gotToReady trajectory
-        rightHandCartesianWP.append([0.25822435038901964, -0.1895604971725577, 1.0461857180093073])
-        rightHandOrientationWP.append([0.5409881394605172, -0.8191390472602035, 0.19063854336595773])
-        jPosWP.append([0.06796522908004803, 0.06796522908004803,                                                                   # torso
-                       0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,     # left arm
-                       -0.08569654146540764, 0.07021124925432169, -0.15649686418494702, 1.7194162945362514, 1.51, -0.07, -0.18])   # right arm
+        rightHandCartesianWP.append(originalCartesianPoint)
+        # rightHandOrientationWP.append([0.5409881394605172, -0.8191390472602035, 0.19063854336595773])
+        # jPosWP.append([0.06796522908004803, 0.06796522908004803,                                                                   # torso
+        #                0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,     # left arm
+        #                -0.08569654146540764, 0.07021124925432169, -0.15649686418494702, 1.7194162945362514, 1.51, -0.07, -0.18])   # right arm
+
+        # linearly interpolate four points between the original point and the pipe's location
+        for ii in range(4):
+            step = ii + 1.0
+            xx = (PIPE_LOCATION[0] - originalCartesianPoint[0]) / 4.0 * step + originalCartesianPoint[0]
+            yy = (PIPE_LOCATION[1] - originalCartesianPoint[1]) / 4.0 * step + originalCartesianPoint[1]
+            zz = (PIPE_LOCATION[2] - originalCartesianPoint[2]) / 4.0 * step + originalCartesianPoint[2]
+            cartesianPos = []
+            cartesianPos.append(xx)
+            cartesianPos.append(yy)
+            cartesianPos.append(zz)
+            rightHandCartesianWP.append(cartesianPos)
+        
 
         # Create the WayPoints
-        # rightHandCartesianWP.append([0.3137686413286708, -0.26659865390759796, 1.0541700108404664])
+        # rightHandCartesianWP.append([0.25822435038901964, -0.1895604971725577, 1.0461857180093073])
+        # rightHandCartesianWP.append([0.25822435038901964, -0.1895604971725577, 1.0461857180093073])
+        # rightHandCartesianWP.append([0.25822435038901964, -0.1895604971725577, 1.0461857180093073])
         # rightHandCartesianWP.append([0.2926328098812538, -0.22212659727858264, 0.9685956358633105])
         # rightHandCartesianWP.append([0.28750632029946943, -0.17027266952524717, 0.9597899484960192])
         # rightHandCartesianWP.append([0.28664480323526653, -0.1614844904659368, 0.9597645035426976])
+        rightHandCartesianWP.append(PIPE_LOCATION) # displacement 1
 
-        rightHandCartesianWP.append(PIPE_DISPLACEMENT) # displacement 1
-
+        # rightHandOrientationWP.append([0.5409881394605172, -0.8191390472602035, 0.19063854336595773])
+        # rightHandOrientationWP.append([0.5409881394605172, -0.8191390472602035, 0.19063854336595773])
+        # rightHandOrientationWP.append([0.5409881394605172, -0.8191390472602035, 0.19063854336595773])
         # rightHandOrientationWP.append([0.6030193813610835, -0.6721560435204502, 0.42962062201648427])
         # rightHandOrientationWP.append([0.6847262101203426, -0.7283419844816242, 0.025845131371348223])
         # rightHandOrientationWP.append([0.8206856971797751, -0.5665754546656667, -0.0739407912788299])
-        rightHandOrientationWP.append([0.830926574184253, -0.5512666962638427, -0.07527322169782114])
-
+        # rightHandOrientationWP.append([0.830926574184253, -0.5512666962638427, -0.07527322169782114])
        
-        jPosWP.append([0.09594703765058178, 0.09594703765058178, 
-                       0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,     # left arm
-                       0.09817730939874109, 0.1020579374634571, 0.0836978735049272, 1.6235470575907778, 1.054005683347489, -0.6934016966989962, -0.4214573788290379])
-        jPosWP.append([0.09578187031551673, 0.09578187031551673, 
-                       0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,     # left arm
-                       0.07827516108651086, 0.06968225019914681, -0.0651398024593994, 1.3456921412703295, 1.3295641014614135, -0.6445024104856519, -0.4748814187628949])
-        jPosWP.append([0.09578234092970726, 0.09578234092970726, 
-                       0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,     # left arm
-                       0.09157211596703656, 0.041108271773515705, -0.22384970463739684, 1.3076704033792463, 1.353903257753508, -0.7185241326180924, -0.454150460888528])
-        jPosWP.append([0.09590536736161434, 0.09590536736161434, 
-                       0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,     # left arm
-                       0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377])
+        # jPosWP.append([0.09594703765058178, 0.09594703765058178, 
+        #                0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,     # left arm
+        #                0.09817730939874109, 0.1020579374634571, 0.0836978735049272, 1.6235470575907778, 1.054005683347489, -0.6934016966989962, -0.4214573788290379])
+        # jPosWP.append([0.09578187031551673, 0.09578187031551673, 
+        #                0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,     # left arm
+        #                0.07827516108651086, 0.06968225019914681, -0.0651398024593994, 1.3456921412703295, 1.3295641014614135, -0.6445024104856519, -0.4748814187628949])
+        # jPosWP.append([0.09578234092970726, 0.09578234092970726, 
+        #                0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,     # left arm
+        #                0.09157211596703656, 0.041108271773515705, -0.22384970463739684, 1.3076704033792463, 1.353903257753508, -0.7185241326180924, -0.454150460888528])
+        # jPosWP.append([0.09590536736161434, 0.09590536736161434, 
+        #                0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,     # left arm
+        #                0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377])
 
         # Create the trajectory generators
         rightHandCartesianTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(rightHandCartesianWP)
-        rightHandOrientationTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(rightHandOrientationWP)
-        jPosTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(jPosWP)
+        # rightHandOrientationTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(rightHandOrientationWP)
+        # jPosTG = TrajectoryGeneratorCubicSpline.TrajectoryGeneratorCubicSpline(jPosWP)
 
         TOTAL_TRAVEL_TIME = 5.0 # seconds
         rightHandCartesianTG.generateTrajectory(TOTAL_TRAVEL_TIME)
-        rightHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
-        jPosTG.generateTrajectory(TOTAL_TRAVEL_TIME)
+        # rightHandOrientationTG.generateTrajectory(TOTAL_TRAVEL_TIME)
+        # jPosTG.generateTrajectory(TOTAL_TRAVEL_TIME)
 
         if ENABLE_USER_PROMPTS:
             index = raw_input("Position right hand around metal tube? Y/n\n")
@@ -384,23 +402,23 @@ class Demo2_ChangingObjectPositions:
 
             if deltaTime >= TOTAL_TRAVEL_TIME:
                 goalRightHandCartPos = rightHandCartesianTG.getLastPoint()
-                goalRightHandOrientation = rightHandOrientationTG.getLastPoint()
-                goalJPos = jPosTG.getLastPoint()
+                # goalRightHandOrientation = rightHandOrientationTG.getLastPoint()
+                # goalJPos = jPosTG.getLastPoint()
                 done = True
             else:
                 goalRightHandCartPos = rightHandCartesianTG.getPoint(deltaTime)
-                goalRightHandOrientation = rightHandOrientationTG.getPoint(deltaTime)
-                goalJPos = jPosTG.getPoint(deltaTime)
+                # goalRightHandOrientation = rightHandOrientationTG.getPoint(deltaTime)
+                # goalJPos = jPosTG.getPoint(deltaTime)
 
             # Save the new goals in ROS messages
             self.rightHandCartesianGoalMsg.data = goalRightHandCartPos
-            self.rightHandOrientationGoalMsg.data = goalRightHandOrientation
-            self.postureGoalMsg.data = goalJPos
+            # self.rightHandOrientationGoalMsg.data = goalRightHandOrientation
+            # self.postureGoalMsg.data = goalJPos
 
             # Publish the ROS messages
             self.rightCartesianTaskGoalPublisher.publish(self.rightHandCartesianGoalMsg)
-            self.rightOrientationTaskGoalPublisher.publish(self.rightHandOrientationGoalMsg)
-            self.postureTaskGoalPublisher.publish(self.postureGoalMsg)
+            # self.rightOrientationTaskGoalPublisher.publish(self.rightHandOrientationGoalMsg)
+            # self.postureTaskGoalPublisher.publish(self.postureGoalMsg)
 
             if not done:
                 rospy.sleep(0.01) # 100Hz
@@ -448,21 +466,19 @@ class Demo2_ChangingObjectPositions:
         jPosWP = []
 
 
-        # This is the last configuration of the gotToReady trajectory
-        # rightHandCartesianWP.append([0.25822435038901964, -0.1895604971725577, 1.0461857180093073])
-        # rightHandOrientationWP.append([0.5409881394605172, -0.8191390472602035, 0.19063854336595773])
-        # leftHandCartesianWP.append([0.25822435038901964, 0.1895604971725577, 1.0461857180093073])
-        # leftHandOrientationWP.append([0.5409881394605172, 0.8191390472602035, 0.19063854336595773])
-        # jPosWP.append([0.06796522908004803, 0.06796522908004803,                                                                   # torso
-        #                -0.08569654146540764, 0.07021124925432169, 0,                    1.7194162945362514, 1.51, -0.07, -0.18,  # left arm
-        #                -0.08569654146540764, 0.07021124925432169, -0.15649686418494702, 1.7194162945362514, 1.51, -0.07, -0.18])   # right arm
+        # This is the last configuration of the grabMetalTube trajectory
+        rightHandCartesianWP.append(PIPE_LOCATION)
+        rightHandOrientationWP.append([0.5409881394605172, -0.8191390472602035, 0.19063854336595773])        
+        jPosWP.append([0.06796522908004803, 0.06796522908004803,                                                                   # torso
+                       0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,     # left arm
+                       -0.08569654146540764, 0.07021124925432169, -0.15649686418494702, 1.7194162945362514, 1.51, -0.07, -0.18])   # right arm
 
         # This is the last configuration of the grabMetalTube trajectory
-        rightHandCartesianWP.append(PIPE_DISPLACEMENT)
-        rightHandOrientationWP.append([0.830926574184253, -0.5512666962638427, -0.07527322169782114])
-        jPosWP.append([0.09590536736161434, 0.09590536736161434, 
-                       0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,     # left arm
-                       0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377])
+        # rightHandCartesianWP.append(PIPE_LOCATION)
+        # rightHandOrientationWP.append([0.830926574184253, -0.5512666962638427, -0.07527322169782114])
+        # jPosWP.append([0.09590536736161434, 0.09590536736161434, 
+        #                0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,     # left arm
+        #                0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377])
 
         # 2015.01.06 Trajectory
         rightHandCartesianWP.append([0.25822435038901964, -0.1895604971725577, 1.0461857180093073])
