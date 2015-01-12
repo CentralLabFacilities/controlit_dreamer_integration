@@ -37,7 +37,8 @@ DEFAULT_POSTURE = [0.0, 0.0,                                    # torso
 
 # PIPE_LOCATION = [0.28664480323526653, -0.1614844904659368, 0.9597645035426976]  # original
 # PIPE_LOCATION = [0.33, -0.2, 0.9597645035426976]  # displacement 1
-PIPE_LOCATION = [0.38, 0.0, 0.9597645035426976]  # displacement 2
+# PIPE_LOCATION = [0.38, 0.0, 0.9597645035426976]  # displacement 2
+PIPE_LOCATION = [0.2, -0.1, 0.9597645035426976]  # displacement 3
 
 class Demo2_ChangingObjectPositions:
     def __init__(self):
@@ -443,17 +444,6 @@ class Demo2_ChangingObjectPositions:
             self.rightHandCmdMsg.data = True
             self.rightHandCmdPublisher.publish(self.rightHandCmdMsg)
 
-        releasePowerGrasp = True
-
-        if ENABLE_USER_PROMPTS:
-            index = raw_input("Release right hand power grasp? Y/n\n")
-            if index == "N" or index == "n":
-                releasePowerGrasp = False
-
-        if releasePowerGrasp:
-            self.rightHandCmdMsg.data = False  # relax grasp
-            self.rightHandCmdPublisher.publish(self.rightHandCmdMsg)
-
         # print "Done grabbing metal tube!"
         return not rospy.is_shutdown()
 
@@ -559,6 +549,17 @@ class Demo2_ChangingObjectPositions:
 
             if not done:
                 rospy.sleep(0.01) # 100Hz
+
+        releasePowerGrasp = True
+
+        if ENABLE_USER_PROMPTS:
+            index = raw_input("Release right hand power grasp? Y/n\n")
+            if index == "N" or index == "n":
+                releasePowerGrasp = False
+
+        if releasePowerGrasp:
+            self.rightHandCmdMsg.data = False  # relax grasp
+            self.rightHandCmdPublisher.publish(self.rightHandCmdMsg)
 
         print "Done going to idle position!"
         return True
