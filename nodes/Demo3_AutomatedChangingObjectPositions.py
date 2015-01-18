@@ -20,7 +20,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 import TrajectoryGeneratorCubicSpline
 
-ENABLE_USER_PROMPTS = True
+ENABLE_USER_PROMPTS = False
 
 NUM_CARTESIAN_DOFS = 3 # Cartesian goal is x, y, z
 NUM_ORIENTATION_DOFS = 3 # Orientation is defined using a x, y, z vector
@@ -37,16 +37,23 @@ DEFAULT_POSTURE = [0.0, 0.0,                                    # torso
                    0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0]  # right arm
 
 PIPE_LOCATIONS = [
-    [0.28664480323526653, -0.1614844904659368, 0.9597645035426976],
-    [0.33, -0.2, 0.9597645035426976],  # displacemen
-    [0.38, 0.0, 0.9597645035426976],  # displacemen
-    [0.2, -0.1, 0.9597645035426976],  # displacemen
-    [0.38, -0.16, 1.2],  # displacemen
-    [0.48, -0.16, 1.3],  # displacemen
-    [0.2, -0.16, 1.15],  # displacemen
-    [0.28, -0.3, 1.0],  # displacemen
-    [0.28, -0.3, 1.2],  # displacemen
-    [0.35, -0.35, 1.1]]  # displacement 9
+    # [0.28664480323526653, -0.1614844904659368, 0.9597645035426976],  # 0
+    [0.33, -0.2, 0.9597645035426976],
+    [0.33, 0.2, 0.9597645035426976],
+    # [0.38, 0.0, 0.9597645035426976], 
+    [0.2, -0.1, 0.9597645035426976], 
+    [0.38, -0.16, 1.2],
+    [0.38, 0.16, 1.2],
+    [0.48, -0.16, 1.3],
+    [0.48, 0.16, 1.3],
+    [0.2, -0.16, 1.15],
+    [0.2, 0.16, 1.15],
+    [0.28, -0.3, 1.0],
+    [0.28, 0.3, 1.0],
+    [0.28, -0.3, 1.2], 
+    [0.28, 0.3, 1.2], 
+    [0.35, -0.35, 1.1]
+    [0.35, 0.35, 1.1]]
 
 class Demod_AutomatedChangingObjectPositions:
     def __init__(self):
@@ -417,13 +424,6 @@ class Demod_AutomatedChangingObjectPositions:
         jPosWP.append([0.06796522908004803, 0.06796522908004803,                                                                   # torso
                        0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,     # left arm
                        -0.08569654146540764, 0.07021124925432169, -0.15649686418494702, 1.7194162945362514, 1.51, -0.07, -0.18])   # right arm
-
-        # This is the last configuration of the positionRightHand trajectory
-        # rightHandCartesianWP.append(PIPE_LOCATION)
-        # rightHandOrientationWP.append([0.830926574184253, -0.5512666962638427, -0.07527322169782114])
-        # jPosWP.append([0.09590536736161434, 0.09590536736161434, 
-        #                0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,     # left arm
-        #                0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377])
 
         # 2015.01.06 Trajectory
         rightHandCartesianWP.append([0.25822435038901964, -0.1895604971725577, 1.0461857180093073])
