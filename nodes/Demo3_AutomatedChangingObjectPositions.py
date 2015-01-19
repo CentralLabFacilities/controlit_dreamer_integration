@@ -41,7 +41,7 @@ PIPE_LOCATIONS = [
     [0.33, -0.2, 0.9597645035426976],
     [0.33, 0.2, 0.9597645035426976],
     # [0.38, 0.0, 0.9597645035426976], 
-    [0.2, -0.1, 0.9597645035426976], 
+    [0.3, -0.1, 0.9597645035426976], 
     [0.38, -0.16, 1.2],
     [0.38, 0.16, 1.2],
     [0.48, -0.16, 1.3],
@@ -49,10 +49,10 @@ PIPE_LOCATIONS = [
     [0.2, -0.16, 1.15],
     [0.2, 0.16, 1.15],
     [0.28, -0.3, 1.0],
-    [0.28, 0.3, 1.0],
+    [0.35, 0.2, 1.0],
     [0.28, -0.3, 1.2], 
-    [0.28, 0.3, 1.2], 
-    [0.35, -0.35, 1.1]
+    [0.32, 0.2, 1.2], 
+    [0.35, -0.35, 1.1],
     [0.35, 0.35, 1.1]]
 
 class Demod_AutomatedChangingObjectPositions:
@@ -474,6 +474,8 @@ class Demod_AutomatedChangingObjectPositions:
             if index == "N" or index == "n":
                 return False  # quit
 
+        print "Going to Idle..."
+        
         # Follow the trajectories
         startTime = self.getTimeSeconds()
         done = False
