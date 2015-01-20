@@ -152,3 +152,19 @@ class Trajectory:
         self.rhOrientWP.insert(0, traj.getFinalRHOrient())
         self.lhOrientWP.insert(0, traj.getFinalLHOrient())
         self.jPosWP.insert(0, traj.getFinalPosture())
+
+    def __str__(self):
+        return "  - name: {0}\n"\
+               "  - duration: {1}\n"\
+               "  - right hand Cartesian way points:\n        {2}\n"\
+               "  - left hand Cartesian way points:\n        {3}\n"\
+               "  - right hand orientation way points:\n        {4}\n"\
+               "  - left hand orientation way points:\n        {5}\n"\
+               "  - posture way points:\n        {6}".format(
+                        self.name, self.duration,
+                        self.rhCartWP, self.lhCartWP,
+                        self.rhOrientWP, self.lhOrientWP,
+                        self.jPosWP)
+
+    def __repr__(self):
+        return self.__str__()
