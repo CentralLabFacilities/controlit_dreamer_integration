@@ -199,7 +199,6 @@ class Demo1_ProductDisassembly:
         self.trajRemoveLeftHand.makeRHCartStatic(self.trajRemoveValve)
         self.trajRemoveLeftHand.makeRHOrientStatic(self.trajRemoveValve)
 
-
         self.trajRemoveLeftHand.addLHCartWP([0.5243759641170038, 0.4270759618427376, 1.26])
         self.trajRemoveLeftHand.addLHCartWP([0.5660859116491781, 0.30329916134206, 1.3])
         self.trajRemoveLeftHand.addLHCartWP([0.5331769484913014, 0.33551507563836863, 1.4390766724027195])
@@ -231,7 +230,7 @@ class Demo1_ProductDisassembly:
 
         # ==============================================================================================        
         self.trajStoreTube = Trajectory.Trajectory("StoreTube", 5.0)
-        self.trajStoreTube.setPrevTraj(self.trajRemoveValve)
+        self.trajStoreTube.setPrevTraj(self.trajRemoveLeftHand)
 
         # Left hand does not move
         self.trajStoreTube.makeLHCartStatic(self.trajRemoveLeftHand)
