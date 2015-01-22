@@ -60,6 +60,7 @@ def main():
     outcome = sm.execute()
 
     # Wait for ctrl-c to stop the application
+    print "Test FSM done, waiting until ctrl+c is hit..."
     rospy.spin()
     sis.stop()
 
