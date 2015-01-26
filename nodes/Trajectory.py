@@ -16,6 +16,8 @@ class Trajectory:
         self.lhOrientWP = []   # left hand orientation trajectory
         self.jPosWP = []       # posture trajectory
 
+        self.prevTrajSet = False
+
     def setInitRHCartWP(self, wp):
         ''' 
         Sets the first waypoint in the right hand Cartesian space trajectory.
@@ -147,11 +149,19 @@ class Trajectory:
         Updates this trajectory to start in the same configuration
         as the end of the previous trajectory.
         '''
-        self.rhCartWP.insert(0, traj.getFinalRHCartPos())
-        self.lhCartWP.insert(0, traj.getFinalLHCartPos())
-        self.rhOrientWP.insert(0, traj.getFinalRHOrient())
-        self.lhOrientWP.insert(0, traj.getFinalLHOrient())
-        self.jPosWP.insert(0, traj.getFinalPosture())
+        if not self.prevTrajSet:
+            self.rhCartWP.insert(0, traj.getFinalRHCartPos())
+            self.lhCartWP.insert(0, traj.getFinalLHCartPos())
+            self.rhOrientWP.insert(0, traj.getFinalRHOrient())
+            self.lhOrientWP.insert(0, traj.getFinalLHOrient())
+            self.jPosWP.insert(0, traj.getFinalPosture())
+            self.prevTrajSet = True
+        else:
+            self.rhCartWP[0] = traj.getFinalRHCartPos()
+            self.lhCartWP[0] = traj.getFinalLHCartPos()
+            self.rhOrientWP[0] = traj.getFinalRHOrient()
+            self.lhOrientWP[0] = traj.getFinalLHOrient()
+            self.jPosWP[0] = traj.getFinalPosture()
 
     def __str__(self):
         return "  - name: {0}\n"\

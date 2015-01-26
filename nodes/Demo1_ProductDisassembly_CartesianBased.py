@@ -9,6 +9,8 @@ import time
 import math
 import threading
 import rospy
+import smach
+import smach_ros
 
 from std_msgs.msg import Float64, Float64MultiArray, MultiArrayDimension, Bool, Int32
 
@@ -32,6 +34,109 @@ ENABLE_USER_PROMPTS = False
 DEFAULT_POSTURE = [0.0, 0.0,                                    # torso
                    0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,  # left arm
                    0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0]  # right arm
+
+class TrajectoryState(smach.State):
+    def __init__(self, dreamerInterface, goodResult, traj):
+        smach.State.__init__(self, outcomes=[goodResult, "exit"])
+        self.dreamerInterface = dreamerInterface
+        self.goodResult = goodResult
+        self.traj = traj
+
+    def execute(self, userdata):
+        rospy.loginfo('Executing TrajectoryState')
+
+        if self.dreamerInterface.followTrajectory(self.traj):
+            return self.goodResult
+        else:
+            return "exit"
+
+class RightHandPowerGraspState(smach.State):
+    def __init__(self, dreamerInterface, goodResult, doGrasp, includeIndexFinger, includeMiddleFinger):
+        smach.State.__init__(self, outcomes=[goodResult, "exit"])
+        self.dreamerInterface = dreamerInterface
+        self.goodResult = goodResult
+        self.doGrasp = doGrasp
+        self.includeIndexFinger = includeIndexFinger
+        self.includeMiddleFinger = includeMiddleFinger
+
+    def execute(self, userdata):
+        rospy.loginfo('Executing RightHandPowerGraspState')
+
+        if self.doGrasp:
+            doPowerGrasp = True
+            if ENABLE_USER_PROMPTS:
+                index = raw_input("Perform right hand power grasp? Y/n\n")
+                if index == "N" or index == "n":
+                    doPowerGrasp = False
+            
+            if doPowerGrasp:
+                self.dreamerInterface.rightIndexFingerCmdMsg.data = self.includeIndexFinger
+                self.dreamerInterface.selectIndexFingerPublisher.publish(self.dreamerInterface.rightIndexFingerCmdMsg)
+    
+                self.dreamerInterface.rightMiddleFingerCmdMsg.data = self.includeMiddleFinger
+                self.dreamerInterface.selectMiddleFingerPublisher.publish(self.dreamerInterface.rightMiddleFingerCmdMsg)
+    
+                self.dreamerInterface.rightHandCmdMsg.data = True
+                self.dreamerInterface.rightHandCmdPublisher.publish(self.dreamerInterface.rightHandCmdMsg)
+        else:
+            self.dreamerInterface.rightHandCmdMsg.data = False
+            self.dreamerInterface.rightHandCmdPublisher.publish(self.dreamerInterface.rightHandCmdMsg)
+        
+        if rospy.is_shutdown():
+            return "exit"
+        else:
+            return self.goodResult
+
+class LeftGripperGraspState(smach.State):
+    def __init__(self, dreamerInterface, goodResult, doGrasp):
+        smach.State.__init__(self, outcomes=[goodResult, "exit"])
+        self.dreamerInterface = dreamerInterface
+        self.goodResult = goodResult
+        self.doGrasp = doGrasp
+
+    def execute(self, userdata):
+        rospy.loginfo("Executing LeftGripperGraspState")
+
+        if self.doGrasp:
+            performGrasp = True
+            if ENABLE_USER_PROMPTS:
+                index = raw_input("Perform left gripper power grasp? Y/n\n")
+                if index == "N" or index == "n":
+                    performGrasp = False
+            
+            if performGrasp:
+                self.dreamerInterface.leftGripperCmdMsg.data = True
+                self.dreamerInterface.leftGripperCmdPublisher.publish(self.dreamerInterface.leftGripperCmdMsg)
+        else:
+            releaseGripper = True
+            if ENABLE_USER_PROMPTS:
+                index = raw_input("Release left gripper power grasp? Y/n\n")
+                if index == "N" or index == "n":
+                    releaseGripper = False
+
+            if releaseGripper:
+                self.dreamerInterface.leftGripperCmdMsg.data = False
+                self.dreamerInterface.leftGripperCmdPublisher.publish(self.dreamerInterface.leftGripperCmdMsg)
+
+        if rospy.is_shutdown():
+            return "exit"
+        else:
+            return self.goodResult
+
+class SleepState(smach.State):
+    def __init__(self, goodResult, period):
+        smach.State.__init__(self, outcomes=[goodResult, "exit"])
+        self.goodResult = goodResult
+        self.period = period
+
+    def execute(self, userdata):
+        rospy.loginfo("Executing SleepState")
+        rospy.sleep(self.period)
+
+        if rospy.is_shutdown():
+            return "exit"
+        else:
+            return self.goodResult
 
 class Demo1_ProductDisassembly:
     def __init__(self):
@@ -337,6 +442,73 @@ class Demo1_ProductDisassembly:
         self.trajGoToIdle.addPostureWP([0.0686363596318602,  0.0686363596318602,  -1.0914342991625676,  0.39040871074764566, -0.03720209764435387, 1.7583823306095314, 0.05438773164693069, -0.20257591921666193, 0.06386553930484179, -1.0914342991625676,  0.39040871074764566, -0.03720209764435387, 1.7583823306095314, 0.05438773164693069, -0.20257591921666193, 0.06386553930484179])
         self.trajGoToIdle.addPostureWP([0.06826499288341317, 0.06826499288341317, -0.6249282444166423,  0.3079607416653748,  -0.1220981510225299,  1.3675006234559883, 0.06394316468492173, -0.20422693251592328, 0.06223224746326836, -0.6249282444166423,  0.3079607416653748,  -0.1220981510225299,  1.3675006234559883, 0.06394316468492173, -0.20422693251592328, 0.06223224746326836])
 
+    def createFSM(self):
+        # define the states
+        goToReadyState = TrajectoryState(self.dreamerInterface, "goToReadyDone", self.trajGoToReady)
+        grabTubeState = TrajectoryState(self.dreamerInterface, "grabTubeDone", self.trajGrabTube)
+        rightHandGraspState = RightHandPowerGraspState(self.dreamerInterface, "doneGrabbingTube", True, False, False)
+        grabValveState = TrajectoryState(self.dreamerInterface, "grabValveDone", self.trajGrabValve)
+        leftGripperGraspState = LeftGripperGraspState(self.dreamerInterface, "doneGrabbingValve", True)
+        middleFingerGraspState = RightHandPowerGraspState(self.dreamerInterface, "doneMiddleFingerGrasp", True, False, True)
+        sleepState = SleepState("doneSleep", 3)  # three seconds to allow middle finger to grasp tube
+        removeValveState = TrajectoryState(self.dreamerInterface, "removeValveDone", self.trajRemoveValve)
+        releaseGripperState = LeftGripperGraspState(self.dreamerInterface, "doneReleasingValve", False)
+        indexFingerGraspState = RightHandPowerGraspState(self.dreamerInterface, "doneIndexFingerGrasp", True, True, True)
+        removeLeftGripperState = TrajectoryState(self.dreamerInterface, "removeLeftGripperDone", self.trajRemoveLeftHand)
+        storeTubeState = TrajectoryState(self.dreamerInterface, "storeTubeDone", self.trajStoreTube)
+        dropTubeState = RightHandPowerGraspState(self.dreamerInterface, "doneDroppingTube", False, False, False)
+        removeRightHandState = TrajectoryState(self.dreamerInterface, "removeRightHandDone", self.trajRemoveRightHand)
+        goToIdleState = TrajectoryState(self.dreamerInterface, "doneGoToIdle", self.trajGoToIdle)
+
+        # wire the states into a FSM
+        self.fsm = smach.StateMachine(outcomes=['exit'])
+        with self.fsm:
+            smach.StateMachine.add("GoToReady", goToReadyState, 
+                transitions={'goToReadyDone':'GrabTube',
+                             'exit':'exit'})
+            smach.StateMachine.add("GrabTube", grabTubeState, 
+                transitions={'grabTubeDone':'RightHandInitialGraspState',
+                             'exit':'exit'})
+            smach.StateMachine.add("RightHandInitialGraspState", rightHandGraspState, 
+                transitions={'doneGrabbingTube':'GrabValveState',
+                             'exit':'exit'})
+            smach.StateMachine.add("GrabValveState", grabValveState, 
+                transitions={'grabValveDone':'CloseLeftGripperState',
+                             'exit':'exit'})
+            smach.StateMachine.add("CloseLeftGripperState", leftGripperGraspState, 
+                transitions={'doneGrabbingValve':'AddMiddleFingerState',
+                             'exit':'exit'})
+            smach.StateMachine.add("AddMiddleFingerState", middleFingerGraspState, 
+                transitions={'doneMiddleFingerGrasp':'SleepState',
+                             'exit':'exit'})
+            smach.StateMachine.add("SleepState", sleepState, 
+                transitions={'doneSleep':'RemoveValveState',
+                             'exit':'exit'})
+            smach.StateMachine.add("RemoveValveState", removeValveState, 
+                transitions={'removeValveDone':'ReleaseGripperState',
+                             'exit':'exit'})
+            smach.StateMachine.add("ReleaseGripperState", releaseGripperState, 
+                transitions={'doneReleasingValve':'AddIndexFingerState',
+                             'exit':'exit'})
+            smach.StateMachine.add("AddIndexFingerState", indexFingerGraspState, 
+                transitions={'doneIndexFingerGrasp':'RemoveLeftGripperState',
+                             'exit':'exit'})
+            smach.StateMachine.add("RemoveLeftGripperState", removeLeftGripperState, 
+                transitions={'removeLeftGripperDone':'StoreTubeState',
+                             'exit':'exit'})
+            smach.StateMachine.add("StoreTubeState", storeTubeState, 
+                transitions={'storeTubeDone':'DropTubeState',
+                             'exit':'exit'})
+            smach.StateMachine.add("DropTubeState", dropTubeState, 
+                transitions={'doneDroppingTube':'RemoveRightHandState',
+                             'exit':'exit'})
+            smach.StateMachine.add("RemoveRightHandState", removeRightHandState, 
+                transitions={'removeRightHandDone':'GoToIdleState',
+                             'exit':'exit'})
+            smach.StateMachine.add("GoToIdleState", goToIdleState, 
+                transitions={'doneGoToIdle':'exit',
+                             'exit':'exit'})
+
     def run(self):
         """
         Runs the Cartesian and orientation demo 1 behavior.
@@ -346,114 +518,22 @@ class Demo1_ProductDisassembly:
             return
 
         self.createTrajectories()
+        self.createFSM()
+
+        # Create and start the introspection server
+        sis = smach_ros.IntrospectionServer('server_name', self.fsm, '/SM_ROOT')
+        sis.start()
 
         index = raw_input("Start demo? Y/n\n")
         if index == "N" or index == "n":
             return
 
-        #=============================================================================
-        if not self.dreamerInterface.followTrajectory(self.trajGoToReady):
-            return
+        outcome = self.fsm.execute()
 
-        #=============================================================================
-        if not self.dreamerInterface.followTrajectory(self.trajGrabTube):
-            return
+        print "Cartesian based demo 1 done, waiting until ctrl+c is hit..."
+        rospy.spin()  # just to prevent this node from exiting
+        sis.stop()
 
-        doPowerGrasp = True
-        if ENABLE_USER_PROMPTS:
-            index = raw_input("Perform right hand power grasp? Y/n\n")
-            if index == "N" or index == "n":
-                doPowerGrasp = False
-        
-        if doPowerGrasp:
-            # Exclude index finger from power grasp
-            self.dreamerInterface.rightIndexFingerCmdMsg.data = False
-            self.dreamerInterface.selectIndexFingerPublisher.publish(self.dreamerInterface.rightIndexFingerCmdMsg)
-
-            # Exclude midle finger from power grasp
-            self.dreamerInterface.rightMiddleFingerCmdMsg.data = False
-            self.dreamerInterface.selectMiddleFingerPublisher.publish(self.dreamerInterface.rightMiddleFingerCmdMsg)
-
-            self.dreamerInterface.rightHandCmdMsg.data = True
-            self.dreamerInterface.rightHandCmdPublisher.publish(self.dreamerInterface.rightHandCmdMsg)
-
-        #=============================================================================
-        if not self.dreamerInterface.followTrajectory(self.trajGrabValve):
-            return
-
-        performGrasp = True
-        if ENABLE_USER_PROMPTS:
-            index = raw_input("Perform left gripper power grasp? Y/n\n")
-            if index == "N" or index == "n":
-                performGrasp = False
-        
-        if performGrasp:
-            self.dreamerInterface.leftGripperCmdMsg.data = True
-            self.dreamerInterface.leftGripperCmdPublisher.publish(self.dreamerInterface.leftGripperCmdMsg)
-
-
-        addMiddleFinger = True
-        if ENABLE_USER_PROMPTS:
-            index = raw_input("Add middle finger to right hand power grasp? Y/n\n")
-            if index == "N" or index == "n":
-                addMiddleFinger = False
-
-        if addMiddleFinger:
-            self.dreamerInterface.rightMiddleFingerCmdMsg.data = True
-            self.dreamerInterface.selectMiddleFingerPublisher.publish(self.dreamerInterface.rightMiddleFingerCmdMsg)
-
-            rospy.sleep(3) # three seconds to allow middle finger to grasp tube
-
-        #=============================================================================
-        if not self.dreamerInterface.followTrajectory(self.trajRemoveValve):
-            return
-
-        releaseGripper = True
-        if ENABLE_USER_PROMPTS:
-            index = raw_input("Release left gripper power grasp? Y/n\n")
-            if index == "N" or index == "n":
-                releaseGripper = False
-
-        if releaseGripper:
-            self.dreamerInterface.leftGripperCmdMsg.data = False  # relax grasp
-            self.dreamerInterface.leftGripperCmdPublisher.publish(self.dreamerInterface.leftGripperCmdMsg)
-
-        addIndexFinger = True
-        if ENABLE_USER_PROMPTS:
-            index = raw_input("Add index finger to right hand power grasp? Y/n\n")
-            if index == "N" or index == "n":
-                addIndexFinger = False
-
-        if addIndexFinger:
-            self.dreamerInterface.rightIndexFingerCmdMsg.data = True
-            self.dreamerInterface.selectIndexFingerPublisher.publish(self.dreamerInterface.rightIndexFingerCmdMsg)
-
-        #=============================================================================
-        if not self.dreamerInterface.followTrajectory(self.trajRemoveLeftHand):
-            return
-
-        #=============================================================================
-        if not self.dreamerInterface.followTrajectory(self.trajStoreTube):
-            return
-
-        releasePowerGrasp = True
-
-        if ENABLE_USER_PROMPTS:
-            index = raw_input("Release right hand power grasp? Y/n\n")
-            if index == "N" or index == "n":
-                releasePowerGrasp = False
-
-        if releasePowerGrasp:
-            self.dreamerInterface.rightHandCmdMsg.data = False  # relax grasp
-            self.dreamerInterface.rightHandCmdPublisher.publish(self.dreamerInterface.rightHandCmdMsg)
-
-        #=============================================================================
-        if not self.dreamerInterface.followTrajectory(self.trajRemoveRightHand):
-            return
-
-        #=============================================================================
-        if not self.dreamerInterface.followTrajectory(self.trajGoToIdle):
-            return
 
 # Main method
 if __name__ == "__main__":
@@ -465,5 +545,4 @@ if __name__ == "__main__":
     # t.start()
     demo.run()
 
-    print "Cartesian based demo 1 done, waiting until ctrl+c is hit..."
-    rospy.spin()  # just to prevent this node from exiting
+    
