@@ -4,10 +4,8 @@
 Provides an interface to Dreamer
 '''
 
-# import sys, getopt     # for getting and parsing command line arguments
 import time
 import math
-# import threading
 import rospy
 
 from std_msgs.msg import Float64, Float64MultiArray, MultiArrayDimension, Bool, Int32

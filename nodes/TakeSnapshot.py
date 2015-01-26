@@ -160,8 +160,8 @@ class TakeSnapshot:
                 return
     
             # Take the snapshot
-            snapShot = Snapshot(self.currentRightCartesianPos, self.currentRightOrientation,
-                                self.currentLeftCartesianPos, self.currentLeftOrientation, 
+            snapShot = Snapshot(self.currentRightCartesianPos, self.currentLeftCartesianPos,
+                                self.currentRightOrientation, self.currentLeftOrientation, 
                                 self.currentPosture)
             print snapShot
             snapShots.append(snapShot)
