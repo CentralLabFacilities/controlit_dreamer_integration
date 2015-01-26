@@ -70,15 +70,11 @@ class RightHandPowerGraspState(smach.State):
                     doPowerGrasp = False
             
             if doPowerGrasp:
-                if not self.includeIndexFinger:
-                    # Exclude index finger from power grasp
-                    self.dreamerInterface.rightIndexFingerCmdMsg.data = False
-                    self.dreamerInterface.selectIndexFingerPublisher.publish(self.dreamerInterface.rightIndexFingerCmdMsg)
+                self.dreamerInterface.rightIndexFingerCmdMsg.data = self.includeIndexFinger
+                self.dreamerInterface.selectIndexFingerPublisher.publish(self.dreamerInterface.rightIndexFingerCmdMsg)
     
-                if not self.includeMiddleFinger:
-                    # Exclude middle finger from power grasp
-                    self.dreamerInterface.rightMiddleFingerCmdMsg.data = False
-                    self.dreamerInterface.selectMiddleFingerPublisher.publish(self.dreamerInterface.rightMiddleFingerCmdMsg)
+                self.dreamerInterface.rightMiddleFingerCmdMsg.data = self.includeMiddleFinger
+                self.dreamerInterface.selectMiddleFingerPublisher.publish(self.dreamerInterface.rightMiddleFingerCmdMsg)
     
                 self.dreamerInterface.rightHandCmdMsg.data = True
                 self.dreamerInterface.rightHandCmdPublisher.publish(self.dreamerInterface.rightHandCmdMsg)
@@ -473,8 +469,8 @@ class Demo1_ProductDisassembly:
             smach.StateMachine.add("GrabTube", grabTubeState, 
                 transitions={'grabTubeDone':'RightHandInitialGraspState',
                              'exit':'exit'})
-            smach.StateMachine.add("RightHandInitialGraspState", grabTubeState, 
-                transitions={'grabTubeDone':'GrabValveState',
+            smach.StateMachine.add("RightHandInitialGraspState", rightHandGraspState, 
+                transitions={'doneGrabbingTube':'GrabValveState',
                              'exit':'exit'})
             smach.StateMachine.add("GrabValveState", grabValveState, 
                 transitions={'grabValveDone':'CloseLeftGripperState',
