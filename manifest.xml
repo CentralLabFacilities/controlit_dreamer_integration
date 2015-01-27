@@ -4,7 +4,7 @@
     </description>
 
     <author>Chien-Liang Fok</author>
-    <license>LGPLv3</license>
+    <license>BSD</license>
     <review status="unreviewed" notes=""/>
     <url>http://ros.org/wiki/controlit_dreamer_integration</url>
 
