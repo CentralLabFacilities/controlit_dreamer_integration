@@ -35,6 +35,8 @@ DEFAULT_POSTURE = [0.0, 0.0,                                    # torso
                    0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,  # left arm
                    0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0]  # right arm
 
+SPEEDUP_FACTOR = 2.0
+
 class TrajectoryState(smach.State):
     def __init__(self, dreamerInterface, goodResult, traj):
         smach.State.__init__(self, outcomes=[goodResult, "exit"])
@@ -146,7 +148,7 @@ class Demo1_ProductDisassembly:
 
         # ==============================================================================================
         # Define the GoToReady trajectory
-        self.trajGoToReady = Trajectory.Trajectory("GoToReady", 10.0)
+        self.trajGoToReady = Trajectory.Trajectory("GoToReady", 10.0 / SPEEDUP_FACTOR)
 
         # These are the initial values as specified in the YAML ControlIt! configuration file
         self.trajGoToReady.setInitRHCartWP([0.033912978219317776, -0.29726881641499886, 0.82])
@@ -203,7 +205,7 @@ class Demo1_ProductDisassembly:
                        -0.08569654146540764, 0.07021124925432169, -0.15649686418494702, 1.7194162945362514, 1.51, -0.07, -0.18])   # right arm
 
         # ==============================================================================================
-        self.trajGrabTube = Trajectory.Trajectory("GrabTube", 5.0)
+        self.trajGrabTube = Trajectory.Trajectory("GrabTube", 5.0 / SPEEDUP_FACTOR)
         self.trajGrabTube.setPrevTraj(self.trajGoToReady)
 
         # Left hand does not move
@@ -235,7 +237,7 @@ class Demo1_ProductDisassembly:
                        0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377])
 
         # ==============================================================================================        
-        self.trajGrabValve = Trajectory.Trajectory("GrabValve", 5.0)
+        self.trajGrabValve = Trajectory.Trajectory("GrabValve", 5.0 / SPEEDUP_FACTOR)
         self.trajGrabValve.setPrevTraj(self.trajGrabTube)
 
         # Right hand does not move
@@ -266,7 +268,7 @@ class Demo1_ProductDisassembly:
             0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377])
 
         # ==============================================================================================        
-        self.trajRemoveValve = Trajectory.Trajectory("RemoveValve", 5.0)
+        self.trajRemoveValve = Trajectory.Trajectory("RemoveValve", 5.0 / SPEEDUP_FACTOR)
         self.trajRemoveValve.setPrevTraj(self.trajGrabValve)
 
         # Right hand does not move
@@ -297,7 +299,7 @@ class Demo1_ProductDisassembly:
                        0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377]) # right arm
 
         # ==============================================================================================        
-        self.trajRemoveLeftHand = Trajectory.Trajectory("RemoveLeftHand", 5.0)
+        self.trajRemoveLeftHand = Trajectory.Trajectory("RemoveLeftHand", 5.0 / SPEEDUP_FACTOR)
         self.trajRemoveLeftHand.setPrevTraj(self.trajRemoveValve)
 
         # Right hand does not move
@@ -334,7 +336,7 @@ class Demo1_ProductDisassembly:
                        0.09105753863890241, 0.023808037050859456, -0.23396990791158995, 1.3070320542599851, 1.336118787118036, -0.7220768168517259, -0.45385861652866377]) # right arm
 
         # ==============================================================================================        
-        self.trajStoreTube = Trajectory.Trajectory("StoreTube", 5.0)
+        self.trajStoreTube = Trajectory.Trajectory("StoreTube", 5.0 / SPEEDUP_FACTOR)
         self.trajStoreTube.setPrevTraj(self.trajRemoveLeftHand)
 
         # Left hand does not move
@@ -370,7 +372,7 @@ class Demo1_ProductDisassembly:
                        1.1246908322214502, 0.04338531905479525, 0.260906295518494, 1.0195136153943856, -0.20861493889703248, -0.4437284194541821, -0.4310428017453589])     # right arm
 
         # ==============================================================================================        
-        self.trajRemoveRightHand = Trajectory.Trajectory("RemoveRightHand", 5.0)
+        self.trajRemoveRightHand = Trajectory.Trajectory("RemoveRightHand", 5.0 / SPEEDUP_FACTOR)
         self.trajRemoveRightHand.setPrevTraj(self.trajStoreTube)
 
         # Left hand does not move
@@ -401,7 +403,7 @@ class Demo1_ProductDisassembly:
                        -0.11847755416302001, 0.06422356595783688, 0.327169061878712, 1.8993781491277486, 1.3082667536728438, -0.9510221581678175, -0.45723182354673425])   # right arm
 
         # ==============================================================================================        
-        self.trajGoToIdle = Trajectory.Trajectory("GoToIdle", 10.0)
+        self.trajGoToIdle = Trajectory.Trajectory("GoToIdle", 10.0 / SPEEDUP_FACTOR)
         self.trajGoToIdle.setPrevTraj(self.trajRemoveRightHand)
 
         # 2015.01.06 Trajectory
