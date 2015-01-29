@@ -21,10 +21,10 @@ public:
     virtual void start();
 
     /*!
-     * Gets the timer's current value in milliseconds.
+     * Gets the timer's current value in seconds.
      *
-     * \return The number of milliseconds that has elapsed since
-     * the call to start().
+     * \return The number of seconds that have elapsed since
+     * the last call to start().
      */
     virtual double getTime();
 

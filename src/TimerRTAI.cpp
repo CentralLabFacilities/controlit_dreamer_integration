@@ -15,7 +15,7 @@ void TimerRTAI::start()
 
 double TimerRTAI::getTime()
 {
-    return (rt_get_cpu_time_ns() - startTime) / 1e6;
+    return (rt_get_cpu_time_ns() - startTime) / 1e9;
 }
 
 } // namespace dreamer
