@@ -5,6 +5,7 @@
 #include <controlit/RTControlModel.hpp>
 #include <controlit/logging/RealTimeLogging.hpp>
 #include <controlit/dreamer/OdometryStateReceiverDreamer.hpp>
+#include <controlit/dreamer/TimerRTAI.hpp>
 
 #include "m3/robots/chain_name.h"
 #include <m3rt/base/m3ec_def.h>
@@ -289,7 +290,7 @@ bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool 
     //---------------------------------------------------------------------------------
     if (seqno == shm_status.seqno)
     {
-        double latency = getTime() - seqnoSendTime;
+        double latency = rttTimer->getTime();
         publishCommLatency(latency);
     }
 
@@ -591,7 +592,7 @@ bool RobotInterfaceDreamer::write(const controlit::Command & command)
     {
         sendSeqno = false;
         seqno++;
-        seqnoSendTime = getTime();
+        rttTimer->start();
     }
 
     shm_cmd.seqno = seqno;
@@ -615,11 +616,11 @@ bool RobotInterfaceDreamer::write(const controlit::Command & command)
     return controlit::RobotInterface::write(command);
 }
 
-double RobotInterfaceDreamer::getTime()
+std::shared_ptr<Timer> RobotInterfaceDreamer::getTimer()
 {
-    RTIME currTime = rt_get_cpu_time_ns();
-    double result = currTime / 1e9;
-    return result;    
+    std::shared_ptr<Timer> timerPtr;
+    timerPtr.reset(new TimerRTAI());
+    return timerPtr;
 }
 
 } // namespace dreamer

@@ -64,11 +64,11 @@ public:
     virtual bool write(const controlit::Command & command);
 
     /*!
-     * Gets the current time in seconds.
-     *
-     * \return The current time in seconds.
+     * Returns a timer. The default implementation uses TimerROS.
+     * However, child classes may override this method with platform-specific
+     * ways of obtaining the current time.
      */
-    virtual double getTime();
+    virtual std::shared_ptr<Timer> getTimer();
 
 private:
 
