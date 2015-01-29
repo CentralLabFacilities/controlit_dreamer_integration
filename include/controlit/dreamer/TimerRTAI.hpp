@@ -3,6 +3,7 @@
 
 #include <ros/ros.h>
 #include <controlit/Timer.hpp>
+#include <rtai.h>
 
 namespace controlit {
 namespace dreamer {
