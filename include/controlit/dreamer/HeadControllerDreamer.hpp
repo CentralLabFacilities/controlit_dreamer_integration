@@ -65,43 +65,20 @@ public:
 private:
 
     /*!
-     * The callback method for the right hand power grasp control.
+     * Callback methods for head joint commands
      */
-    // void rightHandCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr);
-
-    /*!
-     * Callback methods for including individual fingers in the power grasp.
-     */
-    // void includeRightPinkyFingerCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr);
-    // void includeRightMiddleFingerCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr);
-    // void includeRightPointerFingerCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr);
-
-    // bool powerGraspRight;
-    // bool powerGraspLeft;
-    // bool closingRightFingers;
-    // bool includeRightPointerFinger; // whether to include the right pointer finger in the power grasp
-    // bool includeRightMiddleFinger;  // whether to include the right middle finger in the power grasp
-    // bool includeRightPinkyFinger;   // whether to include the right pinky finger in the power grasp
-
-    // Current state information
-    // Vector currPosition;
-    // Vector currVelocity;
-
-    // Controller parameters
-    // double thumbKp;
-    // double thumbKd;
-    // double thumbGoalPos;
+    void lowerNeckPitchCallback(const boost::shared_ptr<std_msgs::Float64 const> & msgPtr)
 
     // ROS Subscribers
-    // ros::Subscriber rightHandPowerGraspSubscriber;
-    // ros::Subscriber leftGripperPowerGraspSubscriber;
-    // ros::Subscriber includeRightPinkyFingerSubscriber;
-    // ros::Subscriber includeRightMiddleFingerSubscriber;
-    // ros::Subscriber includeRightPointerFingerSubscriber;
+    ros::Subscriber lowerNeckPitchSubscriber;
 
-     std::unique_ptr<controlit::addons::ros::RealtimePublisherHeader<sensor_msgs::JointState>>
+    // The command
+    Vector commandPos;
+    Vector commandVel;
+
+    // ROS publishers
+    std::unique_ptr<controlit::addons::ros::RealtimePublisherHeader<sensor_msgs::JointState>>
         jointStatePublisher;
-
 };
 
 } // namespace dreamer

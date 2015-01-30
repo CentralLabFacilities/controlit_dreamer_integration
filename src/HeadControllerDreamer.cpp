@@ -20,27 +20,12 @@ bool HeadControllerDreamer::init(ros::NodeHandle & nh)
     currPosition.setZero(NUM_DOFS);
     currVelocity.setZero(NUM_DOFS);
 
-    // CONTROLIT_INFO << "Subscribing to power grasp topic...";
-    // rightHandPowerGraspSubscriber = nh.subscribe("controlit/rightHand/powerGrasp", 1, 
-    //     & HeadControllerDreamer::rightHandCallback, this);
-
-    // includeRightPinkyFingerSubscriber = nh.subscribe("controlit/rightHand/includeRightPinkyFinger", 1, 
-    //     & HeadControllerDreamer::includeRightPinkyFingerCallback, this);
-
-    // includeRightMiddleFingerSubscriber = nh.subscribe("controlit/rightHand/includeRightMiddleFinger", 1, 
-    //     & HeadControllerDreamer::includeRightMiddleFingerCallback, this);
-
-    // includeRightPointerFingerSubscriber = nh.subscribe("controlit/rightHand/includeRightIndexFinger", 1, 
-    //     & HeadControllerDreamer::includeRightPointerFingerCallback, this);
-
-    // leftGripperPowerGraspSubscriber = nh.subscribe("controlit/leftGripper/powerGrasp", 1,
-    //     & HeadControllerDreamer::leftGripperCallback, this);
-
-    // CONTROLIT_INFO << "Subscribed to topic: " << rightHandPowerGraspSubscriber.getTopic();
+    commandPos.setZero(NUM_DOFS);
+    commandVel.setZero(NUM_DOFS);
 
     // Create a real-time publisher of the joint states.
     jointStatePublisher.reset(
-        new controlit::addons::ros::RealtimePublisherHeader<sensor_msgs::JointState>(nh, "head/joint_states", 1));
+        new controlit::addons::ros::RealtimePublisherHeader<sensor_msgs::JointState>(nh, "controlit/head/joint_states", 1));
     if(jointStatePublisher->trylock())
     {
         jointStatePublisher->msg_.name.push_back("lower_neck_pitch")
@@ -60,6 +45,10 @@ bool HeadControllerDreamer::init(ros::NodeHandle & nh)
 
         jointStatePublisher->unlockAndPublish();
     }
+
+    // Create a subscriber for the lower neck pitch command
+    lowerNeckPitchSubscriber = nh.subscribe("controlit/head/lower_neck_pitch/position_cmd", 1, 
+        & HeadControllerDreamer::lowerNeckPitchCallback, this);
 
     return true;
 }
@@ -84,35 +73,17 @@ void HeadControllerDreamer::updateState(Vector position, Vector velocity)
 
 void HeadControllerDreamer::getCommand(Vector & command)
 {
-    command.setZero(NUM_DOFS); // for debugging, reset everything to zero 
+    for (size_t ii = 0; ii < NUM_DOFS; ii++)
+    {
+        command[ii] = commandPos[ii];   
+    }
+    // command.setZero(NUM_DOFS); // for debugging, reset everything to zero 
 }
 
-// void HeadControllerDreamer::rightHandCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr)
-// {
-//     powerGraspRight = msgPtr->data;
-//     // CONTROLIT_INFO << "Right hand power grasp: " << (powerGraspRight ? "TRUE" : "FALSE");
-// }
-
-// void HeadControllerDreamer::leftGripperCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr)
-// {
-//     powerGraspLeft = msgPtr->data;
-//     // CONTROLIT_INFO << "Left gripper power grasp: " << (powerGraspLeft ? "TRUE" : "FALSE");
-// }
-
-// void HeadControllerDreamer::includeRightPinkyFingerCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr)
-// {
-//     includeRightPinkyFinger = msgPtr->data;
-// }
-
-// void HeadControllerDreamer::includeRightMiddleFingerCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr)
-// {
-//     includeRightMiddleFinger = msgPtr->data;
-// }
-
-// void HeadControllerDreamer::includeRightPointerFingerCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr)
-// {
-//     includeRightPointerFinger = msgPtr->data;
-// }
+void HeadControllerDreamer::lowerNeckPitchCallback(const boost::shared_ptr<std_msgs::Float64 const> & msgPtr)
+{
+    command[0] = msgPtr->data;
+}
 
 } // namespace dreamer
 } // namespace controlit
