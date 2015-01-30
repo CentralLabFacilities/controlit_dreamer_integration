@@ -72,11 +72,14 @@ void HeadControllerDreamer::updateState(Vector position, Vector velocity)
     // Publish the current joint state
     if(jointStatePublisher->trylock())
     {
-        jointStatePublisher->msg_.position = position;
-        jointStatePublisher->msg_.velocity = velocity;
+        for (size_t ii = 0; ii < NUM_DOFS; ii++)
+        {
+            jointStatePublisher->msg_.position[ii] = position[ii];
+            jointStatePublisher->msg_.velocity[ii] = velocity[ii];
+        }
+        
         jointStatePublisher->unlockAndPublish();
     }
-
 }
 
 void HeadControllerDreamer::getCommand(Vector & command)
