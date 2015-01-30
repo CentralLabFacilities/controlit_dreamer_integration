@@ -79,9 +79,9 @@ bool RobotInterfaceDreamer::init(ros::NodeHandle & nh, RTControlModel * model)
     //---------------------------------------------------------------------------------
 
     headController.init(nh);
-    handCommand.setZero(NUM_HEAD_JOINTS);
-    handJointPositions.setZero(NUM_HEAD_JOINTS);
-    handJointVelocities.setZero(NUM_HEAD_JOINTS);
+    headCommand.setZero(NUM_HEAD_JOINTS);
+    headJointPositions.setZero(NUM_HEAD_JOINTS);
+    headJointVelocities.setZero(NUM_HEAD_JOINTS);
 
     //---------------------------------------------------------------------------------
     // Create the odometry receiver.
