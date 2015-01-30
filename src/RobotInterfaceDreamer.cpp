@@ -585,16 +585,24 @@ bool RobotInterfaceDreamer::write(const controlit::Command & command)
     // shm_cmd.right_hand.q_stiffness[3] = 0;
     // shm_cmd.right_hand.q_stiffness[4] = 0;    
 
-    // Send zero position commands to the neck joints
-    shm_cmd.head.q_desired[0] = 0;
-    shm_cmd.head.q_desired[1] = 0;
-    shm_cmd.head.q_desired[2] = 0;
-    shm_cmd.head.q_desired[3] = 0;
+    // Send position commands to the neck joints
+    headController.getCommand(headCommand);
+
+    shm_cmd.head.q_desired[0] = headCommand[0];
+    shm_cmd.head.q_desired[1] = headCommand[1];
+    shm_cmd.head.q_desired[2] = headCommand[2];
+    shm_cmd.head.q_desired[3] = headCommand[3];
+    shm_cmd.head.q_desired[4] = headCommand[4];
+    shm_cmd.head.q_desired[5] = headCommand[5];
+    shm_cmd.head.q_desired[6] = headCommand[6];  
 
     shm_cmd.head.slew_rate_q_desired[0] = 10;
     shm_cmd.head.slew_rate_q_desired[1] = 10;
     shm_cmd.head.slew_rate_q_desired[2] = 10;
     shm_cmd.head.slew_rate_q_desired[3] = 10;
+    shm_cmd.head.slew_rate_q_desired[4] = 10;
+    shm_cmd.head.slew_rate_q_desired[5] = 10;
+    shm_cmd.head.slew_rate_q_desired[6] = 10;
 
     //---------------------------------------------------------------------------------
     // Save the timestamp into the outgoing command message.  This is necessary for
