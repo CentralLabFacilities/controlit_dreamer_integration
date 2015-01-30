@@ -84,8 +84,8 @@ private:
     // bool includeRightPinkyFinger;   // whether to include the right pinky finger in the power grasp
 
     // Current state information
-    // Vector currPosition;
-    // Vector currVelocity;
+    Vector currPosition;
+    Vector currVelocity;
 
     // Controller parameters
     // double thumbKp;

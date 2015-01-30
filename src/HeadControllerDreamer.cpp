@@ -43,13 +43,13 @@ bool HeadControllerDreamer::init(ros::NodeHandle & nh)
         new controlit::addons::ros::RealtimePublisherHeader<sensor_msgs::JointState>(nh, "head/joint_states", 1));
     if(jointStatePublisher->trylock())
     {
-        jointStatePublisher->msg_.name.push_back("lower_neck_pitch")
-        jointStatePublisher->msg_.name.push_back("upper_neck_yaw")
-        jointStatePublisher->msg_.name.push_back("upper_neck_roll")
-        jointStatePublisher->msg_.name.push_back("upper_neck_pitch")
-        jointStatePublisher->msg_.name.push_back("eye_pitch")
-        jointStatePublisher->msg_.name.push_back("right_eye_yaw")
-        jointStatePublisher->msg_.name.push_back("left_eye_yaw")
+        jointStatePublisher->msg_.name.push_back("lower_neck_pitch");
+        jointStatePublisher->msg_.name.push_back("upper_neck_yaw");
+        jointStatePublisher->msg_.name.push_back("upper_neck_roll");
+        jointStatePublisher->msg_.name.push_back("upper_neck_pitch");
+        jointStatePublisher->msg_.name.push_back("eye_pitch");
+        jointStatePublisher->msg_.name.push_back("right_eye_yaw");
+        jointStatePublisher->msg_.name.push_back("left_eye_yaw");
 
         for (size_t ii = 0; ii < NUM_DOFS; ii++)
         {
