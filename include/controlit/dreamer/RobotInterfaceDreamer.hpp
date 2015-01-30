@@ -4,6 +4,7 @@
 #include <controlit/addons/ros/RealTimePublisher.hpp>
 #include <controlit/RobotInterface.hpp>
 #include <controlit/dreamer/HandControllerDreamer.hpp>
+#include <controlit/dreamer/HeadControllerDreamer.hpp>
 
 // #include <thread>  // for std::mutex
 #include <unistd.h>
