@@ -143,6 +143,26 @@ private:
      * The command to send to the hand.
      */
     Vector handCommand;
+
+    /*!
+     * The object that generates the commands for the head.
+     */
+    HeadControllerDreamer headController;
+
+    /*!
+     * The current head joint positions.
+     */
+    Vector headJointPositions;
+
+    /*!
+     * The current head joint velocities.
+     */
+    Vector headJointVelocities;
+
+    /*!
+     * The command to send to the head.
+     */
+    Vector headCommand;    
 };
 
 } // namespace dreamer
