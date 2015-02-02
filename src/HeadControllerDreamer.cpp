@@ -73,8 +73,11 @@ void HeadControllerDreamer::updateState(Vector position, Vector velocity)
 
 void HeadControllerDreamer::getCommand(Vector & command)
 {
+    // CONTROLIT_INFO << "Method Called";
+
     for (size_t ii = 0; ii < NUM_DOFS; ii++)
     {
+        // CONTROLIT_INFO << "Setting command [" << ii << "] to be: " << commandPos[ii];
         command[ii] = commandPos[ii];   
     }
     // command.setZero(NUM_DOFS); // for debugging, reset everything to zero 
