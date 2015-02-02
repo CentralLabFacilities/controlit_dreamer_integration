@@ -13,7 +13,7 @@ from std_msgs.msg import Float64, Float64MultiArray, MultiArrayDimension
 
 UPDATE_PERIOD = 0.01  # 100Hz
 AMPLITUDE = 0.475
-OFFSET = −0.215
+OFFSET = -0.215
 FREQUENCY = 0.2
 
 class NeckJointTest:
@@ -42,7 +42,7 @@ class NeckJointTest:
           * Radians: -0.69 to 0.26
         """
 
-        publisherJ0 = rospy.Publisher("/dreamer_controller/controlit/head/lower_neck_pitch/position_cmd", Float64MultiArray)
+        publisherJ0 = rospy.Publisher("/dreamer_controller/controlit/head/lower_neck_pitch/position_cmd", Float64)
         startTime = time.time()
 
         while not rospy.is_shutdown():
@@ -54,7 +54,7 @@ class NeckJointTest:
             #     self.goalMsg.data[ii] = 0
             # self.goalMsg.data[self.jointIndex] = goal
 
-            publisher.publish(self.goalMsgJ0)
+            publisherJ0.publish(self.goalMsgJ0)
             rospy.sleep(UPDATE_PERIOD)
 
 
