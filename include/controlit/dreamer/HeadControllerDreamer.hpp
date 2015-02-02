@@ -68,7 +68,7 @@ private:
     /*!
      * Callback methods for head joint commands
      */
-    void lowerNeckPitchCallback(const boost::shared_ptr<std_msgs::Float64 const> & msgPtr)
+    void lowerNeckPitchCallback(const boost::shared_ptr<std_msgs::Float64 const> & msgPtr);
 
     // Local variables for holding the current position and velocity state.
     Vector currPosition;

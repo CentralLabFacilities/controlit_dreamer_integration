@@ -82,7 +82,7 @@ void HeadControllerDreamer::getCommand(Vector & command)
 
 void HeadControllerDreamer::lowerNeckPitchCallback(const boost::shared_ptr<std_msgs::Float64 const> & msgPtr)
 {
-    command[0] = msgPtr.data;
+    commandPos[0] = msgPtr->data;
 }
 
 } // namespace dreamer
