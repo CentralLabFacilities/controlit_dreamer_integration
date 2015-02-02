@@ -588,13 +588,13 @@ bool RobotInterfaceDreamer::write(const controlit::Command & command)
     // Send position commands to the neck joints
     headController.getCommand(headCommand);
 
-    shm_cmd.head.q_desired[0] = headCommand[0];
-    shm_cmd.head.q_desired[1] = headCommand[1];
-    shm_cmd.head.q_desired[2] = headCommand[2];
-    shm_cmd.head.q_desired[3] = headCommand[3];
-    shm_cmd.head.q_desired[4] = headCommand[4];
-    shm_cmd.head.q_desired[5] = headCommand[5];
-    shm_cmd.head.q_desired[6] = headCommand[6];  
+    shm_cmd.head.q_desired[0] = RAD_TO_DEG(headCommand[0]);
+    shm_cmd.head.q_desired[1] = RAD_TO_DEG(headCommand[1]);
+    shm_cmd.head.q_desired[2] = RAD_TO_DEG(headCommand[2]);
+    shm_cmd.head.q_desired[3] = RAD_TO_DEG(headCommand[3]);
+    shm_cmd.head.q_desired[4] = RAD_TO_DEG(headCommand[4]);
+    shm_cmd.head.q_desired[5] = RAD_TO_DEG(headCommand[5]);
+    shm_cmd.head.q_desired[6] = RAD_TO_DEG(headCommand[6]);
 
     shm_cmd.head.slew_rate_q_desired[0] = 10;
     shm_cmd.head.slew_rate_q_desired[1] = 10;
