@@ -42,7 +42,7 @@ class NeckJointTest:
           * Radians: -0.69 to 0.26
         """
 
-        publisherJ0 = rospy.Publisher("/dreamer_controller/controlit/head/lower_neck_pitch/position_cmd", Float64)
+        publisherJ0 = rospy.Publisher("/dreamer_controller/controlit/head/lower_neck_pitch/position_cmd", Float64, queue_size=1)
         startTime = time.time()
 
         while not rospy.is_shutdown():
