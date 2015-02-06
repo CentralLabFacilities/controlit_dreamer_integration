@@ -12,10 +12,10 @@ import rospy
 from std_msgs.msg import Float64, Float64MultiArray, MultiArrayDimension
 
 UPDATE_PERIOD = 0.01  # 100Hz
-# AMPLITUDE = 0.475
-AMPLITUDE = 0.235
+AMPLITUDE = 0.475
+# AMPLITUDE = 0.235
 OFFSET = -0.215
-FREQUENCY = 0.2
+FREQUENCY = 0.02
 
 class NeckJointTest:
     def __init__(self):
