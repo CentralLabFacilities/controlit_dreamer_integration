@@ -60,6 +60,18 @@ bool RobotInterfaceDreamerTester::init()
     std::cout << "Initializing the robot state..." << std::endl; 
     robotState.init(jointNames);
 
+    publisher.init(nh, "robotInterfaceDreamerTester/frequency", 1);
+    if(publisher.trylock())
+    {
+        publisher.msg_.data = 0;
+        publisher.unlockAndPublish();
+    }
+    else
+    {
+        std::cerr << "ServoClockDraemerTester::init: ERROR: Unable to initialize publisher!" << std::endl;
+        return false;
+    }
+
     std::cout << "Done initializing the robot interface tester..." << std::endl;
 
     return true;
@@ -67,6 +79,7 @@ bool RobotInterfaceDreamerTester::init()
 
 bool RobotInterfaceDreamerTester::start(double freq)
 {
+    timer.start();
     servoClock.start(freq);
     return true;
 }
@@ -86,7 +99,16 @@ void RobotInterfaceDreamerTester::servoInit()
 // This is periodically called by the servo clock.
 void RobotInterfaceDreamerTester::servoUpdate()
 {
-    std::cout << "Calling robotInterface.read()..." << std::endl;
+    double elapsedTime = timer.getTime();
+    timer.start();
+    
+    if (publisher.trylock())
+    {
+        publisher.msg_.data = 1.0 / elapsedTime;
+        publisher.unlockAndPublish();
+    }
+
+    // std::cout << "Calling robotInterface.read()..." << std::endl;
     if (!robotInterface.read(robotState))
     {
         std::cerr << "Problems reading from robot state." << std::endl;
