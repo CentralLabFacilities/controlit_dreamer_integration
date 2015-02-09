@@ -3,7 +3,8 @@
 namespace controlit {
 namespace dreamer {
 
-#define TEST_PERIOD 10
+#define TEST_PERIOD 60 // Number of seconds to run test
+#define DEFAULT_SERVO_FREQUENCY 1000  // In Hz
 
 RobotInterfaceDreamerTester::RobotInterfaceDreamerTester()
 {
@@ -34,27 +35,27 @@ bool RobotInterfaceDreamerTester::init()
 
     // Initialize the RobotState
     std::vector<std::string> jointNames;
-    jointNames.push_back("m3joint_mt3_j0");
-    jointNames.push_back("m3joint_mt3_j1");
-    jointNames.push_back("m3joint_slave_mt3_j2");
-    jointNames.push_back("left_arm_pan");
-    jointNames.push_back("left_shoulder_pitch");
-    jointNames.push_back("left_shoulder_roll");
-    jointNames.push_back("left_arm_elbow");
-    jointNames.push_back("left_arm_elbow_rotator");
-    jointNames.push_back("left_wrist_j0");
-    jointNames.push_back("left_wrist_j1");
-    jointNames.push_back("m3joint_ma10_j0");
-    jointNames.push_back("m3joint_ma10_j1");
-    jointNames.push_back("m3joint_ma10_j2");
-    jointNames.push_back("m3joint_ma10_j3");
-    jointNames.push_back("m3joint_ma10_j4");
-    jointNames.push_back("m3joint_ma10_j5");
-    jointNames.push_back("m3joint_ma10_j6");
-    jointNames.push_back("m3joint_ms2_j0");
-    jointNames.push_back("m3joint_ms2_j1");
-    jointNames.push_back("m3joint_ms2_j2");
-    jointNames.push_back("m3joint_ms2_j3");
+    jointNames.push_back("torso_yaw");
+    jointNames.push_back("torso_lower_pitch");
+    jointNames.push_back("torso_upper_pitch");
+    jointNames.push_back("left_shoulder_extensor");
+    jointNames.push_back("left_shoulder_abductor");
+    jointNames.push_back("left_shoulder_rotator");
+    jointNames.push_back("left_elbow");
+    jointNames.push_back("left_wrist_rotator");
+    jointNames.push_back("left_wrist_pitch");
+    jointNames.push_back("left_wrist_yaw");
+    jointNames.push_back("right_shoulder_extensor");
+    jointNames.push_back("right_shoulder_abductor");
+    jointNames.push_back("right_shoulder_rotator");
+    jointNames.push_back("right_elbow");
+    jointNames.push_back("right_wrist_rotator");
+    jointNames.push_back("right_wrist_pitch");
+    jointNames.push_back("right_wrist_yaw");
+    jointNames.push_back("lower_neck_pitch");
+    jointNames.push_back("upper_neck_yaw");
+    jointNames.push_back("upper_neck_roll");
+    jointNames.push_back("upper_neck_pitch");
    
     std::cout << "Initializing the robot state..." << std::endl; 
     robotState.init(jointNames);
@@ -64,9 +65,8 @@ bool RobotInterfaceDreamerTester::init()
     return true;
 }
 
-bool RobotInterfaceDreamerTester::start()
+bool RobotInterfaceDreamerTester::start(double freq)
 {
-    double freq = 1; // TODO: make this a command line parameter
     servoClock.start(freq);
     return true;
 }
@@ -108,17 +108,22 @@ int main(int argc, char **argv)
 
     ros::init(argc, argv, "RobotInterfaceDreamerTester");
 
+    double freq = DEFAULT_SERVO_FREQUENCY;
+
     if (argc != 1)
     {
         // Parse the command line arguments
         int option_char;
-        while ((option_char = getopt (argc, argv, "h")) != -1)
+        while ((option_char = getopt (argc, argv, "hf:")) != -1)
         {
             switch (option_char)
             {
                 case 'h':
                     std::cout << ss.str() << std::endl;
                     return 0;
+                    break;
+                case 'f':
+                    freq = std::stod(optarg);
                     break;
                 default:
                     std::cerr << "ERROR: Unknown option " << option_char << ".  " << ss.str() << std::endl;
@@ -127,12 +132,12 @@ int main(int argc, char **argv)
         }
     }
 
-    std::cout << "RobotInterfaceDreamerTester: Starting test..." << std::endl;
+    std::cout << "RobotInterfaceDreamerTester: Starting test, servo frequency = " << freq << "..." << std::endl;
 
     // Create and start a RobotInterfaceDreamerTester
-    controlit::dreamer::RobotInterfaceDreamerTester RobotInterfaceDreamerTester;
-    RobotInterfaceDreamerTester.init();
-    RobotInterfaceDreamerTester.start();
+    controlit::dreamer::RobotInterfaceDreamerTester tester;
+    if (!tester.init()) return -1;
+    if (!tester.start(freq)) return -1;
 
     // Loop until someone hits ctrl+c
     ros::Rate loop_rate(1);

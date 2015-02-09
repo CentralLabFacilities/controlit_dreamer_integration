@@ -13,8 +13,8 @@ namespace controlit {
 namespace dreamer {
 
 /*!
- * A class that provides the main method for launching a ControlIt!
- * controller.
+ * Tests ServoClockDreamer by instantiating it and measuring its
+ * servo frequency.
  */
 class ServoClockDreamerTester : controlit::ServoableClass
 {

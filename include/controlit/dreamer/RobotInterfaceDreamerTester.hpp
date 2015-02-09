@@ -72,7 +72,7 @@ private:
     controlit::RobotState robotState;
 
     /*!
-     * The servo clock.  This is used to call RobotInterfaceDreamer's read method.
+     * The servo clock. This is used to call RobotInterfaceDreamer's read method.
      */
     ServoClockDreamer servoClock;
 
