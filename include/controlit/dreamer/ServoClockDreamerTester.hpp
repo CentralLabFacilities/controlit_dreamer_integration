@@ -3,6 +3,7 @@
 
 #include "ros/ros.h"
 #include <controlit/dreamer/ServoClockDreamer.hpp>
+#include <controlit/dreamer/TimerRTAI.hpp>
 #include <controlit/ServoableClass.hpp>
 
 namespace controlit {
@@ -34,8 +35,10 @@ public:
 
     /*!
      * Starts this tester.
+     *
+     * \param[in] freq The desired servo frequency in Hz.
      */
-    bool start();
+    bool start(double freq);
 
     /*!
      * Stops this tester.
@@ -70,9 +73,9 @@ private:
     ServoClockDreamer servoClock;
 
     /*!
-     * The previous time update() was called by the servo clock.
+     * The timer used to measure the servo period.
      */
-    ros::Time prevTime;
+    TimerRTAI timer;
 };
 
 } // namespace dreamer
