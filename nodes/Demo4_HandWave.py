@@ -259,6 +259,7 @@ class Demo4_HandWave:
             response = raw_input("Wave again? Y/n\n")
             if response == "N" or response == "n":
                 done = True
+            else:
                 self.trajWave.setPrevTraj(self.trajWave)
 
         #=============================================================================
