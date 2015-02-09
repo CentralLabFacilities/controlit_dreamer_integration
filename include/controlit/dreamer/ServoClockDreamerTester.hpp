@@ -4,6 +4,7 @@
 #include "ros/ros.h"
 #include <controlit/dreamer/ServoClockDreamer.hpp>
 #include <controlit/dreamer/TimerRTAI.hpp>
+#include <controlit/addons/ros/RealTimePublisher.hpp>
 #include <controlit/ServoableClass.hpp>
 
 namespace controlit {
@@ -76,6 +77,11 @@ private:
      * The timer used to measure the servo period.
      */
     TimerRTAI timer;
+
+    /*!
+     * A real-time safe publisher for publishing the servo period.
+     */
+    controlit::addons::ros::RealtimePublisher<std_msgs::Float64> publisher;
 };
 
 } // namespace dreamer

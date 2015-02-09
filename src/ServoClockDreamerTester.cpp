@@ -20,6 +20,21 @@ ServoClockDreamerTester::~ServoClockDreamerTester()
 bool ServoClockDreamerTester::init()
 {
     servoClock.init(this);
+
+    ros::NodeHandle nh;
+
+    publisher.init(nh, "servoClockDreamerTester/period", 1);
+    if(publisher.trylock())
+    {
+        publisher.msg_.data = 0;
+        publisher.unlockAndPublish();
+    }
+    else
+    {
+        std::cerr << "ServoClockDraemerTester::init: ERROR: Unable to initialize publisher!" << std::endl;
+        return false;
+    }
+
     initialized = true;
     return true;
 }
@@ -44,9 +59,14 @@ void ServoClockDreamerTester::servoInit()
 
 void ServoClockDreamerTester::servoUpdate()
 {
-    double elapsedTimeMS = timer.getTime() * 1000;
+    double elapsedTime = timer.getTime();
     timer.start();
-    std::cerr << "Method called, elapsed time = " << elapsedTimeMS << " ms, jitter = " << (elapsedTimeMS - 1) * 1000 << " us" << std::endl;
+    // std::cerr << "Method called, elapsed time = " << elapsedTimeMS << " ms, jitter = " << (elapsedTimeMS - 1) * 1000 << " us" << std::endl;
+    if (publisher.trylock())
+    {
+        publisher.msg_.data = elapsedTime;
+        publisher.unlockAndPublish();
+    }
 }
 
 std::string ServoClockDreamerTester::toString(std::string const& prefix) const
@@ -106,8 +126,8 @@ int main(int argc, char **argv)
 
     // Create and start a ServoClockDreamerTester
     controlit::dreamer::ServoClockDreamerTester servoClockDreamerTester;
-    servoClockDreamerTester.init();
-    servoClockDreamerTester.start(freq);
+    if (!servoClockDreamerTester.init()) return -1;
+    if (!servoClockDreamerTester.start(freq)) return -1;
 
     // Loop at 1Hz until someone hits ctrl+c
     ros::Rate loop_rate(1);
@@ -123,5 +143,5 @@ int main(int argc, char **argv)
     std::cout << "ServoClockDreamerTester: Done test, stopping servo clock." << std::endl;
 
     // Stop ServoClockDreamerTester
-    servoClockDreamerTester.stop();
+    if (!servoClockDreamerTester.stop()) return -1;
 }
