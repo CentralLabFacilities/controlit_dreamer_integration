@@ -23,7 +23,7 @@ bool ServoClockDreamerTester::init()
 
     ros::NodeHandle nh;
 
-    publisher.init(nh, "servoClockDreamerTester/period", 1);
+    publisher.init(nh, "servoClockDreamerTester/frequency", 1);
     if(publisher.trylock())
     {
         publisher.msg_.data = 0;
@@ -64,7 +64,7 @@ void ServoClockDreamerTester::servoUpdate()
     // std::cerr << "Method called, elapsed time = " << elapsedTimeMS << " ms, jitter = " << (elapsedTimeMS - 1) * 1000 << " us" << std::endl;
     if (publisher.trylock())
     {
-        publisher.msg_.data = elapsedTime;
+        publisher.msg_.data = 1.0 / elapsedTime;
         publisher.unlockAndPublish();
     }
 }

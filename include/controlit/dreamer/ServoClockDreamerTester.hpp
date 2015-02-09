@@ -7,6 +7,8 @@
 #include <controlit/addons/ros/RealTimePublisher.hpp>
 #include <controlit/ServoableClass.hpp>
 
+#include <std_msgs/Float64.h>
+
 namespace controlit {
 namespace dreamer {
 
