@@ -11,7 +11,7 @@
     
     <rosparam param="robot_interface_type">controlit_dreamer/RobotInterfaceDreamer</rosparam>
     
-    <rosparam param="controller_type">WBOSC</rosparam>\
+    <rosparam param="controller_type">controlit_wbc/WBOSC</rosparam>\
     
     <rosparam param="parameter_binding_factories">["controlit_binding_factory/BindingFactoryROS", "controlit_binding_factory/BindingFactorySM"]</rosparam>
     
