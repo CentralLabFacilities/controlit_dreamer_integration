@@ -122,7 +122,7 @@ int main(int argc, char **argv)
 
     ros::NodeHandle nh;
 
-    std::cout << "ServoClockDreamerTester: Starting test..." << std::endl;
+    std::cout << "ServoClockDreamerTester: Starting test, servo frequency = " << freq << "..." << std::endl;
 
     // Create and start a ServoClockDreamerTester
     controlit::dreamer::ServoClockDreamerTester servoClockDreamerTester;
