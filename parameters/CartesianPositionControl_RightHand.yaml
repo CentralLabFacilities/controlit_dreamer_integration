@@ -3,7 +3,7 @@ header:
   description: Dreamer right hand Cartesian position control
 tasks:
   - name: RightHandPosition
-    type: controlit/CartPosTask  # must match class name in sensor_plugins.xml
+    type: controlit/CartesianPositionTask  # must match class name in sensor_plugins.xml
     parameters:
       - name: kp
         type: vector
@@ -51,7 +51,7 @@ tasks:
                 [0, 1, 0],
                 [0, 0, 1]]
   - name: JPosTask     # Arbitrary instance name
-    type: controlit/JPosTaskCompWiseVel # Must Match the NAME of the task in the task_library
+    type: controlit/JointPositionTask # Must Match the NAME of the task in the task_library
     parameters:
       - name: kp
         type: vector

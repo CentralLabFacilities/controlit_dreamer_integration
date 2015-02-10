@@ -2,7 +2,7 @@ header:
   version: 2
   description: dreamer joint state control
 tasks:
-  - type: controlit/JPosTaskCompWiseVel # Must Match the NAME of the task in the task_library
+  - type: controlit/JointPositionTask # Must Match the NAME of the task in the task_library
     name: JPosTask     # Arbitrary instance name
     parameters:
       - name: kp
