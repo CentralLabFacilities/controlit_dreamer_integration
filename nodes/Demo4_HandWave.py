@@ -232,7 +232,7 @@ class Demo4_HandWave:
 
     def run(self):
         """
-        Runs the Cartesian and orientation demo 1 behavior.
+        Runs the Cartesian and orientation demo 4 behavior.
         """
 
         if not self.dreamerInterface.connectToControlIt(DEFAULT_POSTURE):

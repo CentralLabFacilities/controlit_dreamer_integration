@@ -132,8 +132,8 @@ class DreamerInterface:
         self.leftOrientationError = None
 
         # Create the ROS topic subscriptions
-        self.postureTaskActualSubscriber = rospy.Subscriber("/dreamer_controller/JPosTask/actualPosition", Float64MultiArray, self.postureTaskActualCallback)
-        self.postureTaskErrorSubscriber  = rospy.Subscriber("/dreamer_controller/JPosTask/error",          Float64MultiArray, self.postureTaskErrorCallback)
+        self.postureTaskActualSubscriber = rospy.Subscriber("/dreamer_controller/Posture/actualPosition", Float64MultiArray, self.postureTaskActualCallback)
+        self.postureTaskErrorSubscriber  = rospy.Subscriber("/dreamer_controller/Posture/error",          Float64MultiArray, self.postureTaskErrorCallback)
 
         self.rightCartesianTaskActualSubscriber = rospy.Subscriber("/dreamer_controller/RightHandPosition/actualWorldPosition", Float64MultiArray, self.rightCartesianTaskActualCallback)
         self.rightCartesianTaskErrorSubscriber  = rospy.Subscriber("/dreamer_controller/RightHandPosition/error",               Float64MultiArray, self.rightCartesianTaskErrorCallback)
@@ -148,8 +148,8 @@ class DreamerInterface:
         self.leftOrientationTaskErrorSubscriber  = rospy.Subscriber("/dreamer_controller/LeftHandOrientation/errorAngle",    Float64,           self.leftOrientationTaskErrorCallback)
 
         # Create the ROS topic publishers
-        self.postureTaskGoalPublisher = rospy.Publisher("/dreamer_controller/JPosTask/goalPosition", Float64MultiArray, queue_size=1)
-        self.postureTaskTarePublisher = rospy.Publisher("/dreamer_controller/JPosTask/tare", Int32, queue_size=1)
+        self.postureTaskGoalPublisher = rospy.Publisher("/dreamer_controller/Posture/goalPosition", Float64MultiArray, queue_size=1)
+        self.postureTaskTarePublisher = rospy.Publisher("/dreamer_controller/Posture/tare", Int32, queue_size=1)
 
         self.rightCartesianTaskGoalPublisher = rospy.Publisher("/dreamer_controller/RightHandPosition/goalPosition", Float64MultiArray, queue_size=1)
         self.rightCartesianTaskEnablePublisher = rospy.Publisher("/dreamer_controller/RightHandPosition/enabled", Int32, queue_size=1)
