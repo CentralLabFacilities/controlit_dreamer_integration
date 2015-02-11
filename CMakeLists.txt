@@ -20,7 +20,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 include_directories (/usr/realtime/include)
 
-set(SRCS src/OdometryStateReceiverDreamer.cpp src/PluginList.cpp src/RobotInterfaceDreamer.cpp src/RobotInterfaceDreamerTester.cpp src/ServoClockDreamer.cpp src/ServoClockDreamerTester.cpp src/HandControllerDreamer.cpp src/HeadControllerDreamer.cpp src/TimerRTAI.cpp)
+set(SRCS src/OdometryStateReceiverDreamer.cpp src/PluginList.cpp src/RobotInterfaceDreamer.cpp src/ServoClockDreamer.cpp src/HandControllerDreamer.cpp src/HeadControllerDreamer.cpp src/TimerRTAI.cpp)
 rosbuild_add_library (${PROJECT_NAME} SHARED ${SRCS})
 
 rosbuild_add_openmp_flags(${PROJECT_NAME})

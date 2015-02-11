@@ -175,5 +175,5 @@ int main(int argc, char **argv)
     std::cout << "RobotInterfaceDreamerTester: Done test, stopping servo clock." << std::endl;
 
     // Stop RobotInterfaceDreamerTester
-    RobotInterfaceDreamerTester.stop();
+    tester.stop();
 }
