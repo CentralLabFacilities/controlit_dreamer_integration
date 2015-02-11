@@ -50,7 +50,7 @@ tasks:
         value: [[1, 0, 0],
                 [0, 1, 0],
                 [0, 0, 1]]
-  - name: JPosTask     # Arbitrary instance name
+  - name: Posture     # Arbitrary instance name
     type: controlit/JointPositionTask # Must Match the NAME of the task in the task_library
     parameters:
       - name: kp
@@ -125,12 +125,12 @@ compound_task:
   name: My compound task
   events:
     - name: converged
-      expression: JPosTask.converged and JPosTask.quiescent
+      expression: Posture.converged and Posture.quiescent
   task_list:
      - name: RightHandPosition
        priority: 0
        enabled: 1
-     - name: JPosTask
+     - name: Posture
        priority: 1
        enabled: 1
 constraints:

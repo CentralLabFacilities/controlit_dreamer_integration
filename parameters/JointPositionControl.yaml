@@ -3,7 +3,7 @@ header:
   description: dreamer joint state control
 tasks:
   - type: controlit/JointPositionTask # Must Match the NAME of the task in the task_library
-    name: JPosTask     # Arbitrary instance name
+    name: Posture     # Arbitrary instance name
     parameters:
       - name: kp
         type: vector
@@ -74,9 +74,9 @@ compound_task:
   name: My compound task
   events:
     - name: converged
-      expression: JPosTask.converged and JPosTask.quiescent
+      expression: Posture.converged and Posture.quiescent
   task_list:
-     - name: JPosTask
+     - name: Posture
        priority: 0
        enabled: 1
 constraints:
