@@ -11,5 +11,5 @@
            command="$(find xacro)/xacro.py '$(find dreamer_no_left_arm_controlit)/models/dreamer_no_left_arm_controlit/xacro/dreamer_no_left_arm_controlit.xacro'"/>
 
     <!-- Start the RobotInterfaceDreamer tester -->
-    <node name="RobotInterfaceDreamerTester" pkg="controlit_dreamer_integration" type="RobotInterfaceDreamerTester" output="screen" />
+    <!-- <node name="RobotInterfaceDreamerTester" pkg="controlit_dreamer_integration" type="RobotInterfaceDreamerTester" output="screen" /> -->
 </launch>

@@ -16,7 +16,7 @@ RobotInterfaceDreamerTester::~RobotInterfaceDreamerTester()
 
 bool RobotInterfaceDreamerTester::init()
 {
-    std::cout << "RobotInterfaceDreamerTester Init Method called." << std::endl;
+    std::cout << "RobotInterfaceDreamerTester::init(): Method called!" << std::endl;
     // Initialize the robot interface.
     if (!robotInterface.init(nh, &model))
     {
