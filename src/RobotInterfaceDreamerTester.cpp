@@ -17,18 +17,24 @@ RobotInterfaceDreamerTester::~RobotInterfaceDreamerTester()
 bool RobotInterfaceDreamerTester::init()
 {
     std::cout << "RobotInterfaceDreamerTester::init(): Method called!" << std::endl;
+
+    ros::NodeHandle nh;
+
+    model.init(nh, & robotState, & bindingManager, & params);
     // Initialize the robot interface.
     if (!robotInterface.init(nh, &model))
     {
-        std::cerr << "Problems initializing the robot interface." << std::endl;
+        std::cerr << "RobotInterfaceDreamerTester::init(): ERROR: Problems initializing the robot interface." << std::endl;
         ros::shutdown();
         return false;
     }
 
+    std::cout << "RobotInterfaceDreamerTester::init(): Initializing servo clock." << std::endl;
+
     // Initialize the servo clock.
     if (!servoClock.init(this))
     {
-        std::cerr << "Problems initializing servo clock." << std::endl;
+        std::cerr << "RobotInterfaceDreamerTester::init(): ERROR: Problems initializing servo clock." << std::endl;
         ros::shutdown();
         return false;
     }
@@ -57,7 +63,7 @@ bool RobotInterfaceDreamerTester::init()
     jointNames.push_back("upper_neck_roll");
     jointNames.push_back("upper_neck_pitch");
    
-    std::cout << "Initializing the robot state..." << std::endl; 
+    std::cout << "RobotInterfaceDreamerTester::init(): Initializing the robot state..." << std::endl; 
     robotState.init(jointNames);
 
     publisher.init(nh, "robotInterfaceDreamerTester/frequency", 1);
@@ -68,11 +74,11 @@ bool RobotInterfaceDreamerTester::init()
     }
     else
     {
-        std::cerr << "ServoClockDraemerTester::init: ERROR: Unable to initialize publisher!" << std::endl;
+        std::cerr << "RobotInterfaceDreamerTester::init(): ERROR: Unable to initialize publisher!" << std::endl;
         return false;
     }
 
-    std::cout << "Done initializing the robot interface tester..." << std::endl;
+    std::cout << "RobotInterfaceDreamerTester::init(): Done initializing the robot interface tester..." << std::endl;
 
     return true;
 }
@@ -166,8 +172,9 @@ int main(int argc, char **argv)
     int loopCounter = 0;
 
     std::cout << "RobotInterfaceDreamerTester: Letting test run for " << TEST_PERIOD << " seconds." << std::endl;
-    while (ros::ok() && loopCounter < TEST_PERIOD)
+    while (ros::ok() && loopCounter++ < TEST_PERIOD)
     {
+        std::cout << "RobotInterfaceDreamerTester: loopCounter = " << loopCounter << std::endl;
         ros::spinOnce();
         loop_rate.sleep();
     }

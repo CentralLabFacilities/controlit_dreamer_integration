@@ -8,6 +8,8 @@
 #include <controlit/ServoableClass.hpp>
 #include <controlit/dreamer/RobotInterfaceDreamer.hpp>
 #include <controlit/RTControlModel.hpp>
+#include <controlit/utility/ControlItParameters.hpp>
+#include <controlit/BindingManager.hpp>
 
 #include <std_msgs/Float64.h>
 
@@ -96,6 +98,10 @@ private:
      * A real-time safe publisher for publishing the servo period.
      */
     controlit::addons::ros::RealtimePublisher<std_msgs::Float64> publisher;
+
+    controlit::BindingManager bindingManager;
+
+    controlit::utility::ControlItParameters params;
 };
 
 } // namespace dreamer
