@@ -191,13 +191,13 @@ void HandControllerDreamer::getCommand(Vector & command)
     // command[0] = thumbKp * (currGoal - currPosition[0]) - thumbKd * currVelocity[0];
 
     // Do velocity control of right_thumb_cmc
-    double goalVelcity = 2.0;
+    double goalVelocity = 2.0;
     if (thumbGoalPos < currPosition[0])
     {
         goalVelocity = -2.0;
     }
 
-    command[0] = thumbKp * (goalVelocity - currVelocity[0])
+    command[0] = thumbKp * (goalVelocity - currVelocity[0]);
 
     // Publish the right hand command
     if(rhCommandPublisher.trylock())
