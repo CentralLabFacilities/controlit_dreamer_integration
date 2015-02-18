@@ -12,8 +12,8 @@ namespace dreamer {
 #define LEFT_GRIPPER_JOINT_INDEX 5
 
 // #define MAX_STEP_SIZE 0.1 // 5.7 degrees
-// #define MAX_STEP_SIZE 0.05 // 2.35 degrees
-#define MAX_STEP_SIZE 0.01 // 0.57 degrees
+#define MAX_STEP_SIZE 0.05 // 2.35 degrees
+// #define MAX_STEP_SIZE 0.01 // 0.57 degrees
 
 #define POWER_GRASP_ENABLED_KP 3.5
 // #define POWER_GRASP_DISABLED_KP 5.0
@@ -196,16 +196,16 @@ void HandControllerDreamer::getCommand(Vector & command)
 
     if (powerGraspRight)
     {
-        // if (thumbGoalPos > currPosition[0])
-        // {
-        //     if (thumbGoalPos - currPosition[0] > MAX_STEP_SIZE)
-        //         currGoal = currPosition[0] + MAX_STEP_SIZE;   
-        // }
-        // else
-        // {
-        //     if (currPosition[0] - thumbGoalPos > MAX_STEP_SIZE)
-        //         currGoal = currPosition[0] - MAX_STEP_SIZE;
-        // }
+        if (thumbGoalPos > currPosition[0])
+        {
+            if (thumbGoalPos - currPosition[0] > MAX_STEP_SIZE)
+                currGoal = currPosition[0] + MAX_STEP_SIZE;   
+        }
+        else
+        {
+            if (currPosition[0] - thumbGoalPos > MAX_STEP_SIZE)
+                currGoal = currPosition[0] - MAX_STEP_SIZE;
+        }
 
         // The PD control law for right_thumb_cmc
         command[0] = thumbKp * (currGoal - currPosition[0]) - thumbKd * currVelocity[0];
