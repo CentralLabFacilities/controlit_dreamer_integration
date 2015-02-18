@@ -15,7 +15,7 @@ namespace dreamer {
 #define MAX_STEP_SIZE 0.05 // 2.35 degrees
 
 #define POWER_GRASP_ENABLED_KP 3.5
-#define POWER_GRASP_DISABLED_KP 10.0
+#define POWER_GRASP_DISABLED_KP 3.0
 
 HandControllerDreamer::HandControllerDreamer() :
     powerGraspRight(false),
@@ -80,7 +80,7 @@ bool HandControllerDreamer::init(ros::NodeHandle & nh)
     }
     else
     {
-        CONTROLIT_ERROR << "Unable to initialize the state publisher!";
+        CONTROLIT_ERROR << "Unable to initialize the right hand state publisher!";
         return false;
     }
 
@@ -103,7 +103,7 @@ bool HandControllerDreamer::init(ros::NodeHandle & nh)
     }
     else
     {
-        CONTROLIT_ERROR << "Unable to initialize the command publisher!";
+        CONTROLIT_ERROR << "Unable to initialize the right hand command publisher!";
         return false;
     }
 
@@ -174,30 +174,30 @@ void HandControllerDreamer::getCommand(Vector & command)
     }
        
     // Do position control of right_thumb_cmc
-    // double currGoal = thumbGoalPos;
+    double currGoal = thumbGoalPos;
 
-    // if (thumbGoalPos > currPosition[0])
-    // {
-    //     if (thumbGoalPos - currPosition[0] > MAX_STEP_SIZE)
-    //         currGoal = currPosition[0] + MAX_STEP_SIZE;   
-    // }
-    // else
-    // {
-    //     if (currPosition[0] - thumbGoalPos > MAX_STEP_SIZE)
-    //         currGoal = currPosition[0] - MAX_STEP_SIZE;
-    // }
-
-    // // The PD control law for right_thumb_cmc
-    // command[0] = thumbKp * (currGoal - currPosition[0]) - thumbKd * currVelocity[0];
-
-    // Do velocity control of right_thumb_cmc
-    double goalVelcity = 2.0;
-    if (thumbGoalPos < currPosition[0])
+    if (thumbGoalPos > currPosition[0])
     {
-        goalVelocity = -2.0;
+        if (thumbGoalPos - currPosition[0] > MAX_STEP_SIZE)
+            currGoal = currPosition[0] + MAX_STEP_SIZE;   
+    }
+    else
+    {
+        if (currPosition[0] - thumbGoalPos > MAX_STEP_SIZE)
+            currGoal = currPosition[0] - MAX_STEP_SIZE;
     }
 
-    command[0] = thumbKp * (goalVelocity - currVelocity[0])
+    // The PD control law for right_thumb_cmc
+    command[0] = thumbKp * (currGoal - currPosition[0]) - thumbKd * currVelocity[0];
+
+    // Do velocity control of right_thumb_cmc
+    // double goalVelcity = 2.0;
+    // if (thumbGoalPos < currPosition[0])
+    // {
+    //     goalVelocity = -2.0;
+    // }
+
+    // command[0] = thumbKp * (goalVelocity - currVelocity[0])
 
     // Publish the right hand command
     if(rhCommandPublisher.trylock())
@@ -206,6 +206,8 @@ void HandControllerDreamer::getCommand(Vector & command)
         {   
             rhCommandPublisher.msg_.effort[ii] =  command[ii];
         }
+
+        rhCommandPublisher.msg_.position[0] = currGoal; // publish the current goal position of the right_thumb_cmc
 
         rhCommandPublisher.unlockAndPublish();
     }
