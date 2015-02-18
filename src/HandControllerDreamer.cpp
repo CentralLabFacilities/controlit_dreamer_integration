@@ -16,7 +16,7 @@ namespace dreamer {
 #define MAX_STEP_SIZE 0.01 // 0.57 degrees
 
 #define POWER_GRASP_ENABLED_KP 3.5
-#define POWER_GRASP_DISABLED_KP 3.0
+#define POWER_GRASP_DISABLED_KP 5.0
 
 HandControllerDreamer::HandControllerDreamer() :
     powerGraspRight(false),
@@ -165,7 +165,9 @@ void HandControllerDreamer::getCommand(Vector & command)
         if (std::abs(currPosition[1]) < 0.02)
         {
             thumbKp = POWER_GRASP_DISABLED_KP;
-            thumbGoalPos = 1.57;  // right_thumb_cmc 180 degrees from palm
+            thumbGoalPos = 1.57;  // right_thumb_cmc at 90 degree position
+            // thumbGoalPos = 1.396; // right_thumb_cmc at 80 degree position
+            command[0] = 0.1; // Issue 0.1 Nm of torque to force the joint to go to position 1.57 radians
         }
         else
         {
@@ -177,6 +179,8 @@ void HandControllerDreamer::getCommand(Vector & command)
     // Do position control of right_thumb_cmc
     double currGoal = thumbGoalPos;
 
+    if (powerGraspRight)
+    {
     if (thumbGoalPos > currPosition[0])
     {
         if (thumbGoalPos - currPosition[0] > MAX_STEP_SIZE)
@@ -190,6 +194,7 @@ void HandControllerDreamer::getCommand(Vector & command)
 
     // The PD control law for right_thumb_cmc
     command[0] = thumbKp * (currGoal - currPosition[0]) - thumbKd * currVelocity[0];
+    }
 
     // Do velocity control of right_thumb_cmc
     // double goalVelcity = 2.0;
