@@ -7,7 +7,8 @@ namespace dreamer {
 #define NUM_DOFS 7
 
 HeadControllerDreamer::HeadControllerDreamer() :
-    jointStatePublisher(nullptr)
+    jointStatePublisher(nullptr),
+    jointCommandPublisher("controlit/head/joint_commands", 1)
 {
 }
 
@@ -46,6 +47,26 @@ bool HeadControllerDreamer::init(ros::NodeHandle & nh)
         jointStatePublisher->unlockAndPublish();
     }
 
+    while (!jointCommandPublisher.trylock()) 
+        usleep(200);
+
+    jointCommandPublisher.msg_.name.push_back("lower_neck_pitch");
+    jointCommandPublisher.msg_.name.push_back("upper_neck_yaw");
+    jointCommandPublisher.msg_.name.push_back("upper_neck_roll");
+    jointCommandPublisher.msg_.name.push_back("upper_neck_pitch");
+    jointCommandPublisher.msg_.name.push_back("eye_pitch");
+    jointCommandPublisher.msg_.name.push_back("right_eye_yaw");
+    jointCommandPublisher.msg_.name.push_back("left_eye_yaw");
+
+    for (size_t ii = 0; ii < NUM_DOFS; ii++)
+    {
+        jointCommandPublisher.msg_.position.push_back(0.0);  // allocate memory for the joint states
+        jointCommandPublisher.msg_.velocity.push_back(0.0);
+        jointCommandPublisher.msg_.effort.push_back(0.0);
+    }
+
+    jointCommandPublisher.unlockAndPublish();
+
     // Create a subscriber for the lower neck pitch command
     lowerNeckPitchSubscriber = nh.subscribe("controlit/head/lower_neck_pitch/position_cmd", 1, 
         & HeadControllerDreamer::lowerNeckPitchCallback, this);
@@ -80,7 +101,17 @@ void HeadControllerDreamer::getCommand(Vector & command)
         // CONTROLIT_INFO << "Setting command [" << ii << "] to be: " << commandPos[ii];
         command[ii] = commandPos[ii];   
     }
-    // command.setZero(NUM_DOFS); // for debugging, reset everything to zero 
+
+
+    if(jointCommandPublisher.trylock())
+    {
+        for (size_t ii = 0; ii < NUM_DOFS; ii++)
+        {
+            // CONTROLIT_INFO << "Setting command [" << ii << "] to be: " << commandPos[ii];
+            jointCommandPublisher.msg_.position = commandPos[ii];
+            jointCommandPublisher.unlockAndPublish();
+        }
+    }
 }
 
 void HeadControllerDreamer::lowerNeckPitchCallback(const boost::shared_ptr<std_msgs::Float64 const> & msgPtr)

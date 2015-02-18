@@ -85,6 +85,8 @@ private:
     // ROS publishers
     std::unique_ptr<controlit::addons::ros::RealtimePublisherHeader<sensor_msgs::JointState>>
         jointStatePublisher;
+
+    controlit::addons::ros::RealtimePublisherHeader<sensor_msgs::JointState> jointCommandPublisher;
 };
 
 } // namespace dreamer
