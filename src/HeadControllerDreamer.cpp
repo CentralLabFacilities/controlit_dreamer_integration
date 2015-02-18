@@ -7,7 +7,7 @@ namespace dreamer {
 #define NUM_DOFS 7
 
 HeadControllerDreamer::HeadControllerDreamer() :
-    jointStatePublisher("controlit/head/joint_states", 1)
+    jointStatePublisher("controlit/head/joint_states", 1),
     jointCommandPublisher("controlit/head/joint_commands", 1)
 {
 }
@@ -107,7 +107,7 @@ void HeadControllerDreamer::getCommand(Vector & command)
         for (size_t ii = 0; ii < NUM_DOFS; ii++)
         {
             // CONTROLIT_INFO << "Setting command [" << ii << "] to be: " << commandPos[ii];
-            jointCommandPublisher.msg_.position = commandPos[ii];
+            jointCommandPublisher.msg_.position[ii] = commandPos[ii];
         }
         jointCommandPublisher.unlockAndPublish();
     }
