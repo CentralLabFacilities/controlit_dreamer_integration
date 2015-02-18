@@ -22,6 +22,7 @@ import Trajectory
 import TrajectoryGeneratorCubicSpline
 
 ENABLE_USER_PROMPTS = False
+GRASP_TIME = 8
 
 # Shoulder abductors about 10 degrees away from body and elbows bent 90 degrees
 # DEFAULT_POSTURE = [0.0, 0.0,                                    # torso
@@ -72,7 +73,7 @@ class Demo5_HandShake:
         self.trajGoToReady.addPostureWP([0.02261344933362008, 0.02261344933362008, -0.24046242047415964, 0.03612594842600267, -0.024443836417768035, 0.6141064688418445, 0.07759789575168982, -0.26756988346271293, 0.0018279130452489236, 0.27597656277256155, 0.012763093450392634, 0.11650789924507622, 1.2552150356689133, 1.4437630086869198, -0.07478599278803119, -0.12877855214133435])
 
         # ==============================================================================================
-        self.trajGrasp = Trajectory.Trajectory("Grasp", 5.0)
+        self.trajGrasp = Trajectory.Trajectory("Grasp", GRASP_TIME)
         self.trajGrasp.setPrevTraj(self.trajGoToReady)
 
         self.trajGrasp.addRHCartWP([0.30, -0.30, 1.10])
