@@ -26,7 +26,9 @@ HandControllerDreamer::HandControllerDreamer() :
     includeRightPinkyFinger(true),
     thumbKp(POWER_GRASP_DISABLED_KP),
     thumbKd(0),
-    thumbGoalPos(0)
+    thumbGoalPos(0),
+    rhCommandPublisher("controlit/rightHand/command", 1),
+    rhStatePublisher("controlit/rightHand/state", 1),
 {
 }
 
@@ -55,7 +57,56 @@ bool HandControllerDreamer::init(ros::NodeHandle & nh)
     leftGripperPowerGraspSubscriber = nh.subscribe("controlit/leftGripper/powerGrasp", 1,
         & HandControllerDreamer::leftGripperCallback, this);
 
-    // CONTROLIT_INFO << "Subscribed to topic: " << rightHandPowerGraspSubscriber.getTopic();
+    //---------------------------------------------------------------------------------
+    // Initialize the publishers of the latest right hand state and command.
+    //---------------------------------------------------------------------------------
+    if(rhStatePublisher.trylock())
+    {
+        rhStatePublisher.msg_.name.push_back("right_thumb_cmc");
+        rhStatePublisher.msg_.name.push_back("right_thumb_mcp");
+        rhStatePublisher.msg_.name.push_back("right_pointer_finger_mcp");
+        rhStatePublisher.msg_.name.push_back("right_middle_finger_mcp");
+        rhStatePublisher.msg_.name.push_back("right_pinky_mcp");
+
+
+        for (size_t ii = 0; ii < NUM_RIGHT_HAND_DOFS; ii++)
+        {   
+            rhStatePublisher.msg_.position.push_back(0.0);  // allocate memory for the joint states
+            rhStatePublisher.msg_.velocity.push_back(0.0);
+            rhStatePublisher.msg_.effort.push_back(0.0);
+        }
+
+        rhStatePublisher.unlockAndPublish();
+    }
+    else
+    {
+        CONTROLIT_ERROR << "Unable to initialize the state publisher!";
+        return false;
+    }
+
+    if(rhCommandPublisher.trylock())
+    {
+        rhCommandPublisher.msg_.name.push_back("right_thumb_cmc");
+        rhCommandPublisher.msg_.name.push_back("right_thumb_mcp");
+        rhCommandPublisher.msg_.name.push_back("right_pointer_finger_mcp");
+        rhCommandPublisher.msg_.name.push_back("right_middle_finger_mcp");
+        rhCommandPublisher.msg_.name.push_back("right_pinky_mcp");
+
+
+        for (size_t ii = 0; ii < NUM_RIGHT_HAND_DOFS; ii++)
+        {
+            rhCommandPublisher.msg_.position.push_back(0.0);  // allocate memory for the joint states
+            rhCommandPublisher.msg_.velocity.push_back(0.0);
+            rhCommandPublisher.msg_.effort.push_back(0.0);
+        }
+        rhCommandPublisher.unlockAndPublish();
+    }
+    else
+    {
+        CONTROLIT_ERROR << "Unable to initialize the command publisher!";
+        return false;
+    }
+
     return true;
 }
 
@@ -63,6 +114,17 @@ void HandControllerDreamer::updateState(Vector position, Vector velocity)
 {
     currPosition = position;
     currVelocity = velocity;
+
+    if(rhStatePublisher.trylock())
+    {
+        for (size_t ii = 0; ii < NUM_RIGHT_HAND_DOFS; ii++)
+        {   
+            rhStatePublisher.msg_.position[ii] =  currPosition[ii];
+            rhStatePublisher.msg_.velocity[ii] = currVelocity[ii];
+        }
+
+        rhStatePublisher.unlockAndPublish();
+    }
 }
 
 void HandControllerDreamer::getCommand(Vector & command)
@@ -84,9 +146,9 @@ void HandControllerDreamer::getCommand(Vector & command)
             thumbKp = 1; //POWER_GRASP_DISABLED_KP;
 
             command[1] = 0.3; // close right_thumb_mcp
-            command[2] = (includeRightPointerFinger ? 0.3 : -0.1); // right_pointer_finger
-            command[3] = (includeRightMiddleFinger ? 0.3 : -0.1);  // right_middle_finger
-            command[4] = (includeRightPinkyFinger ? 0.3 : -0.1);   // right_pinky_finger
+            command[2] = (includeRightPointerFinger ? 0.3 : -0.1);  // right_pointer_finger
+            command[3] = (includeRightMiddleFinger  ? 0.3 : -0.1);  // right_middle_finger
+            command[4] = (includeRightPinkyFinger   ? 0.3 : -0.1);  // right_pinky_finger
         }
         else
         {
@@ -127,6 +189,17 @@ void HandControllerDreamer::getCommand(Vector & command)
 
     // The PD control law for right_thumb_cmc
     command[0] = thumbKp * (currGoal - currPosition[0]) - thumbKd * currVelocity[0];
+
+    // Publish the right hand command
+    if(rhCommandPublisher.trylock())
+    {
+        for (size_t ii = 0; ii < NUM_RIGHT_HAND_DOFS; ii++)
+        {   
+            rhCommandPublisher.msg_.effort[ii] =  command[ii];
+        }
+
+        rhCommandPublisher.unlockAndPublish();
+    }
 
     // Issue command to left gripper
     command[5] = powerGraspLeft ? 2 : -0.5;

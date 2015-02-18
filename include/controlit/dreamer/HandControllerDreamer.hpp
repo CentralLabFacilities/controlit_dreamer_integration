@@ -2,8 +2,13 @@
 #define __CONTROLIT_DREAMER_INTEGRATION_HAND_CONTROLLER_DREAMER_HPP__
 
 #include <ros/ros.h>
+
 #include <std_msgs/Bool.h>
+#include <sensor_msgs/JointState.h>
+
 #include <controlit/addons/eigen/LinearAlgebra.hpp>
+#include <controlit/addons/ros/RealTimePublisherHeader.hpp>
+
 
 using controlit::addons::eigen::Vector;
 using controlit::addons::eigen::Matrix;
@@ -103,6 +108,10 @@ private:
     ros::Subscriber includeRightPinkyFingerSubscriber;
     ros::Subscriber includeRightMiddleFingerSubscriber;
     ros::Subscriber includeRightPointerFingerSubscriber;
+
+    // ROS Publishers
+    controlit::addons::ros::RealtimePublisherHeader<sensor_msgs::JointState> rhCommandPublisher;
+    controlit::addons::ros::RealtimePublisherHeader<sensor_msgs::JointState> rhStatePublisher;
 };
 
 } // namespace dreamer
