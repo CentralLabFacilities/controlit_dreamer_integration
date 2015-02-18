@@ -15,7 +15,7 @@ namespace dreamer {
 #define MAX_STEP_SIZE 0.05 // 2.35 degrees
 
 #define POWER_GRASP_ENABLED_KP 3.5
-#define POWER_GRASP_DISABLED_KP 3.0
+#define POWER_GRASP_DISABLED_KP 0.0
 
 HandControllerDreamer::HandControllerDreamer() :
     powerGraspRight(false),
@@ -28,7 +28,7 @@ HandControllerDreamer::HandControllerDreamer() :
     thumbKd(0),
     thumbGoalPos(0),
     rhCommandPublisher("controlit/rightHand/command", 1),
-    rhStatePublisher("controlit/rightHand/state", 1),
+    rhStatePublisher("controlit/rightHand/state", 1)
 {
 }
 
