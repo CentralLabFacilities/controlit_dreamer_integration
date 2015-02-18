@@ -164,10 +164,25 @@ void HandControllerDreamer::getCommand(Vector & command)
         // wait until all fingers are relaxed before moving the right_thumb_cmc
         if (std::abs(currPosition[1]) < 0.02)
         {
-            thumbKp = POWER_GRASP_DISABLED_KP;
+            // thumbKp = POWER_GRASP_DISABLED_KP;
             thumbGoalPos = 1.57;  // right_thumb_cmc at 90 degree position
             // thumbGoalPos = 1.396; // right_thumb_cmc at 80 degree position
-            command[0] = 0.1; // Issue 0.1 Nm of torque to force the joint to go to position 1.57 radians
+            if (currPosition[0] < 1.57)
+            {
+                command[0] = 0.1; // Issue 0.1 Nm of torque to force the joint to go to position 1.57 radians
+                timeAtRelaxedPos = ros::Time::now();
+            }
+            else
+            {
+                double elapsedTime = (ros::Time::now() - timeAtRelaxedPos).toSec();
+                if (elapsedTime > 3.0)
+                    command[0] = 0.02;
+                else
+                    command[0] = 0.1;
+                
+            }
+
+            // command[0] = 0.05; // Issue 0.05 Nm of torque to force the joint to go to position 1.57 radians
         }
         else
         {

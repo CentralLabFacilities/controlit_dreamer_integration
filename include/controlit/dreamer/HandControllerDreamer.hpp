@@ -113,6 +113,7 @@ private:
     controlit::addons::ros::RealtimePublisherHeader<sensor_msgs::JointState> rhCommandPublisher;
     controlit::addons::ros::RealtimePublisherHeader<sensor_msgs::JointState> rhStatePublisher;
 
+    ros::Time timeAtRelaxedPos;
 };
 
 } // namespace dreamer
