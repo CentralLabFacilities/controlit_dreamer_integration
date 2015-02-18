@@ -135,7 +135,7 @@ void HandControllerDreamer::getCommand(Vector & command)
     if (powerGraspRight)
     {
         thumbKp = POWER_GRASP_ENABLED_KP;
-        
+
         // if (!closingRightFingers)
         //     thumbKp = POWER_GRASP_ENABLED_KP;
         // else
@@ -146,7 +146,7 @@ void HandControllerDreamer::getCommand(Vector & command)
         if (closingRightFingers || std::abs(currPosition[0]) < 0.2)  // 0.2 radians is 11.46 degrees
         {
             closingRightFingers = true;
-            // thumbKp = 1; //POWER_GRASP_DISABLED_KP;
+            thumbKp = 1; //POWER_GRASP_DISABLED_KP;
 
             command[1] = 0.3; // close right_thumb_mcp
             command[2] = (includeRightPointerFinger ? 0.3 : -0.1);  // right_pointer_finger
