@@ -181,19 +181,19 @@ void HandControllerDreamer::getCommand(Vector & command)
 
     if (powerGraspRight)
     {
-    if (thumbGoalPos > currPosition[0])
-    {
-        if (thumbGoalPos - currPosition[0] > MAX_STEP_SIZE)
-            currGoal = currPosition[0] + MAX_STEP_SIZE;   
-    }
-    else
-    {
-        if (currPosition[0] - thumbGoalPos > MAX_STEP_SIZE)
-            currGoal = currPosition[0] - MAX_STEP_SIZE;
-    }
+        if (thumbGoalPos > currPosition[0])
+        {
+            if (thumbGoalPos - currPosition[0] > MAX_STEP_SIZE)
+                currGoal = currPosition[0] + MAX_STEP_SIZE;   
+        }
+        else
+        {
+            if (currPosition[0] - thumbGoalPos > MAX_STEP_SIZE)
+                currGoal = currPosition[0] - MAX_STEP_SIZE;
+        }
 
-    // The PD control law for right_thumb_cmc
-    command[0] = thumbKp * (currGoal - currPosition[0]) - thumbKd * currVelocity[0];
+        // The PD control law for right_thumb_cmc
+        command[0] = thumbKp * (currGoal - currPosition[0]) - thumbKd * currVelocity[0];
     }
 
     // Do velocity control of right_thumb_cmc
