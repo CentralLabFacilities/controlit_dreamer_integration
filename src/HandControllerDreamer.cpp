@@ -241,7 +241,7 @@ void HandControllerDreamer::getCommand(Vector & command)
             rhCommandPublisher.msg_.effort[ii] =  command[ii];
         }
 
-        rhCommandPublisher.msg_.position[0] = currGoal; // publish the current goal position of the right_thumb_cmc
+        rhCommandPublisher.msg_.position[0] = thumbGoalPos; // publish the current goal position of the right_thumb_cmc
 
         rhCommandPublisher.unlockAndPublish();
     }
