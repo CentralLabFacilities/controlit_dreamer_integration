@@ -88,6 +88,7 @@ private:
 
     bool powerGraspRight;
     bool powerGraspLeft;
+    bool closingThumbFinger;
     bool closingRightFingers;
     bool includeRightPointerFinger; // whether to include the right pointer finger in the power grasp
     bool includeRightMiddleFinger;  // whether to include the right middle finger in the power grasp
@@ -101,6 +102,7 @@ private:
     double thumbKp;
     double thumbKd;
     double thumbGoalPos;
+    double thumbInitPos;
 
     // ROS Subscribers
     ros::Subscriber rightHandPowerGraspSubscriber;
@@ -113,7 +115,9 @@ private:
     controlit::addons::ros::RealtimePublisherHeader<sensor_msgs::JointState> rhCommandPublisher;
     controlit::addons::ros::RealtimePublisherHeader<sensor_msgs::JointState> rhStatePublisher;
 
+    ros::Time timeBeginCloseThumb;
     ros::Time timeAtRelaxedPos;
+
 };
 
 } // namespace dreamer

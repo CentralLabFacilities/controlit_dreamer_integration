@@ -20,9 +20,12 @@ namespace dreamer {
 
 #define POWER_GRASP_ENABLED_KD 0
 
+#define THUMB_SPEED 0.1  // radians per second
+
 HandControllerDreamer::HandControllerDreamer() :
     powerGraspRight(false),
     powerGraspLeft(false),
+    closingThumbFinger(false),
     closingRightFingers(false),
     includeRightPointerFinger(true),
     includeRightMiddleFinger(true),
@@ -138,11 +141,15 @@ void HandControllerDreamer::getCommand(Vector & command)
     {
         thumbKp = POWER_GRASP_ENABLED_KP;
 
-        // if (!closingRightFingers)
-        //     thumbKp = POWER_GRASP_ENABLED_KP;
-        // else
-        //     thumbKp = 1; //POWER_GRASP_DISABLED_KP;
         thumbGoalPos = 0; // right_thumb_cmc 90 degrees from palm
+
+        if (!closingRightFingers && !closingThumbFinger)
+        {
+            closingThumbFinger = true;
+
+            timeBeginCloseThumb = ros::Time::now();
+            thumbInitPos = currPosition[0];
+        }
         
         // wait until right_thumb_cmc is at the zero position before curling the fingers
         if (closingRightFingers || std::abs(currPosition[0]) < 0.2)  // 0.2 radians is 11.46 degrees
@@ -158,19 +165,23 @@ void HandControllerDreamer::getCommand(Vector & command)
         else
         {
             // CONTROLIT_INFO << "Not curling right_thumb_mcp, current position of right_thumb_cmc is " << std::abs(currPosition[0]);
+
+            double elapsedTime = (ros::Time::now() - timeBeginCloseThumb).toSec();
+            thumbGoalPos = thumbInitPos - elapsedTime * THUMB_SPEED;
+            if (thumbGoalPos < 0)
+                thumbGoalPos = 0;
         }
     }
     else
     {
         closingRightFingers = false;
+        closingThumbFinger = false;
         command[4] = command[3] = command[2] = command[1] = -0.1;  // right_thumb_mcp, right_pointer_finger_mcp, right_pointer_finger_mcp, right_pinky_mcp
         
         // wait until all fingers are relaxed before moving the right_thumb_cmc
         if (std::abs(currPosition[1]) < 0.02)
         {
-            // thumbKp = POWER_GRASP_DISABLED_KP;
             thumbGoalPos = 1.57;  // right_thumb_cmc at 90 degree position
-            // thumbGoalPos = 1.396; // right_thumb_cmc at 80 degree position
             if (currPosition[0] < 1.57)
             {
                 command[0] = 0.1; // Issue 0.1 Nm of torque to force the joint to go to position 1.57 radians
@@ -185,8 +196,6 @@ void HandControllerDreamer::getCommand(Vector & command)
                     command[0] = 0.1;
                 
             }
-
-            // command[0] = 0.05; // Issue 0.05 Nm of torque to force the joint to go to position 1.57 radians
         }
         else
         {
@@ -196,23 +205,23 @@ void HandControllerDreamer::getCommand(Vector & command)
     }
        
     // Do position control of right_thumb_cmc
-    double currGoal = thumbGoalPos;
+    // double currGoal = thumbGoalPos;
 
     if (powerGraspRight)
     {
-        if (thumbGoalPos > currPosition[0])
-        {
-            if (thumbGoalPos - currPosition[0] > MAX_STEP_SIZE)
-                currGoal = currPosition[0] + MAX_STEP_SIZE;   
-        }
-        else
-        {
-            if (currPosition[0] - thumbGoalPos > MAX_STEP_SIZE)
-                currGoal = currPosition[0] - MAX_STEP_SIZE;
-        }
+        // if (thumbGoalPos > currPosition[0])
+        // {
+        //     if (thumbGoalPos - currPosition[0] > MAX_STEP_SIZE)
+        //         currGoal = currPosition[0] + MAX_STEP_SIZE;   
+        // }
+        // else
+        // {
+        //     if (currPosition[0] - thumbGoalPos > MAX_STEP_SIZE)
+        //         currGoal = currPosition[0] - MAX_STEP_SIZE;
+        // }
 
         // The PD control law for right_thumb_cmc
-        command[0] = thumbKp * (currGoal - currPosition[0]) - thumbKd * currVelocity[0];
+        command[0] = thumbKp * (thumbGoalPos - currPosition[0]) - thumbKd * currVelocity[0];
     }
 
     // Do velocity control of right_thumb_cmc
