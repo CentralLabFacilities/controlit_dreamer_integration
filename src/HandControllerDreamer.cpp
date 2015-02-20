@@ -148,7 +148,7 @@ void HandControllerDreamer::getCommand(Vector & command)
         if (closingRightFingers || std::abs(currPosition[0]) < 0.2)  // 0.2 radians is 11.46 degrees
         {
             closingRightFingers = true;
-            thumbKp = 1; //POWER_GRASP_DISABLED_KP;
+            // thumbKp = 1; //POWER_GRASP_DISABLED_KP;
 
             command[1] = 0.3; // close right_thumb_mcp
             command[2] = (includeRightPointerFinger ? 0.3 : -0.1);  // right_pointer_finger
@@ -205,11 +205,11 @@ void HandControllerDreamer::getCommand(Vector & command)
             if (thumbGoalPos - currPosition[0] > MAX_STEP_SIZE)
                 currGoal = currPosition[0] + MAX_STEP_SIZE;   
         }
-        // else
-        // {
-        //     if (currPosition[0] - thumbGoalPos > MAX_STEP_SIZE)
-        //         currGoal = currPosition[0] - MAX_STEP_SIZE;
-        // }
+        else
+        {
+            if (currPosition[0] - thumbGoalPos > MAX_STEP_SIZE)
+                currGoal = currPosition[0] - MAX_STEP_SIZE;
+        }
 
         // The PD control law for right_thumb_cmc
         command[0] = thumbKp * (currGoal - currPosition[0]) - thumbKd * currVelocity[0];
