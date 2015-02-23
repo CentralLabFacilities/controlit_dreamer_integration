@@ -12,9 +12,6 @@ import rospy
 from std_msgs.msg import Float64, Float64MultiArray, MultiArrayDimension
 
 UPDATE_PERIOD = 0.01  # 100Hz
-AMPLITUDE = 0.475
-# AMPLITUDE = 0.235
-OFFSET = -0.215
 
 class NeckJointDetails:
     def __init__(self, name, index, minPos, maxPos, freq = 0.02):
@@ -24,6 +21,11 @@ class NeckJointDetails:
         self.maxPos = maxPos
         self.freq = freq
 
+    def getAmplitude(self):
+        return self.maxPos - self.minPos
+
+    def getOffset(self):
+        return self.minPos + self.getAmplitude() / 2.0
 
     def __repr__(self):
         return self.__str__()
@@ -61,46 +63,76 @@ class NeckJointTest:
         self.goalPosMsg.layout.dim.append(dimPos)
         self.goalPosMsg.layout.data_offset = 0
 
-        dimVel = MultiArrayDimension()
-        dimVel.size = len(self.jointSpecs)
-        dimVel.label = "goalVelMsg"
-        dimVel.stride = 1
+        # dimVel = MultiArrayDimension()
+        # dimVel.size = len(self.jointSpecs)
+        # dimVel.label = "goalVelMsg"
+        # dimVel.stride = 1
 
-        self.goalVelMsg = Float64MultiArray()
+        # self.goalVelMsg = Float64MultiArray()
+        # for ii in range(0, len(self.jointSpecs)):
+        #     self.goalVelMsg.data.append(0)
+        # self.goalVelMsg.layout.dim.append(dimVel)
+        # self.goalVelMsg.layout.data_offset = 0
+
+
+        self.cmdPublisher = rospy.Publisher("/dreamer_controller/controlit/head/position_cmd", Float64MultiArray, queue_size=1)
+
+    def getUserOptions(self):
+        question = "Which head joint would you like to test? (or type 'q' to exit)\n"
         for ii in range(0, len(self.jointSpecs)):
-            self.goalVelMsg.data.append(0)
-        self.goalVelMsg.layout.dim.append(dimVel)
-        self.goalVelMsg.layout.data_offset = 0
+            question = question + "  {0}: {1}\n".format(ii, self.jointSpecs[ii].name)
 
-        # Define the goal messages
-        # self.goalMsgJ0 = Float64()
+        question = question + "$ "
+
+        index = raw_input(question)
+        
+        if "q" == index:
+           return False
+
+        self.jointIndex = int(index)
+
+        defaultFreq = self.jointSpecs[self.jointIndex].freq
+
+        index = raw_input("Please enter desired frequency (default is {0}): ".format(defaultFreq))
+
+        if "q" == index:
+           return False
+
+        if not index == "":
+            self.jointSpecs[self.jointIndex].freq = float(index)
+
+        return True
 
     def getSineSignal(self, elapsedTime_sec, amplitude, offset, freq_hz):
         return amplitude * math.sin(elapsedTime_sec * 2 * math.pi * freq_hz) + offset
 
+    def stop(self):
+        self.keepRunning = False
+
     def start(self):
         """
-        Publishes a sine wave trajectory for the lower neck extensor.
-        Joint range of motion: 
-          * Degrees: -40 to 15
-          * Radians: -0.69 to 0.26
+        Publishes a sine wave trajectory for the specified joint.
         """
 
-        # publisherJ0 = rospy.Publisher("/dreamer_controller/controlit/head/lower_neck_pitch/position_cmd", Float64, queue_size=1)
-        # startTime = time.time()
+        self.keepRunning = True
 
-        # while not rospy.is_shutdown():
-        #     self.goalMsgJ0.data = self.getSineSignal(time.time() - startTime, AMPLITUDE, OFFSET, FREQUENCY)
+        startTime = time.time()
 
-        #     # Make the joint at jointIndex move in a sine wave.
-        #     # Set all other joints to be at position zero.
-        #     # for ii in range(0, numDoFs):
-        #     #     self.goalMsg.data[ii] = 0
-        #     # self.goalMsg.data[self.jointIndex] = goal
+        name      = self.jointSpecs[self.jointIndex].name
+        amplitude = self.jointSpecs[self.jointIndex].getAmplitude()
+        offset    = self.jointSpecs[self.jointIndex].getOffset()
+        freq      = self.jointSpecs[self.jointIndex].freq
 
-        #     publisherJ0.publish(self.goalMsgJ0)
-        #     rospy.sleep(UPDATE_PERIOD)
+        print "Publishing sine wave to joint {0} with frequency {1}....\n".format(name, freq)
 
+        while not rospy.is_shutdown() and self.keepRunning:
+            for ii in range(0, len(self.jointSpecs)):
+                self.goalPosMsg.data[ii] = 0
+
+            self.goalPosMsg.data[self.jointIndex] = self.getSineSignal(time.time() - startTime, amplitude, offset, freq)
+
+            self.cmdPublisher.publish(self.goalPosMsg)
+            rospy.sleep(UPDATE_PERIOD)
 
 # Main method
 if __name__ == "__main__":
@@ -170,11 +202,21 @@ if __name__ == "__main__":
     #               "  - Update Frequency: {7}".format(
     #     rosTopic, amplitude, offset, initGoal, numDoFs, jointIndex, period, updateFreq))
 
+
     # Create a NeckJointTest object
     tester = NeckJointTest()
-    tester.start()
-    # t = threading.Thread(target=neckJointTest.start)
-    # t.start()
+
+    done = False
+    while not rospy.is_shutdown() and not done:
+        if tester.getUserOptions():
+            thread = threading.Thread(target=tester.start)
+            thread.start()
+
+            index = raw_input("Type any key to return to main menu: ")
+            tester.stop()
+            thread.join()
+        else:
+            done = True
 
     # done = False
     # while not done:
