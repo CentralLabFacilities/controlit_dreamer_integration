@@ -66,9 +66,9 @@ bool HeadControllerDreamer::init(ros::NodeHandle & nh)
 
     jointCommandPublisher.unlockAndPublish();
 
-    // Create a subscriber for the lower neck pitch command
-    lowerNeckPitchSubscriber = nh.subscribe("controlit/head/lower_neck_pitch/position_cmd", 1, 
-        & HeadControllerDreamer::lowerNeckPitchCallback, this);
+    // Create a subscriber for the head command
+    headCommandSubscriber = nh.subscribe("controlit/head/position_cmd", 1, 
+        & HeadControllerDreamer::headCommandCallback, this);
 
     return true;
 }
@@ -113,9 +113,12 @@ void HeadControllerDreamer::getCommand(Vector & command)
     }
 }
 
-void HeadControllerDreamer::lowerNeckPitchCallback(const boost::shared_ptr<std_msgs::Float64 const> & msgPtr)
+void HeadControllerDreamer::headCommandCallback(const boost::shared_ptr<std_msgs::Float64MultiArray const> & msgPtr)
 {
-    commandPos[0] = msgPtr->data;
+    for (size_t ii = 0; ii < NUM_DOFS; ii++)
+    {
+        commandPos[ii] = msgPtr->data[ii];    
+    }
 }
 
 } // namespace dreamer

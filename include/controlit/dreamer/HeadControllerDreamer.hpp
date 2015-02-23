@@ -5,7 +5,7 @@
 // #include <std_msgs/Bool.h>
 #include <controlit/addons/eigen/LinearAlgebra.hpp>
 #include <controlit/addons/ros/RealTimePublisherHeader.hpp>
-#include <std_msgs/Float64.h>
+#include <std_msgs/Float64MultiArray.h>
 
 using controlit::addons::eigen::Vector;
 using controlit::addons::eigen::Matrix;
@@ -68,7 +68,7 @@ private:
     /*!
      * Callback methods for head joint commands
      */
-    void lowerNeckPitchCallback(const boost::shared_ptr<std_msgs::Float64 const> & msgPtr);
+    void headCommandCallback(const boost::shared_ptr<std_msgs::Float64MultiArray const> & msgPtr);
 
     // Local variables for holding the current position and velocity state.
     Vector currPosition;
@@ -76,7 +76,7 @@ private:
 
 
     // ROS Subscribers
-    ros::Subscriber lowerNeckPitchSubscriber;
+    ros::Subscriber headCommandSubscriber;
 
     // The command
     Vector commandPos;
@@ -86,7 +86,8 @@ private:
     controlit::addons::ros::RealtimePublisherHeader<sensor_msgs::JointState>
         jointStatePublisher;
 
-    controlit::addons::ros::RealtimePublisherHeader<sensor_msgs::JointState> jointCommandPublisher;
+    controlit::addons::ros::RealtimePublisherHeader<sensor_msgs::JointState> 
+        jointCommandPublisher;
 };
 
 } // namespace dreamer
