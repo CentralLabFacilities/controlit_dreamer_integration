@@ -11,13 +11,7 @@ namespace dreamer {
 #define RIGHT_THUMB_CMC_INDEX 0
 #define LEFT_GRIPPER_JOINT_INDEX 5
 
-// #define MAX_STEP_SIZE 0.1 // 5.7 degrees
-// #define MAX_STEP_SIZE 0.05 // 2.35 degrees
-// #define MAX_STEP_SIZE 0.01 // 0.57 degrees
-
 #define POWER_GRASP_ENABLED_KP 3
-// #define POWER_GRASP_DISABLED_KP 5.0
-
 #define POWER_GRASP_ENABLED_KD 0
 
 #define THUMB_SPEED 1  // radians per second
@@ -166,11 +160,17 @@ void HandControllerDreamer::getCommand(Vector & command)
         {
             // CONTROLIT_INFO << "Not curling right_thumb_mcp, current position of right_thumb_cmc is " << std::abs(currPosition[0]);
 
-            double elapsedTime = (ros::Time::now() - timeBeginCloseThumb).toSec();
-            thumbGoalPos = thumbInitPos - elapsedTime * THUMB_SPEED;
-            if (thumbGoalPos < 0)
-                thumbGoalPos = 0;
+            // double elapsedTime = (ros::Time::now() - timeBeginCloseThumb).toSec();
+            // thumbGoalPos = thumbInitPos - elapsedTime * THUMB_SPEED;
+            // if (thumbGoalPos < 0)
+            //     thumbGoalPos = 0;
+
+            thumbGoalPos = -0.69; // -40 degrees
         }
+
+        // The PD control law for right_thumb_cmc
+        // command[0] = thumbKp * (thumbGoalPos - currPosition[0]) - thumbKd * currVelocity[0];
+        command[0] = -0.15; // Force right_thumb_cmc to go to -40 degree position.
     }
     else
     {
@@ -193,7 +193,7 @@ void HandControllerDreamer::getCommand(Vector & command)
                 if (elapsedTime > 3.0)
                     command[0] = 0.05;
                 else
-                    command[0] = 0.1;
+                    command[0] = 0.1;   // Decrease torque after 3 seconds to prevent right_thumb-cmc motor from over heating
                 
             }
         }
@@ -203,35 +203,6 @@ void HandControllerDreamer::getCommand(Vector & command)
             //               << "  - right_thumb_mcp: " << std::abs(currPosition[1]);
         }
     }
-       
-    // Do position control of right_thumb_cmc
-    // double currGoal = thumbGoalPos;
-
-    if (powerGraspRight)
-    {
-        // if (thumbGoalPos > currPosition[0])
-        // {
-        //     if (thumbGoalPos - currPosition[0] > MAX_STEP_SIZE)
-        //         currGoal = currPosition[0] + MAX_STEP_SIZE;   
-        // }
-        // else
-        // {
-        //     if (currPosition[0] - thumbGoalPos > MAX_STEP_SIZE)
-        //         currGoal = currPosition[0] - MAX_STEP_SIZE;
-        // }
-
-        // The PD control law for right_thumb_cmc
-        command[0] = thumbKp * (thumbGoalPos - currPosition[0]) - thumbKd * currVelocity[0];
-    }
-
-    // Do velocity control of right_thumb_cmc
-    // double goalVelcity = 2.0;
-    // if (thumbGoalPos < currPosition[0])
-    // {
-    //     goalVelocity = -2.0;
-    // }
-
-    // command[0] = thumbKp * (goalVelocity - currVelocity[0])
 
     // Publish the right hand command
     if(rhCommandPublisher.trylock())
