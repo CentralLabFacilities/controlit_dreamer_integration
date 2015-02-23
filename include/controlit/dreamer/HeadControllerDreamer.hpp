@@ -80,7 +80,7 @@ private:
 
     // The command
     Vector commandPos;
-    Vector commandVel;
+    // Vector commandVel;
 
     // ROS publishers
     controlit::addons::ros::RealtimePublisherHeader<sensor_msgs::JointState>

@@ -22,7 +22,7 @@ bool HeadControllerDreamer::init(ros::NodeHandle & nh)
     currVelocity.setZero(NUM_DOFS);
 
     commandPos.setZero(NUM_DOFS);
-    commandVel.setZero(NUM_DOFS);
+    // commandVel.setZero(NUM_DOFS);
 
     // Create a real-time publisher of the joint states.
     while (!jointStatePublisher.trylock()) 
