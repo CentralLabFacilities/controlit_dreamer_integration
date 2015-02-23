@@ -12,15 +12,15 @@ namespace dreamer {
 #define LEFT_GRIPPER_JOINT_INDEX 5
 
 // #define MAX_STEP_SIZE 0.1 // 5.7 degrees
-#define MAX_STEP_SIZE 0.05 // 2.35 degrees
+// #define MAX_STEP_SIZE 0.05 // 2.35 degrees
 // #define MAX_STEP_SIZE 0.01 // 0.57 degrees
 
-#define POWER_GRASP_ENABLED_KP 2.5
+#define POWER_GRASP_ENABLED_KP 3
 // #define POWER_GRASP_DISABLED_KP 5.0
 
 #define POWER_GRASP_ENABLED_KD 0
 
-#define THUMB_SPEED 0.1  // radians per second
+#define THUMB_SPEED 1  // radians per second
 
 HandControllerDreamer::HandControllerDreamer() :
     powerGraspRight(false),
@@ -191,7 +191,7 @@ void HandControllerDreamer::getCommand(Vector & command)
             {
                 double elapsedTime = (ros::Time::now() - timeAtRelaxedPos).toSec();
                 if (elapsedTime > 3.0)
-                    command[0] = 0.02;
+                    command[0] = 0.05;
                 else
                     command[0] = 0.1;
                 
