@@ -15,7 +15,22 @@ UPDATE_PERIOD = 0.01  # 100Hz
 AMPLITUDE = 0.475
 # AMPLITUDE = 0.235
 OFFSET = -0.215
-FREQUENCY = 0.02
+
+class NeckJointDetails:
+    def __init__(self, name, index, minPos, maxPos, freq = 0.02):
+        self.name = name
+        self.index = index
+        self.minPos = minPos
+        self.maxPos = maxPos
+        self.freq = freq
+
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __str__(self):
+        return "[name = {0}, index = {1}, minPos = {2}, maxPos = {3}, freq = {4}]".format(
+            self.name, self.index, self.minPos, self.maxPos, self.freq)
 
 class NeckJointTest:
     def __init__(self):
@@ -23,14 +38,42 @@ class NeckJointTest:
         The constructor.
         """
 
-        # Define the dimensions of the message
-        # dim = MultiArrayDimension()
-        # dim.size = numDoFs
-        # dim.label = "goalMsg"
-        # dim.stride = 1
+        # Define the joint info
+        self.jointSpecs = []
+        self.jointSpecs.append(NeckJointDetails("lower_neck_pitch", 0, -40, 15))
+        self.jointSpecs.append(NeckJointDetails("upper_neck_yaw", 1, -80, 80))
+        self.jointSpecs.append(NeckJointDetails("upper_neck_roll", 2, -14, 14))
+        self.jointSpecs.append(NeckJointDetails("upper_neck_pitch", 3, -7, 37))
+        self.jointSpecs.append(NeckJointDetails("eye_pitch", 4, -34, 34))
+        self.jointSpecs.append(NeckJointDetails("right_eye_yaw", 5, -34, 34))
+        self.jointSpecs.append(NeckJointDetails("left_eye_yaw", 6, -34, 34))
+
+        # Define the goal message
+        # Create the goal message. Store the current joint states into the messages
+        dimPos = MultiArrayDimension()
+        dimPos.size = len(self.jointSpecs)
+        dimPos.label = "goalPosMsg"
+        dimPos.stride = 1
+
+        self.goalPosMsg = Float64MultiArray()
+        for ii in range(0, len(self.jointSpecs)):
+            self.goalPosMsg.data.append(0)
+        self.goalPosMsg.layout.dim.append(dimPos)
+        self.goalPosMsg.layout.data_offset = 0
+
+        dimVel = MultiArrayDimension()
+        dimVel.size = len(self.jointSpecs)
+        dimVel.label = "goalVelMsg"
+        dimVel.stride = 1
+
+        self.goalVelMsg = Float64MultiArray()
+        for ii in range(0, len(self.jointSpecs)):
+            self.goalVelMsg.data.append(0)
+        self.goalVelMsg.layout.dim.append(dimVel)
+        self.goalVelMsg.layout.data_offset = 0
 
         # Define the goal messages
-        self.goalMsgJ0 = Float64()
+        # self.goalMsgJ0 = Float64()
 
     def getSineSignal(self, elapsedTime_sec, amplitude, offset, freq_hz):
         return amplitude * math.sin(elapsedTime_sec * 2 * math.pi * freq_hz) + offset
@@ -43,20 +86,20 @@ class NeckJointTest:
           * Radians: -0.69 to 0.26
         """
 
-        publisherJ0 = rospy.Publisher("/dreamer_controller/controlit/head/lower_neck_pitch/position_cmd", Float64, queue_size=1)
-        startTime = time.time()
+        # publisherJ0 = rospy.Publisher("/dreamer_controller/controlit/head/lower_neck_pitch/position_cmd", Float64, queue_size=1)
+        # startTime = time.time()
 
-        while not rospy.is_shutdown():
-            self.goalMsgJ0.data = self.getSineSignal(time.time() - startTime, AMPLITUDE, OFFSET, FREQUENCY)
+        # while not rospy.is_shutdown():
+        #     self.goalMsgJ0.data = self.getSineSignal(time.time() - startTime, AMPLITUDE, OFFSET, FREQUENCY)
 
-            # Make the joint at jointIndex move in a sine wave.
-            # Set all other joints to be at position zero.
-            # for ii in range(0, numDoFs):
-            #     self.goalMsg.data[ii] = 0
-            # self.goalMsg.data[self.jointIndex] = goal
+        #     # Make the joint at jointIndex move in a sine wave.
+        #     # Set all other joints to be at position zero.
+        #     # for ii in range(0, numDoFs):
+        #     #     self.goalMsg.data[ii] = 0
+        #     # self.goalMsg.data[self.jointIndex] = goal
 
-            publisherJ0.publish(self.goalMsgJ0)
-            rospy.sleep(UPDATE_PERIOD)
+        #     publisherJ0.publish(self.goalMsgJ0)
+        #     rospy.sleep(UPDATE_PERIOD)
 
 
 # Main method
