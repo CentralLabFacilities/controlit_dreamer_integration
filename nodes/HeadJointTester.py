@@ -13,6 +13,9 @@ from std_msgs.msg import Float64, Float64MultiArray, MultiArrayDimension
 
 UPDATE_PERIOD = 0.01  # 100Hz
 
+def degToRad(degValue):
+    return degValue / 180.0 * 3.14159265359
+
 class NeckJointDetails:
     def __init__(self, name, index, minPos, maxPos, freq = 0.02):
         self.name = name
@@ -22,10 +25,10 @@ class NeckJointDetails:
         self.freq = freq
 
     def getAmplitude(self):
-        return self.maxPos - self.minPos
+        return degToRad(self.maxPos - self.minPos) / 2.0
 
     def getOffset(self):
-        return self.minPos + self.getAmplitude() / 2.0
+        return degToRad(self.minPos) + self.getAmplitude()
 
     def __repr__(self):
         return self.__str__()
@@ -123,7 +126,10 @@ class NeckJointTest:
         offset    = self.jointSpecs[self.jointIndex].getOffset()
         freq      = self.jointSpecs[self.jointIndex].freq
 
-        print "Publishing sine wave to joint {0} with frequency {1}....\n".format(name, freq)
+        print "Publishing sine wave to joint {0}:\n"\
+              "  - frequency: {1}\n"\
+              "  - offset: {2}\n"\
+              "  - amplitude: {3}\n".format(name, freq, offset, amplitude)
 
         while not rospy.is_shutdown() and self.keepRunning:
             for ii in range(0, len(self.jointSpecs)):
