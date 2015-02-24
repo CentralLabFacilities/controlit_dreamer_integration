@@ -36,14 +36,14 @@ DEFAULT_POSTURE = [0.0, 0.0,                                    # torso
                    0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0]  # right arm
 
 # The time each trajectory should take
-TIME_GO_TO_READY = 10.0
-TIME_GRAB_TUBE = 5.0
-TIME_GRAB_VALVE = 5.0
-TIME_REMOVE_VALVE = 5.0
-TIME_REMOVE_LEFT_HAND = 5.0
-TIME_STORE_TUBE = 5.0
-TIME_REMOVE_RIGHT_HAND = 5.0
-TIME_GO_TO_IDLE = 10.0
+TIME_GO_TO_READY = 5.0
+TIME_GRAB_TUBE = 3.0
+TIME_GRAB_VALVE = 3.0
+TIME_REMOVE_VALVE = 3.0
+TIME_REMOVE_LEFT_HAND = 3.0
+TIME_STORE_TUBE = 3.0
+TIME_REMOVE_RIGHT_HAND = 3.0
+TIME_GO_TO_IDLE = 7.0
 
 class TrajectoryState(smach.State):
     def __init__(self, dreamerInterface, goodResult, traj):
