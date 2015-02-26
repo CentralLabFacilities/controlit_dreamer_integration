@@ -214,6 +214,10 @@ class DreamerInterface:
     def connectToControlIt(self, defaultPosture):
         print "Connecting to ControlIt!..."
 
+        # Check if already connected
+        if not self.rightCartesianTaskEnablePublisher.get_num_connections() == 0:
+            return not rospy.is_shutdown()
+
         # Wait for connection to ControlIt!
         pauseCount = 0
         warningPrinted = False
@@ -243,7 +247,7 @@ class DreamerInterface:
                 warningPrinted = True
 
         if rospy.is_shutdown():
-            return
+            return False
 
         # Enable the Cartesian position and orientation tasks
         enableMsg = Int32()
@@ -284,7 +288,7 @@ class DreamerInterface:
                 warningPrinted = True
 
         if rospy.is_shutdown():
-            return
+            return False
 
         print "Done connecting to ControlIt!"
         return not rospy.is_shutdown()
