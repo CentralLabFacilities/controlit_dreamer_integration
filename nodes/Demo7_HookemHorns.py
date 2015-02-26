@@ -33,7 +33,7 @@ DEFAULT_POSTURE = [0.0, 0.0,                                    # torso
                    0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,  # left arm
                    0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0]  # right arm
 
-class Demo5_HandShake:
+class Demo7_HookemHorns:
     def __init__(self, dreamerInterface):
         self.dreamerInterface = dreamerInterface
         self.createTrajectories()
@@ -151,7 +151,7 @@ class Demo5_HandShake:
 
     def run(self, enablePrompts = True):
         """
-        Runs the Cartesian and orientation demo 5 behavior.
+        Runs the Cartesian and orientation demo 7 behavior.
         """
 
         if not self.dreamerInterface.connectToControlIt(DEFAULT_POSTURE):
@@ -190,13 +190,12 @@ class Demo5_HandShake:
 # Main method
 if __name__ == "__main__":
 
-    rospy.init_node('Demo5_HandShake', anonymous=True)
+    rospy.init_node('Demo7_HookemHorns')
 
     dreamerInterface = DreamerInterface.DreamerInterface(ENABLE_USER_PROMPTS)
 
-    demo = Demo5_HandShake(dreamerInterface)
-
+    demo = Demo7_HookemHorns()
     demo.run()
 
-    print "Demo 5 done, waiting until ctrl+c is hit..."
+    print "Demo 7 done, waiting until ctrl+c is hit..."
     rospy.spin()  # just to prevent this node from exiting

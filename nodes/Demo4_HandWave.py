@@ -34,8 +34,9 @@ DEFAULT_POSTURE = [0.0, 0.0,                                    # torso
                    0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0]  # right arm
 
 class Demo4_HandWave:
-    def __init__(self):
-        self.dreamerInterface = DreamerInterface.DreamerInterface(ENABLE_USER_PROMPTS)
+    def __init__(self, dreamerInterface):
+        self.dreamerInterface = dreamerInterface
+        self.createTrajectories()
 
     def createTrajectories(self):
 
@@ -230,7 +231,7 @@ class Demo4_HandWave:
             0.18493035171345457, -0.018093572235340995, 0.12375741975377275, 0.7804877049806426, -0.12790804246025334, 0.06510619728499865, -0.04870942823921384,
             0.18493035171345457, -0.018093572235340995, 0.12375741975377275, 0.7804877049806426, -0.12790804246025334, 0.06510619728499865, -0.04870942823921384])
 
-    def run(self):
+    def run(self, enablePrompts = True):
         """
         Runs the Cartesian and orientation demo 4 behavior.
         """
@@ -238,13 +239,12 @@ class Demo4_HandWave:
         if not self.dreamerInterface.connectToControlIt(DEFAULT_POSTURE):
             return
 
-        self.createTrajectories()
-
         # print "Trajectory Wave:\n {0}".format(self.trajWave)
 
-        response = raw_input("Start demo? Y/n\n")
-        if response == "N" or response == "n":
-            return
+        if enablePrompts:
+            response = raw_input("Start demo? Y/n\n")
+            if response == "N" or response == "n":
+                return
 
         #=============================================================================
         if not self.dreamerInterface.followTrajectory(self.trajGoToReady):
@@ -256,11 +256,14 @@ class Demo4_HandWave:
             if not self.dreamerInterface.followTrajectory(self.trajWave):
                 return
 
-            response = raw_input("Wave again? Y/n\n")
-            if response == "N" or response == "n":
-                done = True
+            if enablePrompts:
+                response = raw_input("Wave again? Y/n\n")
+                if response == "N" or response == "n":
+                    done = True
+                else:
+                    self.trajWave.setPrevTraj(self.trajWave)
             else:
-                self.trajWave.setPrevTraj(self.trajWave)
+                done = True   # Assume that if prompts are disabled we only want to wave once
 
         #=============================================================================
         if not self.dreamerInterface.followTrajectory(self.trajGoToIdle):
@@ -271,9 +274,9 @@ if __name__ == "__main__":
 
     rospy.init_node('Demo4_HandWave', anonymous=True)
 
-    demo = Demo4_HandWave()
-    # t = threading.Thread(target=demo.run)
-    # t.start()
+    dreamerInterface = DreamerInterface.DreamerInterface(ENABLE_USER_PROMPTS)
+
+    demo = Demo4_HandWave(dreamerInterface)
     demo.run()
 
     print "Demo 4 done, waiting until ctrl+c is hit..."
