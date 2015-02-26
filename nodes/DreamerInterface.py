@@ -378,9 +378,9 @@ class DreamerInterface:
         self.selectMiddleFingerPublisher.publish(self.rightMiddleFingerCmdMsg)
         self.selectIndexFingerPublisher.publish(self.rightIndexFingerCmdMsg)
 
-        self.rightHandCmdPublisher.publish(self.rightMiddleFingerCmdMsg)
+        self.rightHandCmdPublisher.publish(self.rightHandCmdMsg)
         
     def openRightHand(self):
-        self.rightHandCmdMsg.data = True  # open hand
-        self.rightHandCmdPublisher.publish(self.rightMiddleFingerCmdMsg)
+        self.rightHandCmdMsg.data = False  # open hand
+        self.rightHandCmdPublisher.publish(self.rightHandCmdMsg)
         

@@ -42,7 +42,7 @@ class Demo7_HookemHorns:
 
         # ==============================================================================================
         # Define the GoToReady trajectory
-        self.trajHookEmHorns = Trajectory.Trajectory("HookEmHorns", 60.0)
+        self.trajHookEmHorns = Trajectory.Trajectory("HookEmHorns", 45.0)
 
         # These are the initial values as specified in the YAML ControlIt! configuration file
         self.trajHookEmHorns.setInitRHCartWP([0.033912978219317776, -0.29726881641499886, 0.82])
@@ -177,6 +177,7 @@ class Demo7_HookemHorns:
         if not self.dreamerInterface.followTrajectory(self.trajHookEmHorns):
             return
 
+        print "Opening right hand."
         self.dreamerInterface.openRightHand()
 
 # Main method
