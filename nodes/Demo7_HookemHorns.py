@@ -69,6 +69,7 @@ class Demo7_HookemHorns:
         self.trajHookEmHorns.addRHCartWP([0.3334223664960938, -0.22768356581336102, 0.9520136435318634])
         self.trajHookEmHorns.addRHCartWP([0.22457608787770017, -0.22995326031396174, 0.8494531252948857])
         self.trajHookEmHorns.addRHCartWP([0.11349086677223105, -0.23155749901769876, 0.8021876802700734])
+        self.trajHookEmHorns.addRHCartWP([0.033912978219317776, -0.29726881641499886, 0.82])
 
         self.trajHookEmHorns.addRHOrientWP([0.9376377012987288, 0.08391666275788233, 0.3373329732101732])
         self.trajHookEmHorns.addRHOrientWP([0.5298076308741426, 0.059524856512608346, 0.8460263977705906])
@@ -88,6 +89,7 @@ class Demo7_HookemHorns:
         self.trajHookEmHorns.addRHOrientWP([0.42334613103604013, -0.08713471946197092, 0.9017680378019058])
         self.trajHookEmHorns.addRHOrientWP([0.7697346850293526, -0.11596858259793173, 0.6277418279141436])
         self.trajHookEmHorns.addRHOrientWP([0.9329380163771549, -0.12167477217931731, 0.33885381422284494])
+        self.trajHookEmHorns.addRHOrientWP([1.0, 0.0, 0.0])
 
         self.trajHookEmHorns.addLHCartWP([0.033912978219317776, 0.29726881641499886, 0.82])
         self.trajHookEmHorns.addLHCartWP([0.033912978219317776, 0.29726881641499886, 0.82])
@@ -155,7 +157,8 @@ class Demo7_HookemHorns:
         self.trajHookEmHorns.addPostureWP([0.02773148095605579, 0.02773148095605579, 
             0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,  # left arm
             0.04838444327506801, 0.030814623201507046, -0.014466793019855949, 0.351297189049863, 0.14617716590017665, 0.001240016318019907, 0.004207804245329691])
-
+        self.trajHookEmHorns.addPostureWP(DEFAULT_POSTURE)
+        
     def run(self, enablePrompts = True):
         """
         Runs the Cartesian and orientation demo 7 behavior.
