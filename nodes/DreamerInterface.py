@@ -102,7 +102,10 @@ class DreamerInterface:
         self.rightIndexFingerCmdMsg.data = True # include index finger in power grasp
 
         self.rightMiddleFingerCmdMsg = Bool()
-        self.rightMiddleFingerCmdMsg.data = True # include middle finger in power grasp        
+        self.rightMiddleFingerCmdMsg.data = True # include middle finger in power grasp
+
+        self.rightPinkyFingerCmdMsg = Bool()
+        self.rightPinkyFingerCmdMsg.data = True # include pinky finger in power grasp            
 
         self.leftGripperCmdMsg = Bool()
         self.leftGripperCmdMsg.data = False  # relax gripper
@@ -363,3 +366,21 @@ class DreamerInterface:
 
         # print "Done following trajectory {0}!".format(traj.name)
         return not rospy.is_shutdown()
+
+    def closeRightHand(self, includePinky = True, includeMiddle = True, includeIndex = True):
+        
+        self.rightPinkyFingerCmdMsg.data = includePinky
+        self.rightMiddleFingerCmdMsg.data = includeMiddle
+        self.rightIndexFingerCmdMsg.data = includeIndex
+        self.rightHandCmdMsg.data = True  # close hand
+
+        self.selectPinkyFingerPublisher.publish(self.rightPinkyFingerCmdMsg)
+        self.selectMiddleFingerPublisher.publish(self.rightMiddleFingerCmdMsg)
+        self.selectIndexFingerPublisher.publish(self.rightIndexFingerCmdMsg)
+
+        self.rightHandCmdPublisher.publish(self.rightHandCmdMsg)
+        
+    def openRightHand(self):
+        self.rightHandCmdMsg.data = False  # open hand
+        self.rightHandCmdPublisher.publish(self.rightHandCmdMsg)
+        

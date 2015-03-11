@@ -80,7 +80,7 @@ class Demo8_EERC_Groundbreaking_Ceremony:
                     self.hookemHornsDemo.run(enablePrompts = False)
 
                 print "Done executing demo. Publishing done message."
-                self.demoDonepublisher.publish(self.doneMessage)
+                self.demoDonePublisher.publish(self.doneMessage)
 
                 self.runDemo = False
                 self.demoNumber = DEMO_NONE
