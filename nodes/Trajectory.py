@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 
+import threading
+import rospy
+from visualization_msgs.msg import Marker
+from visualization_msgs.msg import MarkerArray
+
 class Trajectory:
-    def __init__(self, name, duration):
+    def __init__(self, name, duration, publishTraj = False):
         '''
         The constructor.
         '''
@@ -17,6 +22,50 @@ class Trajectory:
         self.jPosWP = []       # posture trajectory
 
         self.prevTrajSet = False
+
+        if publishTraj:
+            tt = threading.Thread(target=self.trajPublisher)
+            tt.start()
+
+    def trajPublisher(self):
+        self.rhCartTrajPublisher = rospy.Publisher("trajectory/" + self.name + "/RHCartesian", MarkerArray, queue_size=1)
+        self.lhCartTrajPublisher = rospy.Publisher("trajectory/" + self.name + "/LHCartesian", MarkerArray, queue_size=1)
+
+        while not rospy.is_shutdown():
+
+            rightHandMsg = MarkerArray()
+
+            for ii in range(0, len(self.rhCartWP)):
+                mm = Marker()
+                mm.header.frame_id = "world"
+                mm.header.stamp = rospy.Time.now()
+                mm.ns = "rh_cartesian"
+                mm.id = ii
+                mm.type = Marker.SPHERE
+                mm.action = Marker.ADD
+
+                mm.pose.position.x = self.rhCartWP[ii][0]
+                mm.pose.position.y = self.rhCartWP[ii][1]
+                mm.pose.position.z = self.rhCartWP[ii][2]
+
+                mm.scale.x = 0.05  # in meters
+                mm.scale.y = 0.05
+                mm.scale.z = 0.05
+
+                mm.color.r = 0.0
+                mm.color.g = 1.0
+                mm.color.b = 0.0
+                mm.color.a = 1.0
+
+                mm.lifetime = rospy.Duration()  # never go away
+
+                rightHandMsg.markers.append(mm)
+
+            self.rhCartTrajPublisher.publish(rightHandMsg)
+
+            rospy.sleep(1.0)
+
+
 
     def setInitRHCartWP(self, wp):
         ''' 

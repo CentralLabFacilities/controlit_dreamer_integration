@@ -42,7 +42,7 @@ class Demo4_HandWave:
 
         # ==============================================================================================
         # Define the GoToReady trajectory
-        self.trajGoToReady = Trajectory.Trajectory("GoToReady", 5.0)
+        self.trajGoToReady = Trajectory.Trajectory(name="GoToReady", duration=5.0, publishTraj=True)
 
         # These are the initial values as specified in the YAML ControlIt! configuration file
         self.trajGoToReady.setInitRHCartWP([0.033912978219317776, -0.29726881641499886, 0.82])
@@ -93,7 +93,7 @@ class Demo4_HandWave:
 
 
         # ==============================================================================================
-        self.trajWave = Trajectory.Trajectory("Wave", 5.0)
+        self.trajWave = Trajectory.Trajectory(name="Wave", duration=5.0, publishTraj=True)
         self.trajWave.setPrevTraj(self.trajGoToReady)
 
         self.trajWave.addRHCartWP([0.36485155544112036, -0.2517840242514848, 1.3112985442583098])
@@ -188,7 +188,7 @@ class Demo4_HandWave:
 
 
         # ==============================================================================================        
-        self.trajGoToIdle = Trajectory.Trajectory("GoToIdle", 5.0)
+        self.trajGoToIdle = Trajectory.Trajectory(name="GoToIdle", duration=5.0, publishTraj=True)
         self.trajGoToIdle.setPrevTraj(self.trajWave)
 
         self.trajGoToIdle.addRHCartWP([0.40394280229724117, -0.21627961864869003, 1.360149033190145])
