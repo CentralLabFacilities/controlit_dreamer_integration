@@ -34,7 +34,8 @@ DEFAULT_POSTURE = [0.0, 0.0,                                    # torso
                    0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0]  # right arm
 
 class Demo4_HandWave:
-    def __init__(self, dreamerInterface):
+
+    def __init__(self, dreamerInterface = None):
         self.dreamerInterface = dreamerInterface
         self.createTrajectories()
 
@@ -42,7 +43,7 @@ class Demo4_HandWave:
 
         # ==============================================================================================
         # Define the GoToReady trajectory
-        self.trajGoToReady = Trajectory.Trajectory(name="GoToReady", duration=5.0, publishTraj=True)
+        self.trajGoToReady = Trajectory.Trajectory(name="GoToReady", duration=5.0)
 
         # These are the initial values as specified in the YAML ControlIt! configuration file
         self.trajGoToReady.setInitRHCartWP([0.033912978219317776, -0.29726881641499886, 0.82])
@@ -93,7 +94,7 @@ class Demo4_HandWave:
 
 
         # ==============================================================================================
-        self.trajWave = Trajectory.Trajectory(name="Wave", duration=5.0, publishTraj=True)
+        self.trajWave = Trajectory.Trajectory(name="Wave", duration=5.0)
         self.trajWave.setPrevTraj(self.trajGoToReady)
 
         self.trajWave.addRHCartWP([0.36485155544112036, -0.2517840242514848, 1.3112985442583098])
@@ -188,7 +189,7 @@ class Demo4_HandWave:
 
 
         # ==============================================================================================        
-        self.trajGoToIdle = Trajectory.Trajectory(name="GoToIdle", duration=5.0, publishTraj=True)
+        self.trajGoToIdle = Trajectory.Trajectory(name="GoToIdle", duration=5.0)
         self.trajGoToIdle.setPrevTraj(self.trajWave)
 
         self.trajGoToIdle.addRHCartWP([0.40394280229724117, -0.21627961864869003, 1.360149033190145])
@@ -235,6 +236,9 @@ class Demo4_HandWave:
             0.18493035171345457, -0.018093572235340995, 0.12375741975377275, 0.7804877049806426, -0.12790804246025334, 0.06510619728499865, -0.04870942823921384,
             0.18493035171345457, -0.018093572235340995, 0.12375741975377275, 0.7804877049806426, -0.12790804246025334, 0.06510619728499865, -0.04870942823921384])
         self.trajGoToIdle.addPostureWP(DEFAULT_POSTURE)
+
+    def getTrajectories(self):
+        return [self.trajGoToReady, self.trajWave, self.trajGoToIdle]
 
     def run(self, enablePrompts = True):
         """
