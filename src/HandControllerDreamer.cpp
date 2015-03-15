@@ -133,21 +133,21 @@ void HandControllerDreamer::getCommand(Vector & command)
 
     if (powerGraspRight)
     {
-        thumbKp = POWER_GRASP_ENABLED_KP;
+        // thumbKp = POWER_GRASP_ENABLED_KP;
 
-        thumbGoalPos = 0; // right_thumb_cmc 90 degrees from palm
+        // thumbGoalPos = 0; // right_thumb_cmc 90 degrees from palm
 
-        if (!closingRightFingers && !closingThumbFinger)
-        {
-            closingThumbFinger = true;
+        // if (!closingRightFingers && !closingThumbFinger)
+        // {
+        //     closingThumbFinger = true;
 
-            timeBeginCloseThumb = ros::Time::now();
-            thumbInitPos = currPosition[0];
-        }
+        //     timeBeginCloseThumb = ros::Time::now();
+        //     thumbInitPos = currPosition[0];
+        // }
         
         // wait until right_thumb_cmc is at the zero position before curling the fingers
-        if (closingRightFingers || std::abs(currPosition[0]) < 0.2)  // 0.2 radians is 11.46 degrees
-        {
+        // if (closingRightFingers || std::abs(currPosition[0]) < 0.2)  // 0.2 radians is 11.46 degrees
+        // {
             closingRightFingers = true;
             // thumbKp = 1; //POWER_GRASP_DISABLED_KP;
 
@@ -155,22 +155,22 @@ void HandControllerDreamer::getCommand(Vector & command)
             command[2] = (includeRightPointerFinger ? 0.3 : -0.1);  // right_pointer_finger
             command[3] = (includeRightMiddleFinger  ? 0.3 : -0.1);  // right_middle_finger
             command[4] = (includeRightPinkyFinger   ? 0.3 : -0.1);  // right_pinky_finger
-        }
-        else
-        {
-            // CONTROLIT_INFO << "Not curling right_thumb_mcp, current position of right_thumb_cmc is " << std::abs(currPosition[0]);
+        // }
+        // else
+        // {
+        //     // CONTROLIT_INFO << "Not curling right_thumb_mcp, current position of right_thumb_cmc is " << std::abs(currPosition[0]);
 
-            // double elapsedTime = (ros::Time::now() - timeBeginCloseThumb).toSec();
-            // thumbGoalPos = thumbInitPos - elapsedTime * THUMB_SPEED;
-            // if (thumbGoalPos < 0)
-            //     thumbGoalPos = 0;
+        //     // double elapsedTime = (ros::Time::now() - timeBeginCloseThumb).toSec();
+        //     // thumbGoalPos = thumbInitPos - elapsedTime * THUMB_SPEED;
+        //     // if (thumbGoalPos < 0)
+        //     //     thumbGoalPos = 0;
 
-            thumbGoalPos = -0.69; // -40 degrees
-        }
+        //     thumbGoalPos = -0.69; // -40 degrees
+        // }
 
         // The PD control law for right_thumb_cmc
         // command[0] = thumbKp * (thumbGoalPos - currPosition[0]) - thumbKd * currVelocity[0];
-        command[0] = -0.15; // Force right_thumb_cmc to go to -40 degree position.
+        // command[0] = -0.15; // Force right_thumb_cmc to go to -40 degree position.
     }
     else
     {
