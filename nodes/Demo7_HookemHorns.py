@@ -42,7 +42,7 @@ class Demo7_HookemHorns:
 
         # ==============================================================================================
         # Define the GoToReady trajectory
-        self.trajHookEmHorns = Trajectory.Trajectory("HookEmHorns", 45.0)
+        self.trajHookEmHorns = Trajectory.Trajectory("HookEmHorns", 30.0) # 45.0
 
         # These are the initial values as specified in the YAML ControlIt! configuration file
         self.trajHookEmHorns.setInitRHCartWP([0.033912978219317776, -0.29726881641499886, 0.82])

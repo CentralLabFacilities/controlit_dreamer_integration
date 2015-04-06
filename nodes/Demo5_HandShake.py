@@ -42,7 +42,7 @@ class Demo5_HandShake:
 
         # ==============================================================================================
         # Define the GoToReady trajectory
-        self.trajGoToReady = Trajectory.Trajectory("GoToReady", 5.0)
+        self.trajGoToReady = Trajectory.Trajectory("GoToReady", 2.5)
 
         # These are the initial values as specified in the YAML ControlIt! configuration file
         self.trajGoToReady.setInitRHCartWP([0.033912978219317776, -0.29726881641499886, 0.82])
@@ -126,7 +126,7 @@ class Demo5_HandShake:
         self.trajShake.addPostureWP([0.023260818508675944, 0.023260818508675944, -0.24046288350114936, 0.03589900072236511, -0.02425938299126323, 0.614092822713246, 0.07764263965283584, -0.2676172726351122, 0.002182773078153543, 0.26809913330028784, -0.058955748530055634, 0.11700005165938254, 1.2850068683831226, 1.454487874592255, -0.06740979496232208, -0.0976162808466806])
 
         # ==============================================================================================        
-        self.trajGoToIdle = Trajectory.Trajectory("GoToIdle", 5.0)
+        self.trajGoToIdle = Trajectory.Trajectory("GoToIdle", 2.5)
         self.trajGoToIdle.setPrevTraj(self.trajShake)
 
         self.trajGoToIdle.addRHCartWP([0.3568508489208336, -0.2522742841735632, 1.0477901706353308])
