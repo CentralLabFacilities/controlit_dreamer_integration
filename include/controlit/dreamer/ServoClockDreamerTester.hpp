@@ -3,14 +3,18 @@
 
 #include "ros/ros.h"
 #include <controlit/dreamer/ServoClockDreamer.hpp>
+#include <controlit/dreamer/TimerRTAI.hpp>
+#include <controlit/addons/ros/RealTimePublisher.hpp>
 #include <controlit/ServoableClass.hpp>
+
+#include <std_msgs/Float64.h>
 
 namespace controlit {
 namespace dreamer {
 
 /*!
- * A class that provides the main method for launching a ControlIt!
- * controller.
+ * Tests ServoClockDreamer by instantiating it and measuring its
+ * servo frequency.
  */
 class ServoClockDreamerTester : controlit::ServoableClass
 {
@@ -34,8 +38,10 @@ public:
 
     /*!
      * Starts this tester.
+     *
+     * \param[in] freq The desired servo frequency in Hz.
      */
-    bool start();
+    bool start(double freq);
 
     /*!
      * Stops this tester.
@@ -70,9 +76,14 @@ private:
     ServoClockDreamer servoClock;
 
     /*!
-     * The previous time update() was called by the servo clock.
+     * The timer used to measure the servo period.
      */
-    ros::Time prevTime;
+    TimerRTAI timer;
+
+    /*!
+     * A real-time safe publisher for publishing the servo period.
+     */
+    controlit::addons::ros::RealtimePublisher<std_msgs::Float64> publisher;
 };
 
 } // namespace dreamer

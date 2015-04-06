@@ -41,6 +41,9 @@ namespace dreamer {
 #define DEG_TO_RAD(deg) deg / 180 * 3.14159265359
 #define RAD_TO_DEG(rad) rad / 3.14159265359 * 180
 
+#define NUM_HAND_JOINTS 6
+#define NUM_HEAD_JOINTS 7
+
 RobotInterfaceDreamer::RobotInterfaceDreamer() :
     RobotInterface(),         // Call super-class' constructor
     sharedMemoryReady(false)
@@ -67,9 +70,18 @@ bool RobotInterfaceDreamer::init(ros::NodeHandle & nh, RTControlModel * model)
     //---------------------------------------------------------------------------------
 
     handController.init(nh);
-    handCommand.setZero(6);
-    handJointPositions.setZero(6);
-    handJointVelocities.setZero(6);
+    handCommand.setZero(NUM_HAND_JOINTS);
+    handJointPositions.setZero(NUM_HAND_JOINTS);
+    handJointVelocities.setZero(NUM_HAND_JOINTS);
+
+    //---------------------------------------------------------------------------------
+    // Initialize the head controller.
+    //---------------------------------------------------------------------------------
+
+    headController.init(nh);
+    headCommand.setZero(NUM_HEAD_JOINTS);
+    headJointPositions.setZero(NUM_HEAD_JOINTS);
+    headJointVelocities.setZero(NUM_HEAD_JOINTS);
 
     //---------------------------------------------------------------------------------
     // Create the odometry receiver.
@@ -442,7 +454,7 @@ bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool 
     latestRobotState.setJointEffort(15, 1.0e-3 * shm_status.right_arm.torque[6]);
 
     // Get the latest hand state and update the hand controller
-    for (size_t ii = 0; ii < 5; ii++)
+    for (size_t ii = 0; ii < NUM_HAND_JOINTS - 1; ii++)
     {
         handJointPositions[ii] = DEG_TO_RAD(shm_status.right_hand.theta[ii]);
         handJointVelocities[ii] = DEG_TO_RAD(shm_status.right_hand.thetadot[ii]);
@@ -451,6 +463,15 @@ bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool 
     handJointVelocities[5] = DEG_TO_RAD(shm_status.left_hand.thetadot[0]);
 
     handController.updateState(handJointPositions, handJointVelocities);
+
+    // Get the latest head joint state and update the head controller.
+    for (size_t ii = 0; ii < NUM_HEAD_JOINTS; ii++)
+    {
+        headJointPositions[ii] = DEG_TO_RAD(shm_status.head.theta[ii]);
+        headJointVelocities[ii] = DEG_TO_RAD(shm_status.head.thetadot[ii]);
+    }
+
+    headController.updateState(headJointPositions, headJointVelocities);
 
     //---------------------------------------------------------------------------------
     // Get and save the latest odometry data.
@@ -564,16 +585,24 @@ bool RobotInterfaceDreamer::write(const controlit::Command & command)
     // shm_cmd.right_hand.q_stiffness[3] = 0;
     // shm_cmd.right_hand.q_stiffness[4] = 0;    
 
-    // Send zero position commands to the neck joints
-    shm_cmd.head.q_desired[0] = 0;
-    shm_cmd.head.q_desired[1] = 0;
-    shm_cmd.head.q_desired[2] = 0;
-    shm_cmd.head.q_desired[3] = 0;
+    // Send position commands to the neck joints
+    headController.getCommand(headCommand);
+
+    shm_cmd.head.q_desired[0] = RAD_TO_DEG(headCommand[0]);
+    shm_cmd.head.q_desired[1] = RAD_TO_DEG(headCommand[1]);
+    shm_cmd.head.q_desired[2] = RAD_TO_DEG(headCommand[2]);
+    shm_cmd.head.q_desired[3] = RAD_TO_DEG(headCommand[3]);
+    shm_cmd.head.q_desired[4] = RAD_TO_DEG(headCommand[4]);
+    shm_cmd.head.q_desired[5] = RAD_TO_DEG(headCommand[5]);
+    shm_cmd.head.q_desired[6] = RAD_TO_DEG(headCommand[6]);
 
     shm_cmd.head.slew_rate_q_desired[0] = 10;
     shm_cmd.head.slew_rate_q_desired[1] = 10;
     shm_cmd.head.slew_rate_q_desired[2] = 10;
     shm_cmd.head.slew_rate_q_desired[3] = 10;
+    shm_cmd.head.slew_rate_q_desired[4] = 10;
+    shm_cmd.head.slew_rate_q_desired[5] = 10;
+    shm_cmd.head.slew_rate_q_desired[6] = 10;
 
     //---------------------------------------------------------------------------------
     // Save the timestamp into the outgoing command message.  This is necessary for

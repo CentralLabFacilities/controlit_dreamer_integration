@@ -102,7 +102,10 @@ class DreamerInterface:
         self.rightIndexFingerCmdMsg.data = True # include index finger in power grasp
 
         self.rightMiddleFingerCmdMsg = Bool()
-        self.rightMiddleFingerCmdMsg.data = True # include middle finger in power grasp        
+        self.rightMiddleFingerCmdMsg.data = True # include middle finger in power grasp
+
+        self.rightPinkyFingerCmdMsg = Bool()
+        self.rightPinkyFingerCmdMsg.data = True # include pinky finger in power grasp            
 
         self.leftGripperCmdMsg = Bool()
         self.leftGripperCmdMsg.data = False  # relax gripper
@@ -132,8 +135,8 @@ class DreamerInterface:
         self.leftOrientationError = None
 
         # Create the ROS topic subscriptions
-        self.postureTaskActualSubscriber = rospy.Subscriber("/dreamer_controller/JPosTask/actualPosition", Float64MultiArray, self.postureTaskActualCallback)
-        self.postureTaskErrorSubscriber  = rospy.Subscriber("/dreamer_controller/JPosTask/error",          Float64MultiArray, self.postureTaskErrorCallback)
+        self.postureTaskActualSubscriber = rospy.Subscriber("/dreamer_controller/Posture/actualPosition", Float64MultiArray, self.postureTaskActualCallback)
+        self.postureTaskErrorSubscriber  = rospy.Subscriber("/dreamer_controller/Posture/error",          Float64MultiArray, self.postureTaskErrorCallback)
 
         self.rightCartesianTaskActualSubscriber = rospy.Subscriber("/dreamer_controller/RightHandPosition/actualWorldPosition", Float64MultiArray, self.rightCartesianTaskActualCallback)
         self.rightCartesianTaskErrorSubscriber  = rospy.Subscriber("/dreamer_controller/RightHandPosition/error",               Float64MultiArray, self.rightCartesianTaskErrorCallback)
@@ -148,8 +151,8 @@ class DreamerInterface:
         self.leftOrientationTaskErrorSubscriber  = rospy.Subscriber("/dreamer_controller/LeftHandOrientation/errorAngle",    Float64,           self.leftOrientationTaskErrorCallback)
 
         # Create the ROS topic publishers
-        self.postureTaskGoalPublisher = rospy.Publisher("/dreamer_controller/JPosTask/goalPosition", Float64MultiArray, queue_size=1)
-        self.postureTaskTarePublisher = rospy.Publisher("/dreamer_controller/JPosTask/tare", Int32, queue_size=1)
+        self.postureTaskGoalPublisher = rospy.Publisher("/dreamer_controller/Posture/goalPosition", Float64MultiArray, queue_size=1)
+        self.postureTaskTarePublisher = rospy.Publisher("/dreamer_controller/Posture/tare", Int32, queue_size=1)
 
         self.rightCartesianTaskGoalPublisher = rospy.Publisher("/dreamer_controller/RightHandPosition/goalPosition", Float64MultiArray, queue_size=1)
         self.rightCartesianTaskEnablePublisher = rospy.Publisher("/dreamer_controller/RightHandPosition/enabled", Int32, queue_size=1)
@@ -214,6 +217,10 @@ class DreamerInterface:
     def connectToControlIt(self, defaultPosture):
         print "Connecting to ControlIt!..."
 
+        # Check if already connected
+        if not self.rightCartesianTaskEnablePublisher.get_num_connections() == 0:
+            return not rospy.is_shutdown()
+
         # Wait for connection to ControlIt!
         pauseCount = 0
         warningPrinted = False
@@ -243,7 +250,7 @@ class DreamerInterface:
                 warningPrinted = True
 
         if rospy.is_shutdown():
-            return
+            return False
 
         # Enable the Cartesian position and orientation tasks
         enableMsg = Int32()
@@ -284,7 +291,7 @@ class DreamerInterface:
                 warningPrinted = True
 
         if rospy.is_shutdown():
-            return
+            return False
 
         print "Done connecting to ControlIt!"
         return not rospy.is_shutdown()
@@ -359,3 +366,21 @@ class DreamerInterface:
 
         # print "Done following trajectory {0}!".format(traj.name)
         return not rospy.is_shutdown()
+
+    def closeRightHand(self, includePinky = True, includeMiddle = True, includeIndex = True):
+        
+        self.rightPinkyFingerCmdMsg.data = includePinky
+        self.rightMiddleFingerCmdMsg.data = includeMiddle
+        self.rightIndexFingerCmdMsg.data = includeIndex
+        self.rightHandCmdMsg.data = True  # close hand
+
+        self.selectPinkyFingerPublisher.publish(self.rightPinkyFingerCmdMsg)
+        self.selectMiddleFingerPublisher.publish(self.rightMiddleFingerCmdMsg)
+        self.selectIndexFingerPublisher.publish(self.rightIndexFingerCmdMsg)
+
+        self.rightHandCmdPublisher.publish(self.rightHandCmdMsg)
+        
+    def openRightHand(self):
+        self.rightHandCmdMsg.data = False  # open hand
+        self.rightHandCmdPublisher.publish(self.rightHandCmdMsg)
+        

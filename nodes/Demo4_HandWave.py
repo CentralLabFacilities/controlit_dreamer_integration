@@ -34,14 +34,16 @@ DEFAULT_POSTURE = [0.0, 0.0,                                    # torso
                    0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0]  # right arm
 
 class Demo4_HandWave:
-    def __init__(self):
-        self.dreamerInterface = DreamerInterface.DreamerInterface(ENABLE_USER_PROMPTS)
+
+    def __init__(self, dreamerInterface = None):
+        self.dreamerInterface = dreamerInterface
+        self.createTrajectories()
 
     def createTrajectories(self):
 
         # ==============================================================================================
         # Define the GoToReady trajectory
-        self.trajGoToReady = Trajectory.Trajectory("GoToReady", 5.0)
+        self.trajGoToReady = Trajectory.Trajectory(name="GoToReady", duration=5.0)
 
         # These are the initial values as specified in the YAML ControlIt! configuration file
         self.trajGoToReady.setInitRHCartWP([0.033912978219317776, -0.29726881641499886, 0.82])
@@ -92,7 +94,7 @@ class Demo4_HandWave:
 
 
         # ==============================================================================================
-        self.trajWave = Trajectory.Trajectory("Wave", 5.0)
+        self.trajWave = Trajectory.Trajectory(name="Wave", duration=5.0)
         self.trajWave.setPrevTraj(self.trajGoToReady)
 
         self.trajWave.addRHCartWP([0.36485155544112036, -0.2517840242514848, 1.3112985442583098])
@@ -187,7 +189,7 @@ class Demo4_HandWave:
 
 
         # ==============================================================================================        
-        self.trajGoToIdle = Trajectory.Trajectory("GoToIdle", 5.0)
+        self.trajGoToIdle = Trajectory.Trajectory(name="GoToIdle", duration=5.0)
         self.trajGoToIdle.setPrevTraj(self.trajWave)
 
         self.trajGoToIdle.addRHCartWP([0.40394280229724117, -0.21627961864869003, 1.360149033190145])
@@ -195,24 +197,28 @@ class Demo4_HandWave:
         self.trajGoToIdle.addRHCartWP([0.4186832833062845, -0.23161337689921324, 1.195102104388137])
         self.trajGoToIdle.addRHCartWP([0.36027175395810024, -0.2366487226876633, 0.9970636893031656])
         self.trajGoToIdle.addRHCartWP([0.25342182518741946, -0.23249440323488493, 0.8583425239604793])
+        self.trajGoToIdle.addRHCartWP([0.033912978219317776, -0.29726881641499886, 0.82])
 
         self.trajGoToIdle.addRHOrientWP([-0.9086099905348223, -0.1356275807488986, 0.39501018270484023])
         self.trajGoToIdle.addRHOrientWP([-0.8358379442751223, -0.15573948591246203, 0.5264220202818829])
         self.trajGoToIdle.addRHOrientWP([-0.603301024048348, -0.06831640854719574, 0.794582118289499])
         self.trajGoToIdle.addRHOrientWP([0.08082529884000572, 0.0531921675651184, 0.9953079244018648])
         self.trajGoToIdle.addRHOrientWP([0.6730021599472973, 0.031757024689336236, 0.7389584454413883])
+        self.trajGoToIdle.addRHOrientWP([1.0, 0.0, 0.0])
 
         self.trajGoToIdle.addLHCartWP([0.40394280229724117, 0.21627961864869003, 1.360149033190145])
         self.trajGoToIdle.addLHCartWP([0.4204761320567268, 0.22276691579626728, 1.3128166611913739])
         self.trajGoToIdle.addLHCartWP([0.4186832833062845, 0.23161337689921324, 1.195102104388137])
         self.trajGoToIdle.addLHCartWP([0.36027175395810024, 0.2366487226876633, 0.9970636893031656])
         self.trajGoToIdle.addLHCartWP([0.25342182518741946, 0.23249440323488493, 0.8583425239604793])
+        self.trajGoToIdle.addLHCartWP([0.033912978219317776, 0.29726881641499886, 0.82])
 
         self.trajGoToIdle.addLHOrientWP([-0.9086099905348223, -0.1356275807488986, 0.39501018270484023])
         self.trajGoToIdle.addLHOrientWP([-0.8358379442751223, -0.15573948591246203, 0.5264220202818829])
         self.trajGoToIdle.addLHOrientWP([-0.603301024048348, -0.06831640854719574, 0.794582118289499])
         self.trajGoToIdle.addLHOrientWP([0.08082529884000572, 0.0531921675651184, 0.9953079244018648])
         self.trajGoToIdle.addLHOrientWP([0.6730021599472973, 0.031757024689336236, 0.7389584454413883])
+        self.trajGoToIdle.addLHOrientWP([1.0, 0.0, 0.0])
 
         self.trajGoToIdle.addPostureWP([0.09670000331985308, 0.09670000331985308, 
             0.9240362038181721, -0.076429908585699, 0.058531084397708745, 1.821464996691965, 0.09191340335475721, 0.17154826940628795, -0.15081068818347018,
@@ -229,22 +235,25 @@ class Demo4_HandWave:
         self.trajGoToIdle.addPostureWP([0.09559710847417426, 0.09559710847417426, 
             0.18493035171345457, -0.018093572235340995, 0.12375741975377275, 0.7804877049806426, -0.12790804246025334, 0.06510619728499865, -0.04870942823921384,
             0.18493035171345457, -0.018093572235340995, 0.12375741975377275, 0.7804877049806426, -0.12790804246025334, 0.06510619728499865, -0.04870942823921384])
+        self.trajGoToIdle.addPostureWP(DEFAULT_POSTURE)
 
-    def run(self):
+    def getTrajectories(self):
+        return [self.trajGoToReady, self.trajWave, self.trajGoToIdle]
+
+    def run(self, enablePrompts = True):
         """
-        Runs the Cartesian and orientation demo 1 behavior.
+        Runs the Cartesian and orientation demo 4 behavior.
         """
 
         if not self.dreamerInterface.connectToControlIt(DEFAULT_POSTURE):
             return
 
-        self.createTrajectories()
-
         # print "Trajectory Wave:\n {0}".format(self.trajWave)
 
-        response = raw_input("Start demo? Y/n\n")
-        if response == "N" or response == "n":
-            return
+        if enablePrompts:
+            response = raw_input("Start demo? Y/n\n")
+            if response == "N" or response == "n":
+                return
 
         #=============================================================================
         if not self.dreamerInterface.followTrajectory(self.trajGoToReady):
@@ -256,10 +265,14 @@ class Demo4_HandWave:
             if not self.dreamerInterface.followTrajectory(self.trajWave):
                 return
 
-            response = raw_input("Wave again? Y/n\n")
-            if response == "N" or response == "n":
-                done = True
-                self.trajWave.setPrevTraj(self.trajWave)
+            if enablePrompts:
+                response = raw_input("Wave again? Y/n\n")
+                if response == "N" or response == "n":
+                    done = True
+                else:
+                    self.trajWave.setPrevTraj(self.trajWave)
+            else:
+                done = True   # Assume that if prompts are disabled we only want to wave once
 
         #=============================================================================
         if not self.dreamerInterface.followTrajectory(self.trajGoToIdle):
@@ -270,9 +283,9 @@ if __name__ == "__main__":
 
     rospy.init_node('Demo4_HandWave', anonymous=True)
 
-    demo = Demo4_HandWave()
-    # t = threading.Thread(target=demo.run)
-    # t.start()
+    dreamerInterface = DreamerInterface.DreamerInterface(ENABLE_USER_PROMPTS)
+
+    demo = Demo4_HandWave(dreamerInterface)
     demo.run()
 
     print "Demo 4 done, waiting until ctrl+c is hit..."

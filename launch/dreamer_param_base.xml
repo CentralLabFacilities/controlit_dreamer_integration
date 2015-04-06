@@ -11,7 +11,7 @@
     
     <rosparam param="robot_interface_type">controlit_dreamer/RobotInterfaceDreamer</rosparam>
     
-    <rosparam param="controller_type">controlit_wbc/WBOSC</rosparam>\
+    <rosparam param="whole_body_controller_type">controlit_wbc/WBOSC</rosparam>\
     
     <rosparam param="parameter_binding_factories">["controlit_binding_factory/BindingFactoryROS", "controlit_binding_factory/BindingFactorySM"]</rosparam>
     
@@ -55,28 +55,4 @@
 
     <rosparam param="log_level">DEBUG</rosparam>
     <rosparam param="log_fields">["package", "file", "line", "function"]</rosparam>
-
-
-    <!-- The following enable/disable multi-threading in ControlIt! -->
-    <!--
-    <rosparam param="USE_SINGLE_THREADED_CONTROL_MODEL">true</rosparam>
-    <rosparam param="USE_SINGLE_THREADED_TASK_UPDATER">true</rosparam>
-    <rosparam param="USE_SINGLE_THREADED_SENSOR_UPDATER">true</rosparam>
-    -->
-
-    <!--
-       Here are some other parameters that should be set:
-
-       controlit_max_effort_command
-       controlit_torque_offsets
-       controlit_torque_scaling_factors
-       controlit_gravity_vector
-       controlit_ramp_up_time' does not exist
-       controlit_coupled_joint_groups
-       controlit_gravity_compensation_mask
-       controlit_effective_gain_pass_through_mask
-       controlit_model_delta_cutoff
-       controlit_model_blend_rate
-    -->
-
 </launch>

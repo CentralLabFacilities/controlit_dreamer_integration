@@ -10,6 +10,11 @@
     <param name="robot_description"
            command="$(find xacro)/xacro.py '$(find dreamer_no_left_arm_controlit)/models/dreamer_no_left_arm_controlit/xacro/dreamer_no_left_arm_controlit.xacro'"/>
 
+    <param name="controlit/robot_description"
+           command="$(find xacro)/xacro.py '$(find dreamer_no_left_arm_controlit)/models/dreamer_no_left_arm_controlit/xacro/dreamer_no_left_arm_controlit.xacro'"/>
+
+    <param name="controlit/parameters" textfile="$(find controlit_dreamer_integration)/parameters/JointPositionControl.yaml"/>
+
     <!-- Start the RobotInterfaceDreamer tester -->
-    <node name="RobotInterfaceDreamerTester" pkg="controlit_dreamer_integration" type="RobotInterfaceDreamerTester" output="screen" />
+    <!-- <node name="RobotInterfaceDreamerTester" pkg="controlit_dreamer_integration" type="RobotInterfaceDreamerTester" output="screen" /> -->
 </launch>

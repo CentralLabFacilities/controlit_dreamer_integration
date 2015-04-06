@@ -55,7 +55,7 @@ PIPE_LOCATIONS = [
     [0.35, -0.35, 1.1],
     [0.35, 0.35, 1.1]]
 
-class Demod_AutomatedChangingObjectPositions:
+class Demo3_AutomatedChangingObjectPositions:
     def __init__(self):
 
         # Define the goal messages
@@ -533,12 +533,12 @@ class Demod_AutomatedChangingObjectPositions:
 # Main method
 if __name__ == "__main__":
 
-    rospy.init_node('Demod_AutomatedChangingObjectPositions', anonymous=True)
+    rospy.init_node('Demo3_AutomatedChangingObjectPositions', anonymous=True)
 
     demo = Demod_AutomatedChangingObjectPositions()
     # t = threading.Thread(target=demo.run)
     # t.start()
     demo.run()
 
-    print "Demo 2 done, waiting until ctrl+c is hit..."
+    print "Demo 3 done, waiting until ctrl+c is hit..."
     rospy.spin()  # just to prevent this node from exiting

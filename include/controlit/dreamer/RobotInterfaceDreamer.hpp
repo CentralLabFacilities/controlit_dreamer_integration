@@ -4,6 +4,7 @@
 #include <controlit/addons/ros/RealTimePublisher.hpp>
 #include <controlit/RobotInterface.hpp>
 #include <controlit/dreamer/HandControllerDreamer.hpp>
+#include <controlit/dreamer/HeadControllerDreamer.hpp>
 
 // #include <thread>  // for std::mutex
 #include <unistd.h>
@@ -143,6 +144,26 @@ private:
      * The command to send to the hand.
      */
     Vector handCommand;
+
+    /*!
+     * The object that generates the commands for the head.
+     */
+    HeadControllerDreamer headController;
+
+    /*!
+     * The current head joint positions.
+     */
+    Vector headJointPositions;
+
+    /*!
+     * The current head joint velocities.
+     */
+    Vector headJointVelocities;
+
+    /*!
+     * The command to send to the head.
+     */
+    Vector headCommand;    
 };
 
 } // namespace dreamer

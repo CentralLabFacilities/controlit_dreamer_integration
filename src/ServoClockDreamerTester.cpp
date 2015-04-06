@@ -1,9 +1,12 @@
 #include <controlit/dreamer/ServoClockDreamerTester.hpp>
 
+#include <string>
+
 namespace controlit {
 namespace dreamer {
 
-#define TEST_PERIOD 10
+#define TEST_PERIOD 60 // Number of seconds to run test
+#define DEFAULT_SERVO_FREQUENCY 1000  // In Hz
 
 ServoClockDreamerTester::ServoClockDreamerTester() :
   initialized(false)
@@ -17,14 +20,28 @@ ServoClockDreamerTester::~ServoClockDreamerTester()
 bool ServoClockDreamerTester::init()
 {
     servoClock.init(this);
+
+    ros::NodeHandle nh;
+
+    publisher.init(nh, "servoClockDreamerTester/frequency", 1);
+    if(publisher.trylock())
+    {
+        publisher.msg_.data = 0;
+        publisher.unlockAndPublish();
+    }
+    else
+    {
+        std::cerr << "ServoClockDraemerTester::init: ERROR: Unable to initialize publisher!" << std::endl;
+        return false;
+    }
+
     initialized = true;
     return true;
 }
 
-bool ServoClockDreamerTester::start()
+bool ServoClockDreamerTester::start(double freq)
 {
-    prevTime = ros::Time::now();
-    double freq = 1000; // TODO: make this a command line parameter
+    timer.start();
     servoClock.start(freq);
     return true;
 }
@@ -42,10 +59,14 @@ void ServoClockDreamerTester::servoInit()
 
 void ServoClockDreamerTester::servoUpdate()
 {
-    ros::Time currTime = ros::Time::now();
-    double elapsedTimeMS = (currTime - prevTime).toSec() * 1000;
-    std::cerr << "Method called, elapsed time = " << elapsedTimeMS << " ms, jitter = " << (elapsedTimeMS - 1) * 1000 << " us" << std::endl;
-    prevTime = currTime;
+    double elapsedTime = timer.getTime();
+    timer.start();
+    // std::cerr << "Method called, elapsed time = " << elapsedTimeMS << " ms, jitter = " << (elapsedTimeMS - 1) * 1000 << " us" << std::endl;
+    if (publisher.trylock())
+    {
+        publisher.msg_.data = 1.0 / elapsedTime;
+        publisher.unlockAndPublish();
+    }
 }
 
 std::string ServoClockDreamerTester::toString(std::string const& prefix) const
@@ -70,21 +91,27 @@ int main(int argc, char **argv)
     std::stringstream ss;
     ss << "Usage: rosrun controlit_dreamer_integration ServoClockDreamerTester [options]\n"
        << "Valid options include:\n"
-       << "  -h: display this usage string";
+       << "  -h: display this usage string\n"
+       << "  -f [frequency]: the desired servo frequency (default: " << DEFAULT_SERVO_FREQUENCY << "Hz)";
 
     ros::init(argc, argv, "ServoClockDreamerTester");
+
+    double freq = DEFAULT_SERVO_FREQUENCY;
 
     if (argc != 1)
     {
         // Parse the command line arguments
         int option_char;
-        while ((option_char = getopt (argc, argv, "h")) != -1)
+        while ((option_char = getopt (argc, argv, "hf:")) != -1)
         {
             switch (option_char)
             {
                 case 'h':
                     std::cout << ss.str() << std::endl;
                     return 0;
+                    break;
+                case 'f':
+                    freq = std::stod(optarg);
                     break;
                 default:
                     std::cerr << "ERROR: Unknown option " << option_char << ".  " << ss.str() << std::endl;
@@ -95,19 +122,19 @@ int main(int argc, char **argv)
 
     ros::NodeHandle nh;
 
-    std::cout << "ServoClockDreamerTester: Starting test..." << std::endl;
+    std::cout << "ServoClockDreamerTester: Starting test, servo frequency = " << freq << "..." << std::endl;
 
     // Create and start a ServoClockDreamerTester
     controlit::dreamer::ServoClockDreamerTester servoClockDreamerTester;
-    servoClockDreamerTester.init();
-    servoClockDreamerTester.start();
+    if (!servoClockDreamerTester.init()) return -1;
+    if (!servoClockDreamerTester.start(freq)) return -1;
 
-    // Loop until someone hits ctrl+c
+    // Loop at 1Hz until someone hits ctrl+c
     ros::Rate loop_rate(1);
     int loopCounter = 0;
 
     std::cout << "ServoClockDreamerTester: Letting test run for " << TEST_PERIOD << " seconds." << std::endl;
-    while (ros::ok() && loopCounter < TEST_PERIOD)
+    while (ros::ok() && loopCounter++ < TEST_PERIOD)
     {
         ros::spinOnce();
         loop_rate.sleep();
@@ -116,5 +143,5 @@ int main(int argc, char **argv)
     std::cout << "ServoClockDreamerTester: Done test, stopping servo clock." << std::endl;
 
     // Stop ServoClockDreamerTester
-    servoClockDreamerTester.stop();
+    if (!servoClockDreamerTester.stop()) return -1;
 }

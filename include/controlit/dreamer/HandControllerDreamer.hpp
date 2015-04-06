@@ -2,8 +2,13 @@
 #define __CONTROLIT_DREAMER_INTEGRATION_HAND_CONTROLLER_DREAMER_HPP__
 
 #include <ros/ros.h>
+
 #include <std_msgs/Bool.h>
+#include <sensor_msgs/JointState.h>
+
 #include <controlit/addons/eigen/LinearAlgebra.hpp>
+#include <controlit/addons/ros/RealTimePublisherHeader.hpp>
+
 
 using controlit::addons::eigen::Vector;
 using controlit::addons::eigen::Matrix;
@@ -83,6 +88,7 @@ private:
 
     bool powerGraspRight;
     bool powerGraspLeft;
+    bool closingThumbFinger;
     bool closingRightFingers;
     bool includeRightPointerFinger; // whether to include the right pointer finger in the power grasp
     bool includeRightMiddleFinger;  // whether to include the right middle finger in the power grasp
@@ -96,6 +102,7 @@ private:
     double thumbKp;
     double thumbKd;
     double thumbGoalPos;
+    double thumbInitPos;
 
     // ROS Subscribers
     ros::Subscriber rightHandPowerGraspSubscriber;
@@ -103,6 +110,14 @@ private:
     ros::Subscriber includeRightPinkyFingerSubscriber;
     ros::Subscriber includeRightMiddleFingerSubscriber;
     ros::Subscriber includeRightPointerFingerSubscriber;
+
+    // ROS Publishers
+    controlit::addons::ros::RealtimePublisherHeader<sensor_msgs::JointState> rhCommandPublisher;
+    controlit::addons::ros::RealtimePublisherHeader<sensor_msgs::JointState> rhStatePublisher;
+
+    ros::Time timeBeginCloseThumb;
+    ros::Time timeAtRelaxedPos;
+
 };
 
 } // namespace dreamer

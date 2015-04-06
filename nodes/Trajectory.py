@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+
+
 class Trajectory:
     def __init__(self, name, duration):
         '''

@@ -1,5 +1,7 @@
 #include <controlit/dreamer/TimerRTAI.hpp>
 
+#include <rtai_shm.h> // for rt_get_cpu_time_ns
+//#include <rtai_sched.h>
 
 namespace controlit {
 namespace dreamer {
@@ -15,7 +17,7 @@ void TimerRTAI::start()
 
 double TimerRTAI::getTime()
 {
-    return (rt_get_cpu_time_ns() - startTime) / 1e6;
+    return (rt_get_cpu_time_ns() - startTime) / 1e9;
 }
 
 } // namespace dreamer
