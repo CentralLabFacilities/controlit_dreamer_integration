@@ -171,6 +171,7 @@ void HandControllerDreamer::getCommand(Vector & command)
         // The PD control law for right_thumb_cmc
         // command[0] = thumbKp * (thumbGoalPos - currPosition[0]) - thumbKd * currVelocity[0];
         // command[0] = -0.15; // Force right_thumb_cmc to go to -40 degree position.
+        command[0] = 0; // send the right_thumb_cmc a torque command of zero to prevent it from overheating
     }
     else
     {
