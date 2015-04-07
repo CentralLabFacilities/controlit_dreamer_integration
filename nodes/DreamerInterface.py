@@ -329,7 +329,7 @@ class DreamerInterface:
         startTime = self.getTimeSeconds()
         done = False
 
-        print "Following trajectory {0}...".format(traj.name)
+        print "DreamerInterface: followTrajectory: Following trajectory {0}...".format(traj.name)
         while not done and not rospy.is_shutdown():
             deltaTime = self.getTimeSeconds() - startTime
 
@@ -366,6 +366,14 @@ class DreamerInterface:
 
         # print "Done following trajectory {0}!".format(traj.name)
         return not rospy.is_shutdown()
+
+    def updateRightHandCartesianPosition(self, cartesianGoal):
+        self.rightHandCartesianGoalMsg.data = cartesianGoal
+        self.rightCartesianTaskGoalPublisher.publish(self.rightHandCartesianGoalMsg)
+
+    def updateLeftHandCartesianPosition(self, cartesianGoal):
+        self.leftHandCartesianGoalMsg.data = cartesianGoal
+        self.leftCartesianTaskGoalPublisher.publish(self.leftHandCartesianGoalMsg)
 
     def closeRightHand(self, includePinky = True, includeMiddle = True, includeIndex = True):
         

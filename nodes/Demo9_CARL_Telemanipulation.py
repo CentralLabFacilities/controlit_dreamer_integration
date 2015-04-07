@@ -71,6 +71,7 @@ DEFAULT_POSTURE = [0.0, 0.0,                                    # torso
 # The time each trajectory should take
 TIME_GO_TO_READY = 5.0
 TIME_GO_TO_IDLE = 7.0
+TIME_GO_BACK_TO_READY = 5.0
 
 # Define the commands that can be received from the CARL user interface.
 class Command(IntEnum):
@@ -99,6 +100,9 @@ class CartesianDirection(IntEnum):
     FORWARD = 4
     BACKWARD = 5
 
+# Define the Cartesian movement increment
+CARTESIAN_MOVE_DELTA = 0.01  # 1 cm movement increments
+
 class TrajectoryState(smach.State):
     """
     A SMACH state that makes the robot follow a trajectory.
@@ -125,6 +129,72 @@ class TrajectoryState(smach.State):
         else:
             return "exit"
 
+class GoBackToReadyState(smach.State):
+    """
+    A SMACH state that makes the end effectors go back to the ready state,
+    which is also the beginning of the GoToIdle trajectory.
+    """
+
+    def __init__(self, dreamerInterface, goToIdleTraj):
+        """
+        The constructor.
+
+        Keyword Parameters:
+          - dreamerInterface: The object to which to provide the trajectory.
+          - goToIdleTraj: The goToIdle trajectory. This is used to determine the final
+                          waypoint of the GoBackToReady trajectory.
+        """
+
+        smach.State.__init__(self, outcomes=["done", "exit"])
+        self.dreamerInterface = dreamerInterface
+        self.goToIdleTraj = goToIdleTraj
+
+    def execute(self, userdata):
+        rospy.loginfo("Executing GoBackToReadyState")
+
+        # Create a trajectory to go back to the start / idle position
+        traj = Trajectory.Trajectory("GoBackToReady", TIME_GO_BACK_TO_READY)  # TODO: make the time be proportional to the distance that needs to be traveled
+
+        # Initial goal is current goal
+        traj.setInitRHCartWP(self.dreamerInterface.rightHandCartesianGoalMsg.data)
+        traj.setInitLHCartWP(self.dreamerInterface.leftHandCartesianGoalMsg.data)
+        traj.setInitRHOrientWP(self.dreamerInterface.rightHandOrientationGoalMsg.data)
+        traj.setInitLHOrientWP(self.dreamerInterface.leftHandOrientationGoalMsg.data)
+        traj.setInitPostureWP(self.dreamerInterface.postureGoalMsg.data)
+
+        # repeat the same point twice (this is to ensure the trajectory has sufficient number of points to perform cubic spline)
+        traj.addRHCartWP(self.dreamerInterface.rightHandCartesianGoalMsg.data)
+        traj.addRHOrientWP(self.dreamerInterface.rightHandOrientationGoalMsg.data)
+        traj.addLHCartWP(self.dreamerInterface.leftHandCartesianGoalMsg.data)
+        traj.addLHOrientWP(self.dreamerInterface.leftHandOrientationGoalMsg.data)
+        traj.addPostureWP(self.dreamerInterface.postureGoalMsg.data)
+
+        traj.addRHCartWP(self.dreamerInterface.rightHandCartesianGoalMsg.data)
+        traj.addRHOrientWP(self.dreamerInterface.rightHandOrientationGoalMsg.data)
+        traj.addLHCartWP(self.dreamerInterface.leftHandCartesianGoalMsg.data)
+        traj.addLHOrientWP(self.dreamerInterface.leftHandOrientationGoalMsg.data)
+        traj.addPostureWP(self.dreamerInterface.postureGoalMsg.data)
+
+        # final way point is initial waypoint of GoToIdle trajectory
+        traj.addRHCartWP(self.goToIdleTraj.rhCartWP[0])
+        traj.addRHOrientWP(self.goToIdleTraj.rhOrientWP[0])
+        traj.addLHCartWP(self.goToIdleTraj.lhCartWP[0])
+        traj.addLHOrientWP(self.goToIdleTraj.lhOrientWP[0])
+        traj.addPostureWP(self.goToIdleTraj.jPosWP[0])
+
+        # repea the same final point (this is to ensure the trajectory has sufficient number of points to perform cubic spline)
+        traj.addRHCartWP(self.goToIdleTraj.rhCartWP[0])
+        traj.addRHOrientWP(self.goToIdleTraj.rhOrientWP[0])
+        traj.addLHCartWP(self.goToIdleTraj.lhCartWP[0])
+        traj.addLHOrientWP(self.goToIdleTraj.lhOrientWP[0])
+        traj.addPostureWP(self.goToIdleTraj.jPosWP[0])
+
+        if self.dreamerInterface.followTrajectory(traj):
+            return "done"
+        else:
+            return "exit"
+
+
 class AwaitCommandState(smach.State):
     """
     A SMACH state that waits for a command to arrive. It subscribes to a 
@@ -132,22 +202,24 @@ class AwaitCommandState(smach.State):
     based on the received command.
     """
 
-    def __init__(self, moveCartesianState):
+    def __init__(self, moveCartesianState, goToIdleState):
         """
         The constructor.
 
         Keyword parameters:
           - moveCartesianState: The SMACH state that moves the cartesian position
+          - goToIdleState: The SMACH state that moves the robot back to the idle state
         """
 
         # Initialize parent class
         smach.State.__init__(self, outcomes=[
             "go_to_ready",
-            "go_to_idle",
+            "go_back_to_ready",
             "move_cartesian_position",
             "exit"])
 
         self.moveCartesianState = moveCartesianState
+        self.goToIdleState = goToIdleState
 
         # Initialize local variables
         self.rcvdCmd = False
@@ -173,10 +245,10 @@ class AwaitCommandState(smach.State):
 
         rospy.loginfo('Executing await command...')
 
+        self.rcvdCmd = False # reset this variable (ignore any commands sent prior to this state executing)
+
         while not self.rcvdCmd:
             rospy.sleep(self.sleepPeriod)
-
-        self.rcvdCmd = False # reset this so another command can be received
 
         if rospy.is_shutdown():
             return "exit"
@@ -186,7 +258,7 @@ class AwaitCommandState(smach.State):
             elif self.cmd == Command.CMD_GOTO_READY:
                 return "go_to_ready"
             elif self.cmd == Command.CMD_GOTO_IDLE:
-                return "go_to_idle"
+                return "go_back_to_ready"
             elif self.cmd == Command.CMD_MOVE_RIGHT_HAND_FORWARD:
                 self.moveCartesianState.setParameters(endEffector="right", direction=CartesianDirection.FORWARD)
                 return "move_cartesian_position"
@@ -257,6 +329,13 @@ class MoveCartesianState(smach.State):
         self.direction = direction
 
     def directionToString(self, direction):
+        """
+        Returns a string representation of the direction command.
+
+        Keyword Parameters:
+          - direction: the direction to convert into a string.
+        """
+
         if direction == CartesianDirection.UP:
             return "UP"
         elif direction == CartesianDirection.DOWN:
@@ -276,18 +355,50 @@ class MoveCartesianState(smach.State):
         rospy.loginfo('MoveCartesianState: Executing, end effector = {0}, direction = {1}'.format(
             self.endEffector, self.directionToString(self.direction)))
 
-        # TODO: Determine current Cartesian position
-
-        # TODO: Compute new Cartesian position
-
-        # TODO: Publish new Cartesian position goal
-
-        success = True
-
-        if success:
-            return "done"
+        # Determine the current Cartesian position
+        if self.endEffector == "right":
+            cartesianPosition = self.dreamerInterface.currentRightCartesianPos
         else:
-            return "exit"
+            cartesianPosition = self.dreamerInterface.currentLeftCartesianPos
+
+        if cartesianPosition == None:
+            rospy.loginfo("MoveCartesianState: ERROR: Unable to get current Cartesian position. Aborting the move. Returning done.")
+            return "done"
+
+        # Compute new Cartesian position
+        X_AXIS = 0
+        Y_AXIS = 1
+        Z_AXIS = 2
+
+        if self.direction == CartesianDirection.FORWARD:
+            newCartesianPosition = [cartesianPosition[X_AXIS] + CARTESIAN_MOVE_DELTA, cartesianPosition[Y_AXIS], cartesianPosition[Z_AXIS]]
+        if self.direction == CartesianDirection.BACKWARD:
+            newCartesianPosition = [cartesianPosition[X_AXIS] - CARTESIAN_MOVE_DELTA, cartesianPosition[Y_AXIS], cartesianPosition[Z_AXIS]]
+
+        if self.direction == CartesianDirection.LEFT:
+            newCartesianPosition = [cartesianPosition[X_AXIS], cartesianPosition[Y_AXIS] + CARTESIAN_MOVE_DELTA, cartesianPosition[Z_AXIS]]
+        if self.direction == CartesianDirection.RIGHT:
+            newCartesianPosition = [cartesianPosition[X_AXIS], cartesianPosition[Y_AXIS] - CARTESIAN_MOVE_DELTA, cartesianPosition[Z_AXIS]]
+
+        if self.direction == CartesianDirection.UP:
+            newCartesianPosition = [cartesianPosition[X_AXIS], cartesianPosition[Y_AXIS], cartesianPosition[Z_AXIS] + CARTESIAN_MOVE_DELTA]
+        if self.direction == CartesianDirection.DOWN:
+            newCartesianPosition = [cartesianPosition[X_AXIS], cartesianPosition[Y_AXIS], cartesianPosition[Z_AXIS] - CARTESIAN_MOVE_DELTA]
+
+        rospy.loginfo("MoveCartesianState: Modifying goal Cartesian position:\n"\
+            "  - Current Cartesian position: {0}\n"\
+            "  - New Cartesian position: {1}".format(cartesianPosition, newCartesianPosition))
+
+        # Publish new Cartesian position goal
+        if self.endEffector == "right":
+            self.dreamerInterface.updateRightHandCartesianPosition(newCartesianPosition)
+        else:
+            self.dreamerInterface.updateLeftHandCartesianPosition(newCartesianPosition)
+
+        # Wait 2 seconds to allow convergence before returning
+        rospy.sleep(2)
+
+        return "done"
 
 # class RightHandPowerGraspState(smach.State):
 #     def __init__(self, dreamerInterface, goodResult, doGrasp, includeIndexFinger, includeMiddleFinger):
@@ -495,10 +606,10 @@ class Demo9_CARL_Telemanipulation:
         # define the states
         moveCartesianState = MoveCartesianState(dreamerInterface = self.dreamerInterface)
 
-        awaitCommandState = AwaitCommandState(moveCartesianState = moveCartesianState)
-
         goToReadyState = TrajectoryState(self.dreamerInterface, self.trajGoToReady)
         goToIdleState = TrajectoryState(self.dreamerInterface, self.trajGoToIdle)
+        goBackToReadyState = GoBackToReadyState(self.dreamerInterface, self.trajGoToIdle)
+        awaitCommandState = AwaitCommandState(moveCartesianState = moveCartesianState, goToIdleState = goToIdleState)
 
         # wire the states into a FSM
         self.fsm = smach.StateMachine(outcomes=['exit'])
@@ -506,7 +617,7 @@ class Demo9_CARL_Telemanipulation:
 
             smach.StateMachine.add("AwaitCommandState", awaitCommandState,
                 transitions={"go_to_ready":"GoToReadyState",
-                             "go_to_idle":"GoToIdleState",
+                             "go_back_to_ready":"GoBackToReadyState",
                              "move_cartesian_position":"MoveCartesianState",
                              "exit":"exit"})
 
@@ -515,6 +626,10 @@ class Demo9_CARL_Telemanipulation:
                              'exit':'exit'})
             smach.StateMachine.add("GoToIdleState", goToIdleState,
                 transitions={'done':'AwaitCommandState',
+                             'exit':'exit'})
+
+            smach.StateMachine.add("GoBackToReadyState", goBackToReadyState,
+                transitions={'done':'GoToIdleState',
                              'exit':'exit'})
 
             smach.StateMachine.add("MoveCartesianState", moveCartesianState,

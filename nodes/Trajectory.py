@@ -18,65 +18,89 @@ class Trajectory:
         self.lhOrientWP = []   # left hand orientation trajectory
         self.jPosWP = []       # posture trajectory
 
-        self.prevTrajSet = False
+        self.initRHCartPosSet = False
+        self.initLHCartPosSet = False
+        self.initRHOrientSet = False
+        self.initLHOrientSet = False
+        self.initPostureSet = False
 
     def setInitRHCartWP(self, wp):
         ''' 
         Sets the first waypoint in the right hand Cartesian space trajectory.
         '''
-        self.rhCartWP.insert(0, wp)
+        if not self.initRHCartPosSet:
+            self.rhCartWP.insert(0, wp)
+            self.initRHCartPosSet = True
+        else:
+            self.rhCartWP[0] = wp
 
     def setInitLHCartWP(self, wp):
         ''' 
         Sets the first waypoint in the left hand Cartesian space trajectory.
         '''
-        self.lhCartWP.insert(0, wp)
+        if not self.initLHCartPosSet:
+            self.lhCartWP.insert(0, wp)
+            self.initLHCartPosSet = True
+        else:
+            self.lhCartWP[0] = wp
 
     def setInitRHOrientWP(self, wp):
         ''' 
         Sets the first waypoint in the right hand orientation space trajectory.
         '''
-        self.rhOrientWP.insert(0, wp)
+        if not self.initRHOrientSet:
+            self.rhOrientWP.insert(0, wp)
+            self.initRHOrientSet = True
+        else:
+            self.rhOrientWP[0] = wp
 
     def setInitLHOrientWP(self, wp):
         ''' 
         Sets the first waypoint in the left hand orientation space trajectory.
         '''
-        self.lhOrientWP.insert(0, wp)
+        if not self.initLHOrientSet:
+            self.lhOrientWP.insert(0, wp)
+            self.initLHOrientSet = True
+        else:
+            self.lhOrientWP[0] = wp
 
     def setInitPostureWP(self, wp):
         ''' 
         Sets the first waypoint in the posture space trajectory.
         '''
-        self.jPosWP.insert(0, wp)
+        if not self.initPostureSet:
+            self.jPosWP.insert(0, wp)
+            self.initPostureSet = True
+        else:
+            self.jPosWP[0] = wp
 
     def addRHCartWP(self, wp):
         '''
-        Add a waypoint to the right hand Cartesian space trajectory.
+        Add a waypoint to the end of the right hand Cartesian space trajectory.
         '''
         self.rhCartWP.append(wp)
 
     def addLHCartWP(self, wp):
         '''
-        Add a waypoint to the left hand Cartesian space trajectory.
+        Add a waypoint to the end of the left hand Cartesian space trajectory.
         '''
         self.lhCartWP.append(wp)
 
     def addRHOrientWP(self, wp):
         '''
-        Add a waypoint to the right hand orientation space trajectory.
+        Add a waypoint to the end of the right hand orientation space trajectory.
         '''
         self.rhOrientWP.append(wp)
 
     def addLHOrientWP(self, wp):
         '''
-        Add a waypoint to the right hand orientation space trajectory.
+        Add a waypoint to the end of the right hand orientation space trajectory.
         '''
         self.lhOrientWP.append(wp)
 
     def addPostureWP(self, wp):
         '''
-        Add a waypoint to the posture space trajectory.
+        Add a waypoint to the end of the posture space trajectory.
         '''
         self.jPosWP.append(wp)
 
@@ -151,18 +175,34 @@ class Trajectory:
         Updates this trajectory to start in the same configuration
         as the end of the previous trajectory.
         '''
-        if not self.prevTrajSet:
+        if not self.initRHCartPosSet:
             self.rhCartWP.insert(0, traj.getFinalRHCartPos())
-            self.lhCartWP.insert(0, traj.getFinalLHCartPos())
-            self.rhOrientWP.insert(0, traj.getFinalRHOrient())
-            self.lhOrientWP.insert(0, traj.getFinalLHOrient())
-            self.jPosWP.insert(0, traj.getFinalPosture())
-            self.prevTrajSet = True
+            self.initRHCartPosSet = True
         else:
             self.rhCartWP[0] = traj.getFinalRHCartPos()
+
+        if not self.initLHCartPosSet:
+            self.lhCartWP.insert(0, traj.getFinalLHCartPos())
+            self.initLHCartPosSet = True
+        else:
             self.lhCartWP[0] = traj.getFinalLHCartPos()
+
+        if not self.initRHOrientSet:
+            self.rhOrientWP.insert(0, traj.getFinalRHOrient())
+            self.initRHOrientSet = True
+        else:
             self.rhOrientWP[0] = traj.getFinalRHOrient()
+
+        if not self.initLHOrientSet:
+            self.lhOrientWP.insert(0, traj.getFinalLHOrient())
+            self.initLHOrientSet = True
+        else:
             self.lhOrientWP[0] = traj.getFinalLHOrient()
+
+        if not self.initPostureSet:
+            self.jPosWP.insert(0, traj.getFinalPosture())
+            self.initPostureSet = True
+        else:
             self.jPosWP[0] = traj.getFinalPosture()
 
     def __str__(self):
