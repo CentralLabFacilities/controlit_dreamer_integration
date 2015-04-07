@@ -357,9 +357,9 @@ class MoveCartesianState(smach.State):
 
         # Determine the current Cartesian position
         if self.endEffector == "right":
-            cartesianPosition = self.dreamerInterface.currentRightCartesianPos
+            cartesianPosition = self.dreamerInterface.rightHandCartesianGoalMsg.data
         else:
-            cartesianPosition = self.dreamerInterface.currentLeftCartesianPos
+            cartesianPosition = self.dreamerInterface.leftHandCartesianGoalMsg.data
 
         if cartesianPosition == None:
             rospy.loginfo("MoveCartesianState: ERROR: Unable to get current Cartesian position. Aborting the move. Returning done.")
