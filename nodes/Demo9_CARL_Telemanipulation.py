@@ -3,6 +3,36 @@
 '''
 Enables users to telemanipulate Dreamer's end effectors via CARL.
 Uses WBOSC configured with end effector Cartesian position and orientation.
+
+-----------------
+Dependency notes:
+
+If you're using Python 2.7, you need to install Python's
+enum package. Download it from here: https://pypi.python.org/pypi/enum34#downloads
+Then run:
+  $ sudo python setup.py install
+
+Visualzing the FSM requires smach_viewer:
+  $ sudo apt-get install ros-indigo-smach-viewer
+You will need to modify /opt/ros/indigo/lib/python2.7/dist-packages/xdot/xdot.py
+lines 487, 488, 593, and 594 to contain self.read_float() instead of self.read_number().
+
+-----------------
+Usage Notes:
+
+To issue a command using the command line:
+
+  exit:
+    $ rostopic pub --once /demo9/cmd std_msgs/Int32 'data: 0'
+
+  go to ready:
+    $ rostopic pub --once /demo9/cmd std_msgs/Int32 'data: 1'
+
+  go to idle:
+    $ rostopic pub --once /demo9/cmd std_msgs/Int32 'data: 2'
+
+To visualize FSM:
+  $ rosrun smach_viewer smach_viewer.py
 '''
 
 import sys, getopt     # for getting and parsing command line arguments
@@ -42,82 +72,87 @@ DEFAULT_POSTURE = [0.0, 0.0,                                    # torso
 TIME_GO_TO_READY = 5.0
 TIME_GO_TO_IDLE = 7.0
 
-# Define the commands that can be received from the CARL user interface
-class Color(IntEnum):
+# Define the commands that can be received from the CARL user interface.
+class Command(IntEnum):
     CMD_NONE = 0
-    CMD_MOVE_RIGHT_HAND_FORWARD = 1
-    CMD_MOVE_RIGHT_HAND_BACKWARD = 2
-    CMD_MOVE_RIGHT_HAND_UP = 3
-    CMD_MOVE_RIGHT_HAND_DOWN = 4
-    CMD_MOVE_RIGHT_HAND_LEFT = 5
-    CMD_MOVE_RIGHT_HAND_RIGHT = 6
-    CMD_MOVE_LEFT_HAND_FORWARD = 7
-    CMD_MOVE_LEFT_HAND_BACKWARD = 8
-    CMD_MOVE_LEFT_HAND_UP = 9
-    CMD_MOVE_LEFT_HAND_DOWN = 10 
-    CMD_MOVE_LEFT_HAND_LEFT = 11
-    CMD_MOVE_LEFT_HAND_RIGHT = 12
+    CMD_GOTO_READY = 1
+    CMD_GOTO_IDLE = 2
+    CMD_MOVE_RIGHT_HAND_FORWARD = 3
+    CMD_MOVE_RIGHT_HAND_BACKWARD = 4
+    CMD_MOVE_RIGHT_HAND_UP = 5
+    CMD_MOVE_RIGHT_HAND_DOWN = 6
+    CMD_MOVE_RIGHT_HAND_LEFT = 7
+    CMD_MOVE_RIGHT_HAND_RIGHT = 8
+    CMD_MOVE_LEFT_HAND_FORWARD = 9
+    CMD_MOVE_LEFT_HAND_BACKWARD = 10
+    CMD_MOVE_LEFT_HAND_UP = 11
+    CMD_MOVE_LEFT_HAND_DOWN = 12
+    CMD_MOVE_LEFT_HAND_LEFT = 13
+    CMD_MOVE_LEFT_HAND_RIGHT = 14
+
+# Define the Cartesian directions. This is used by the MoveCartesianState.
+class CartesianDirection(IntEnum):
+    UP = 0
+    DOWN = 1
+    LEFT = 2
+    RIGHT = 3
+    FORWARD = 4
+    BACKWARD = 5
 
 class TrajectoryState(smach.State):
     """
     A SMACH state that makes the robot follow a trajectory.
     """
 
-    def __init__(self, dreamerInterface, goodResult, traj):
+    def __init__(self, dreamerInterface, traj):
         """
         The constructor.
 
         Keyword Parameters:
           - dreamerInterface: The object to which to provide the trajectory.
-          - goodResult: The string to return after the trajectory is 
-                        successfully followed. Note that "exit" is returned 
-                        if there is an error in following the trajectory.
           - traj: The trajectory to follow.
         """
 
-        smach.State.__init__(self, outcomes=[goodResult, "exit"])
+        smach.State.__init__(self, outcomes=["done", "exit"])
         self.dreamerInterface = dreamerInterface
-        self.goodResult = goodResult
         self.traj = traj
 
     def execute(self, userdata):
         rospy.loginfo('Executing TrajectoryState')
 
         if self.dreamerInterface.followTrajectory(self.traj):
-            return self.goodResult
+            return "done"
         else:
             return "exit"
 
-class AwaitCommandStateState(smach.State):
+class AwaitCommandState(smach.State):
     """
     A SMACH state that waits for a command to arrive. It subscribes to a 
     ROS topic over which commands are published and triggers a transition
     based on the received command.
     """
 
-    def __init__(self):
+    def __init__(self, moveCartesianState):
         """
         The constructor.
+
+        Keyword parameters:
+          - moveCartesianState: The SMACH state that moves the cartesian position
         """
 
         # Initialize parent class
-        smach.State.__init__(self, outcomes=["move_right_hand_forward",
-                                             "move_right_hand_backward",
-                                             "move_right_hand_up",
-                                             "move_right_hand_down",
-                                             "move_right_hand_left",
-                                             "move_right_hand_right",
-                                             "move_left_hand_forward",
-                                             "move_left_hand_backward",
-                                             "move_left_hand_up",
-                                             "move_left_hand_down",
-                                             "move_left_hand_left",
-                                             "move_left_hand_right",
-                                             "exit"])
+        smach.State.__init__(self, outcomes=[
+            "go_to_ready",
+            "go_to_idle",
+            "move_cartesian_position",
+            "exit"])
+
+        self.moveCartesianState = moveCartesianState
+
         # Initialize local variables
         self.rcvdCmd = False
         self.sleepPeriod = 0.5  # in seconds
-        self.cmdNumber = CMD_NONE
+        self.cmd = Command.CMD_NONE
 
         # Register a ROS topic listener
         self.demoCmdSubscriber  = rospy.Subscriber("/demo9/cmd", Int32, self.demoCmdCallback)
@@ -125,22 +160,134 @@ class AwaitCommandStateState(smach.State):
 
     def demoCmdCallback(self, msg):
         """
-        The command ROS topic subscriber's callback method.
+        The callback method of the command ROS topic subscriber.
         """
 
-        self.cmdNumber = msg.data
+        self.cmd = msg.data
         self.rcvdCmd = True
 
     def execute(self, userdata):
+        """
+        Waits for a command to arrive. Then processes the command.
+        """
+
         rospy.loginfo('Executing await command...')
 
         while not self.rcvdCmd:
             rospy.sleep(self.sleepPeriod)
 
+        self.rcvdCmd = False # reset this so another command can be received
+
         if rospy.is_shutdown():
             return "exit"
         else:
-            if self.cmd
+            if self.cmd == Command.CMD_NONE:
+                return "exit"
+            elif self.cmd == Command.CMD_GOTO_READY:
+                return "go_to_ready"
+            elif self.cmd == Command.CMD_GOTO_IDLE:
+                return "go_to_idle"
+            elif self.cmd == Command.CMD_MOVE_RIGHT_HAND_FORWARD:
+                self.moveCartesianState.setParameters(endEffector="right", direction=CartesianDirection.FORWARD)
+                return "move_cartesian_position"
+            elif self.cmd == Command.CMD_MOVE_RIGHT_HAND_BACKWARD:
+                self.moveCartesianState.setParameters(endEffector="right", direction=CartesianDirection.BACKWARD)
+                return "move_cartesian_position"
+            elif self.cmd == Command.CMD_MOVE_RIGHT_HAND_UP:
+                self.moveCartesianState.setParameters(endEffector="right", direction=CartesianDirection.UP)
+                return "move_cartesian_position"
+            elif self.cmd == Command.CMD_MOVE_RIGHT_HAND_DOWN:
+                self.moveCartesianState.setParameters(endEffector="right", direction=CartesianDirection.DOWN)
+                return "move_cartesian_position"
+            elif self.cmd == Command.CMD_MOVE_RIGHT_HAND_LEFT:
+                self.moveCartesianState.setParameters(endEffector="right", direction=CartesianDirection.LEFT)
+                return "move_cartesian_position"
+            elif self.cmd == Command.CMD_MOVE_RIGHT_HAND_RIGHT:
+                self.moveCartesianState.setParameters(endEffector="right", direction=CartesianDirection.RIGHT)
+                return "move_cartesian_position"
+            elif self.cmd == Command.CMD_MOVE_LEFT_HAND_FORWARD:
+                self.moveCartesianState.setParameters(endEffector="left", direction=CartesianDirection.FORWARD)
+                return "move_cartesian_position"
+            elif self.cmd == Command.CMD_MOVE_LEFT_HAND_BACKWARD:
+                self.moveCartesianState.setParameters(endEffector="left", direction=CartesianDirection.BACKWARD)
+                return "move_cartesian_position"
+            elif self.cmd == Command.CMD_MOVE_LEFT_HAND_UP:
+                self.moveCartesianState.setParameters(endEffector="left", direction=CartesianDirection.UP)
+                return "move_cartesian_position"
+            elif self.cmd == Command.CMD_MOVE_LEFT_HAND_DOWN:
+                self.moveCartesianState.setParameters(endEffector="left", direction=CartesianDirection.DOWN)
+                return "move_cartesian_position"
+            elif self.cmd == Command.CMD_MOVE_LEFT_HAND_LEFT:
+                self.moveCartesianState.setParameters(endEffector="left", direction=CartesianDirection.LEFT)
+                return "move_cartesian_position"
+            elif self.cmd == Command.CMD_MOVE_LEFT_HAND_RIGHT:
+                self.moveCartesianState.setParameters(endEffector="left", direction=CartesianDirection.RIGHT)
+                return "move_cartesian_position"
+            else:
+                rospy.loginfo("AwaitCommandState: ERROR: Received a unknown command ({0})! Returning exit".format(self.cmd))
+                return "exit"
+
+class MoveCartesianState(smach.State):
+    """
+    A SMACH state that moves the Cartesian position of a point on the robot.
+    """
+
+    def __init__(self, dreamerInterface):
+        """
+        The constructor.
+
+        Keyword Parameters:
+          - dreamerInterface: The object providing access to Dreamer hardware.
+        """
+
+        smach.State.__init__(self, outcomes=["done", "exit"])
+        self.dreamerInterface = dreamerInterface
+
+    def setParameters(self, endEffector, direction):
+        """
+        Sets the end effector and movement direction parameters.
+
+        Keyword Parameters:
+          - dreamerInterface: The object providing access to Dreamer hardware.
+          - endEffector: Which end effector to adjust.
+          - direction: The direction to adjust the end effector's Cartesian position.
+        """
+
+        self.endEffector = endEffector
+        self.direction = direction
+
+    def directionToString(self, direction):
+        if direction == CartesianDirection.UP:
+            return "UP"
+        elif direction == CartesianDirection.DOWN:
+            return "DOWN"
+        elif direction == CartesianDirection.LEFT:
+            return "LEFT"
+        elif direction == CartesianDirection.RIGHT:
+            return "RIGHT"
+        elif direction == CartesianDirection.FORWARD:
+            return "FORWARD"
+        elif direction == CartesianDirection.BACKWARD:
+            return "BACKWARD"
+        else:
+            return "UNKNOWN"
+
+    def execute(self, userdata):
+        rospy.loginfo('MoveCartesianState: Executing, end effector = {0}, direction = {1}'.format(
+            self.endEffector, self.directionToString(self.direction)))
+
+        # TODO: Determine current Cartesian position
+
+        # TODO: Compute new Cartesian position
+
+        # TODO: Publish new Cartesian position goal
+
+        success = True
+
+        if success:
+            return "done"
+        else:
+            return "exit"
 
 # class RightHandPowerGraspState(smach.State):
 #     def __init__(self, dreamerInterface, goodResult, doGrasp, includeIndexFinger, includeMiddleFinger):
@@ -304,7 +451,7 @@ class Demo9_CARL_Telemanipulation:
 
         # ==============================================================================================        
         self.trajGoToIdle = Trajectory.Trajectory("GoToIdle", TIME_GO_TO_IDLE)
-        self.trajGoToIdle.setPrevTraj(self.trajRemoveRightHand)
+        self.trajGoToIdle.setPrevTraj(self.trajGoToReady)
 
         # 2015.01.06 Trajectory
         self.trajGoToIdle.addRHCartWP([0.25822435038901964, -0.1895604971725577, 1.0461857180093073])
@@ -346,74 +493,37 @@ class Demo9_CARL_Telemanipulation:
 
     def createFSM(self):
         # define the states
-        goToReadyState = TrajectoryState(self.dreamerInterface, "goToReadyDone", self.trajGoToReady)
-        # grabTubeState = TrajectoryState(self.dreamerInterface, "grabTubeDone", self.trajGrabTube)
-        # rightHandGraspState = RightHandPowerGraspState(self.dreamerInterface, "doneGrabbingTube", True, False, False)
-        # grabValveState = TrajectoryState(self.dreamerInterface, "grabValveDone", self.trajGrabValve)
-        # leftGripperGraspState = LeftGripperGraspState(self.dreamerInterface, "doneGrabbingValve", True)
-        # middleFingerGraspState = RightHandPowerGraspState(self.dreamerInterface, "doneMiddleFingerGrasp", True, False, True)
-        # sleepState = SleepState("doneSleep", 3)  # three seconds to allow middle finger to grasp tube
-        # removeValveState = TrajectoryState(self.dreamerInterface, "removeValveDone", self.trajRemoveValve)
-        # releaseGripperState = LeftGripperGraspState(self.dreamerInterface, "doneReleasingValve", False)
-        # indexFingerGraspState = RightHandPowerGraspState(self.dreamerInterface, "doneIndexFingerGrasp", True, True, True)
-        # removeLeftGripperState = TrajectoryState(self.dreamerInterface, "removeLeftGripperDone", self.trajRemoveLeftHand)
-        # storeTubeState = TrajectoryState(self.dreamerInterface, "storeTubeDone", self.trajStoreTube)
-        # dropTubeState = RightHandPowerGraspState(self.dreamerInterface, "doneDroppingTube", False, False, False)
-        # removeRightHandState = TrajectoryState(self.dreamerInterface, "removeRightHandDone", self.trajRemoveRightHand)
-        goToIdleState = TrajectoryState(self.dreamerInterface, "doneGoToIdle", self.trajGoToIdle)
+        moveCartesianState = MoveCartesianState(dreamerInterface = self.dreamerInterface)
+
+        awaitCommandState = AwaitCommandState(moveCartesianState = moveCartesianState)
+
+        goToReadyState = TrajectoryState(self.dreamerInterface, self.trajGoToReady)
+        goToIdleState = TrajectoryState(self.dreamerInterface, self.trajGoToIdle)
 
         # wire the states into a FSM
         self.fsm = smach.StateMachine(outcomes=['exit'])
         with self.fsm:
-            smach.StateMachine.add("GoToReady", goToReadyState, 
-                transitions={'goToReadyDone':'GrabTube',
+
+            smach.StateMachine.add("AwaitCommandState", awaitCommandState,
+                transitions={"go_to_ready":"GoToReadyState",
+                             "go_to_idle":"GoToIdleState",
+                             "move_cartesian_position":"MoveCartesianState",
+                             "exit":"exit"})
+
+            smach.StateMachine.add("GoToReadyState", goToReadyState,
+                transitions={'done':'AwaitCommandState',
                              'exit':'exit'})
-            smach.StateMachine.add("GrabTube", grabTubeState, 
-                transitions={'grabTubeDone':'RightHandInitialGraspState',
+            smach.StateMachine.add("GoToIdleState", goToIdleState,
+                transitions={'done':'AwaitCommandState',
                              'exit':'exit'})
-            smach.StateMachine.add("RightHandInitialGraspState", rightHandGraspState, 
-                transitions={'doneGrabbingTube':'GrabValveState',
-                             'exit':'exit'})
-            smach.StateMachine.add("GrabValveState", grabValveState, 
-                transitions={'grabValveDone':'CloseLeftGripperState',
-                             'exit':'exit'})
-            smach.StateMachine.add("CloseLeftGripperState", leftGripperGraspState, 
-                transitions={'doneGrabbingValve':'AddMiddleFingerState',
-                             'exit':'exit'})
-            smach.StateMachine.add("AddMiddleFingerState", middleFingerGraspState, 
-                transitions={'doneMiddleFingerGrasp':'SleepState',
-                             'exit':'exit'})
-            smach.StateMachine.add("SleepState", sleepState, 
-                transitions={'doneSleep':'RemoveValveState',
-                             'exit':'exit'})
-            smach.StateMachine.add("RemoveValveState", removeValveState, 
-                transitions={'removeValveDone':'ReleaseGripperState',
-                             'exit':'exit'})
-            smach.StateMachine.add("ReleaseGripperState", releaseGripperState, 
-                transitions={'doneReleasingValve':'AddIndexFingerState',
-                             'exit':'exit'})
-            smach.StateMachine.add("AddIndexFingerState", indexFingerGraspState, 
-                transitions={'doneIndexFingerGrasp':'RemoveLeftGripperState',
-                             'exit':'exit'})
-            smach.StateMachine.add("RemoveLeftGripperState", removeLeftGripperState, 
-                transitions={'removeLeftGripperDone':'StoreTubeState',
-                             'exit':'exit'})
-            smach.StateMachine.add("StoreTubeState", storeTubeState, 
-                transitions={'storeTubeDone':'DropTubeState',
-                             'exit':'exit'})
-            smach.StateMachine.add("DropTubeState", dropTubeState, 
-                transitions={'doneDroppingTube':'RemoveRightHandState',
-                             'exit':'exit'})
-            smach.StateMachine.add("RemoveRightHandState", removeRightHandState, 
-                transitions={'removeRightHandDone':'GoToIdleState',
-                             'exit':'exit'})
-            smach.StateMachine.add("GoToIdleState", goToIdleState, 
-                transitions={'doneGoToIdle':'exit',
+
+            smach.StateMachine.add("MoveCartesianState", moveCartesianState,
+                transitions={'done':'AwaitCommandState',
                              'exit':'exit'})
 
     def run(self):
         """
-        Runs the Cartesian and orientation demo 1 behavior.
+        Runs the Cartesian and orientation demo 9 behavior.
         """
 
         if not self.dreamerInterface.connectToControlIt(DEFAULT_POSTURE):
@@ -432,7 +542,7 @@ class Demo9_CARL_Telemanipulation:
 
         outcome = self.fsm.execute()
 
-        print "Cartesian based demo 1 done, waiting until ctrl+c is hit..."
+        print "Demo 9 done, waiting until ctrl+c is hit..."
         rospy.spin()  # just to prevent this node from exiting
         sis.stop()
 
@@ -442,3 +552,6 @@ if __name__ == "__main__":
     rospy.init_node('Demo9_CARL_Telemanipulation', anonymous=True)
     demo = Demo9_CARL_Telemanipulation()
     demo.run()
+
+    print "Demo 9 done, waiting until ctrl+c is hit..."
+    rospy.spin()  # just to prevent this node from exiting
