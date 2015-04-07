@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 '''
-This uses both posture and orientation control.
+This uses both posture and orientation control to make Dreamer shake hands.
 '''
 
 import sys, getopt     # for getting and parsing command line arguments
