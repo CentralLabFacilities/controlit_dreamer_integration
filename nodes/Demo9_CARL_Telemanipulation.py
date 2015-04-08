@@ -73,6 +73,12 @@ TIME_GO_TO_READY = 5.0
 TIME_GO_TO_IDLE = 7.0
 TIME_GO_BACK_TO_READY = 5.0
 
+# The speed at which the Cartesian position should change
+TRAVEL_SPEED = 0.01  # 1 cm per second
+
+# The update frequency when adjusting the Cartesian position
+TRAVEL_UPDATE_FREQUENCY = 10
+
 # Define the commands that can be received from the CARL user interface.
 class Command(IntEnum):
     CMD_NONE = 0
@@ -389,7 +395,46 @@ class MoveCartesianState(smach.State):
             "  - Current Cartesian position: {0}\n"\
             "  - New Cartesian position: {1}".format(cartesianPosition, newCartesianPosition))
 
-        # Publish new Cartesian position goal
+        # Compute the distance to travel
+        dist = math.sqrt(math.pow(cartesianPosition[X_AXIS] - newCartesianPosition[X_AXIS], 2) +
+                         math.pow(cartesianPosition[Y_AXIS] - newCartesianPosition[Y_AXIS], 2) +
+                         math.pow(cartesianPosition[Z_AXIS] - newCartesianPosition[Z_AXIS], 2))
+
+        rospy.loginfo("MoveCartesianState: Distance to travel: {0}".format(dist))
+
+        # Compute the time to travel
+        travelTime = dist / TRAVEL_SPEED
+        rospy.loginfo("MoveCartesianState: Travel time: {0}s, speed: {1}m/s".format(travelTime, TRAVEL_SPEED))
+
+        # Compute the number of updates throughout the trajectory
+        numUpdates = travelTime / TRAVEL_UPDATE_FREQUENCY
+        rospy.loginfo("MoveCartesianState: Total number of updates: {0}, update frequency: {1}".format(numUpdates, TRAVEL_UPDATE_FREQUENCY))
+
+        # Compute the change in position of each update
+        deltaX = (newCartesianPosition[X_AXIS] - cartesianPosition[X_AXIS]) / numUpdates
+        deltaY = (newCartesianPosition[Y_AXIS] - cartesianPosition[Y_AXIS]) / numUpdates
+        deltaZ = (newCartesianPosition[Z_AXIS] - cartesianPosition[Z_AXIS]) / numUpdates
+        rospy.loginfo("MoveCartesianState: Step deltas:\n"\
+                      "  - deltaX = {0}\n"\
+                      "  - deltaY = {1}\n"\
+                      "  - deltaZ = {2}".format(deltaX, deltaY, deltaZ))
+
+        # Publish the trajectory
+        rospy.loginfo("MoveCartesianState: Publishing trajectory...")
+        for updateCount in range(0, int(math.ceil(numUpdates))):
+            currCartesianGoal = [cartesianPosition[X_AXIS] + updateCount * deltaX,
+                                 cartesianPosition[Y_AXIS] + updateCount * deltaY,
+                                 cartesianPosition[Z_AXIS] + updateCount * deltaZ]
+
+            if self.endEffector == "right":
+                self.dreamerInterface.updateRightHandCartesianPosition(currCartesianGoal)
+            else:
+                self.dreamerInterface.updateLeftHandCartesianPosition(currCartesianGoal)
+
+            rospy.sleep(1.0 / TRAVEL_UPDATE_FREQUENCY)
+
+        # Publish new Cartesian position goal. This ensures the end effector is at the new desired Cartesian position
+        rospy.loginfo("MoveCartesianState: Publishing final goal state...")
         if self.endEffector == "right":
             self.dreamerInterface.updateRightHandCartesianPosition(newCartesianPosition)
         else:
