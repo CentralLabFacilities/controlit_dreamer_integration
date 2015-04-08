@@ -226,6 +226,7 @@ class AwaitCommandState(smach.State):
             "move_cartesian_position",
             "toggle_right_hand",
             "toggle_left_gripper",
+            "done",
             "exit"])
 
         self.moveCartesianState = moveCartesianState
@@ -235,6 +236,7 @@ class AwaitCommandState(smach.State):
         self.rcvdCmd = False
         self.sleepPeriod = 0.5  # in seconds
         self.cmd = Command.CMD_NONE
+        self.isIdle = True  # Initially we are in idle state
 
         # Register a ROS topic listener
         self.demoCmdSubscriber  = rospy.Subscriber("/demo9/cmd", Int32, self.demoCmdCallback)
@@ -266,9 +268,21 @@ class AwaitCommandState(smach.State):
             if self.cmd == Command.CMD_NONE:
                 return "exit"
             elif self.cmd == Command.CMD_GOTO_READY:
-                return "go_to_ready"
+
+                # Only go to ready position if we're in idle
+                if self.isIdle:
+                    self.isIdle = False
+                    return "go_to_ready"
+                else:
+                    return "done"
             elif self.cmd == Command.CMD_GOTO_IDLE:
-                return "go_back_to_ready"
+
+                # Only go to idle if we're not in idle
+                if not self.isIdle:
+                    self.isIdle = True
+                    return "go_back_to_ready"
+                else:
+                    return "done"
             elif self.cmd == Command.CMD_MOVE_RIGHT_HAND_FORWARD:
                 self.moveCartesianState.setParameters(endEffector="right", direction=CartesianDirection.FORWARD)
                 return "move_cartesian_position"
@@ -723,6 +737,7 @@ class Demo9_CARL_Telemanipulation:
                              "move_cartesian_position":"MoveCartesianState",
                              "toggle_left_gripper":"ToggleLeftGripperState",
                              "toggle_right_hand":"ToggleRightHandState",
+                             "done":"AwaitCommandState",
                              "exit":"exit"})
 
             smach.StateMachine.add("GoToReadyState", goToReadyState,
