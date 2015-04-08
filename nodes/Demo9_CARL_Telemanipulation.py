@@ -96,6 +96,8 @@ class Command(IntEnum):
     CMD_MOVE_LEFT_HAND_DOWN = 12
     CMD_MOVE_LEFT_HAND_LEFT = 13
     CMD_MOVE_LEFT_HAND_RIGHT = 14
+    CMD_TOGGLE_RIGHT_HAND = 15
+    CMD_TOGGLE_LEFT_GRIPPER = 16
 
 # Define the Cartesian directions. This is used by the MoveCartesianState.
 class CartesianDirection(IntEnum):
@@ -222,6 +224,8 @@ class AwaitCommandState(smach.State):
             "go_to_ready",
             "go_back_to_ready",
             "move_cartesian_position",
+            "toggle_right_hand",
+            "toggle_left_gripper",
             "exit"])
 
         self.moveCartesianState = moveCartesianState
@@ -249,7 +253,7 @@ class AwaitCommandState(smach.State):
         Waits for a command to arrive. Then processes the command.
         """
 
-        rospy.loginfo('Executing await command...')
+        rospy.loginfo('AwaitCommandState: Executing...')
 
         self.rcvdCmd = False # reset this variable (ignore any commands sent prior to this state executing)
 
@@ -301,6 +305,10 @@ class AwaitCommandState(smach.State):
             elif self.cmd == Command.CMD_MOVE_LEFT_HAND_RIGHT:
                 self.moveCartesianState.setParameters(endEffector="left", direction=CartesianDirection.RIGHT)
                 return "move_cartesian_position"
+            elif self.cmd == Command.CMD_TOGGLE_LEFT_GRIPPER:
+                return "toggle_left_gripper"
+            elif self.cmd == Command.CMD_TOGGLE_RIGHT_HAND:
+                return "toggle_right_hand"
             else:
                 rospy.loginfo("AwaitCommandState: ERROR: Received a unknown command ({0})! Returning exit".format(self.cmd))
                 return "exit"
@@ -443,7 +451,53 @@ class MoveCartesianState(smach.State):
         # Wait 2 seconds to allow convergence before returning
         rospy.sleep(2)
 
-        return "done"
+        if rospy.is_shutdown():
+             return "exit"
+        else:
+            return "done"
+
+class EndEffectorToggleState(smach.State):
+    """
+    A SMACH state that toggles the state of an end effector.
+    """
+
+    def __init__(self, dreamerInterface, endEffectorSide):
+        """
+        The constructor.
+
+        Keyword Parameters:
+          - dreamerInterface: The object to which to provide the trajectory.
+          - endEffectorSide: Which end effector to toggle
+        """
+
+        smach.State.__init__(self, outcomes=["done", "exit"])
+        self.dreamerInterface = dreamerInterface
+        self.endEffectorSide = endEffectorSide
+        self.isClosed = False  # Assume initial state is relaxed
+
+    def execute(self, userdata):
+        rospy.loginfo('Executing EndEffectorToggleState, side = {0}'.format(self.endEffectorSide))
+
+        if self.endEffectorSide == "right":
+            if self.isClosed:
+                self.dreamerInterface.openRightHand()
+            else:
+                self.dreamerInterface.closeRightHand()
+        else:
+            if self.isClosed:
+                self.dreamerInterface.openLeftGripper()
+            else:
+                self.dreamerInterface.closeLeftGripper()
+
+        self.isClosed = not self.isClosed
+
+        # wait 2 seconds to allow convergence before returning
+        rospy.sleep(2)
+
+        if rospy.is_shutdown():
+             return "exit"
+        else:
+            return "done"
 
 # class RightHandPowerGraspState(smach.State):
 #     def __init__(self, dreamerInterface, goodResult, doGrasp, includeIndexFinger, includeMiddleFinger):
@@ -656,6 +710,9 @@ class Demo9_CARL_Telemanipulation:
         goBackToReadyState = GoBackToReadyState(self.dreamerInterface, self.trajGoToIdle)
         awaitCommandState = AwaitCommandState(moveCartesianState = moveCartesianState, goToIdleState = goToIdleState)
 
+        toggleLeftGripperState = EndEffectorToggleState(self.dreamerInterface, "left")
+        toggleRightHandState = EndEffectorToggleState(self.dreamerInterface, "right")
+
         # wire the states into a FSM
         self.fsm = smach.StateMachine(outcomes=['exit'])
         with self.fsm:
@@ -664,6 +721,8 @@ class Demo9_CARL_Telemanipulation:
                 transitions={"go_to_ready":"GoToReadyState",
                              "go_back_to_ready":"GoBackToReadyState",
                              "move_cartesian_position":"MoveCartesianState",
+                             "toggle_left_gripper":"ToggleLeftGripperState",
+                             "toggle_right_hand":"ToggleRightHandState",
                              "exit":"exit"})
 
             smach.StateMachine.add("GoToReadyState", goToReadyState,
@@ -678,6 +737,14 @@ class Demo9_CARL_Telemanipulation:
                              'exit':'exit'})
 
             smach.StateMachine.add("MoveCartesianState", moveCartesianState,
+                transitions={'done':'AwaitCommandState',
+                             'exit':'exit'})
+
+            smach.StateMachine.add("ToggleLeftGripperState", toggleLeftGripperState,
+                transitions={'done':'AwaitCommandState',
+                             'exit':'exit'})
+
+            smach.StateMachine.add("ToggleRightHandState", toggleRightHandState,
                 transitions={'done':'AwaitCommandState',
                              'exit':'exit'})
 

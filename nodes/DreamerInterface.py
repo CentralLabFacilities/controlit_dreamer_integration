@@ -392,3 +392,11 @@ class DreamerInterface:
         self.rightHandCmdMsg.data = False  # open hand
         self.rightHandCmdPublisher.publish(self.rightHandCmdMsg)
         
+
+    def closeLeftGripper(self):
+        self.leftGripperCmdMsg.data = True # close the gripper
+        self.leftGripperCmdPublisher.publish(self.leftGripperCmdMsg)
+
+    def openLeftGripper(self):
+        self.leftGripperCmdMsg.data = False # relax the gripper
+        self.leftGripperCmdPublisher.publish(self.leftGripperCmdMsg)
