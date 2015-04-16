@@ -255,10 +255,10 @@ class AwaitCommandState(smach.State):
             "go_to_ready",
             "go_back_to_ready",
             "move_cartesian_position",
-            "toggle_right_hand",
-            "toggle_left_gripper",
+            "toggle_end_effector",
             "done",
-            "exit"])
+            "exit"],
+            output_keys=['endEffectorSide'])
 
         self.moveCartesianState = moveCartesianState
         self.goToIdleState = goToIdleState
@@ -351,9 +351,11 @@ class AwaitCommandState(smach.State):
                 self.moveCartesianState.setParameters(endEffector="left", direction=CartesianDirection.RIGHT)
                 return "move_cartesian_position"
             elif self.cmd == Command.CMD_TOGGLE_LEFT_GRIPPER:
-                return "toggle_left_gripper"
+                userdata.endEffectorSide = "left"
+                return "toggle_end_effector"
             elif self.cmd == Command.CMD_TOGGLE_RIGHT_HAND:
-                return "toggle_right_hand"
+                userdata.endEffectorSide = "right"
+                return "toggle_end_effector"
             else:
                 rospy.loginfo("AwaitCommandState: ERROR: Received a unknown command ({0})! Returning exit".format(self.cmd))
                 return "exit"
@@ -510,24 +512,22 @@ class EndEffectorToggleState(smach.State):
     A SMACH state that toggles the state of an end effector.
     """
 
-    def __init__(self, dreamerInterface, endEffectorSide):
+    def __init__(self, dreamerInterface):
         """
         The constructor.
 
         Keyword Parameters:
           - dreamerInterface: The object to which to provide the trajectory.
-          - endEffectorSide: Which end effector to toggle
         """
 
-        smach.State.__init__(self, outcomes=["done", "exit"])
+        smach.State.__init__(self, outcomes=["done", "exit"], input_keys=['endEffectorSide'])
         self.dreamerInterface = dreamerInterface
-        self.endEffectorSide = endEffectorSide
         self.isClosed = False  # Assume initial state is relaxed
 
     def execute(self, userdata):
-        rospy.loginfo('Executing EndEffectorToggleState, side = {0}'.format(self.endEffectorSide))
+        rospy.loginfo('Executing EndEffectorToggleState, side = {0}'.format(userdata.endEffectorSide))
 
-        if self.endEffectorSide == "right":
+        if userdata.endEffectorSide == "right":
             if self.isClosed:
                 self.dreamerInterface.openRightHand()
             else:
@@ -547,79 +547,6 @@ class EndEffectorToggleState(smach.State):
              return "exit"
         else:
             return "done"
-
-# class RightHandPowerGraspState(smach.State):
-#     def __init__(self, dreamerInterface, goodResult, doGrasp, includeIndexFinger, includeMiddleFinger):
-#         smach.State.__init__(self, outcomes=[goodResult, "exit"])
-#         self.dreamerInterface = dreamerInterface
-#         self.goodResult = goodResult
-#         self.doGrasp = doGrasp
-#         self.includeIndexFinger = includeIndexFinger
-#         self.includeMiddleFinger = includeMiddleFinger
-
-#     def execute(self, userdata):
-#         rospy.loginfo('Executing RightHandPowerGraspState')
-
-#         if self.doGrasp:
-#             doPowerGrasp = True
-#             if ENABLE_USER_PROMPTS:
-#                 index = raw_input("Perform right hand power grasp? Y/n\n")
-#                 if index == "N" or index == "n":
-#                     doPowerGrasp = False
-            
-#             if doPowerGrasp:
-#                 self.dreamerInterface.rightIndexFingerCmdMsg.data = self.includeIndexFinger
-#                 self.dreamerInterface.selectIndexFingerPublisher.publish(self.dreamerInterface.rightIndexFingerCmdMsg)
-    
-#                 self.dreamerInterface.rightMiddleFingerCmdMsg.data = self.includeMiddleFinger
-#                 self.dreamerInterface.selectMiddleFingerPublisher.publish(self.dreamerInterface.rightMiddleFingerCmdMsg)
-    
-#                 self.dreamerInterface.rightHandCmdMsg.data = True
-#                 self.dreamerInterface.rightHandCmdPublisher.publish(self.dreamerInterface.rightHandCmdMsg)
-#         else:
-#             self.dreamerInterface.rightHandCmdMsg.data = False
-#             self.dreamerInterface.rightHandCmdPublisher.publish(self.dreamerInterface.rightHandCmdMsg)
-        
-#         if rospy.is_shutdown():
-#             return "exit"
-#         else:
-#             return self.goodResult
-
-# class LeftGripperGraspState(smach.State):
-#     def __init__(self, dreamerInterface, goodResult, doGrasp):
-#         smach.State.__init__(self, outcomes=[goodResult, "exit"])
-#         self.dreamerInterface = dreamerInterface
-#         self.goodResult = goodResult
-#         self.doGrasp = doGrasp
-
-#     def execute(self, userdata):
-#         rospy.loginfo("Executing LeftGripperGraspState")
-
-#         if self.doGrasp:
-#             performGrasp = True
-#             if ENABLE_USER_PROMPTS:
-#                 index = raw_input("Perform left gripper power grasp? Y/n\n")
-#                 if index == "N" or index == "n":
-#                     performGrasp = False
-            
-#             if performGrasp:
-#                 self.dreamerInterface.leftGripperCmdMsg.data = True
-#                 self.dreamerInterface.leftGripperCmdPublisher.publish(self.dreamerInterface.leftGripperCmdMsg)
-#         else:
-#             releaseGripper = True
-#             if ENABLE_USER_PROMPTS:
-#                 index = raw_input("Release left gripper power grasp? Y/n\n")
-#                 if index == "N" or index == "n":
-#                     releaseGripper = False
-
-#             if releaseGripper:
-#                 self.dreamerInterface.leftGripperCmdMsg.data = False
-#                 self.dreamerInterface.leftGripperCmdPublisher.publish(self.dreamerInterface.leftGripperCmdMsg)
-
-#         if rospy.is_shutdown():
-#             return "exit"
-#         else:
-#             return self.goodResult
 
 class SleepState(smach.State):
     """
@@ -765,21 +692,22 @@ class Demo9_CARL_Telemanipulation:
         goBackToReadyState = GoBackToReadyState(self.dreamerInterface, self.trajGoToIdle)
         awaitCommandState = AwaitCommandState(moveCartesianState = moveCartesianState, goToIdleState = goToIdleState)
 
-        toggleLeftGripperState = EndEffectorToggleState(self.dreamerInterface, "left")
-        toggleRightHandState = EndEffectorToggleState(self.dreamerInterface, "right")
+        toggleEndEffectorState = EndEffectorToggleState(self.dreamerInterface)
 
         # wire the states into a FSM
         self.fsm = smach.StateMachine(outcomes=['exit'])
+        self.fsm.userdata.endEffectorSide = "right"
+
         with self.fsm:
 
             smach.StateMachine.add("AwaitCommandState", awaitCommandState,
                 transitions={"go_to_ready":"GoToReadyState",
                              "go_back_to_ready":"GoBackToReadyState",
                              "move_cartesian_position":"MoveCartesianState",
-                             "toggle_left_gripper":"ToggleLeftGripperState",
-                             "toggle_right_hand":"ToggleRightHandState",
+                             "toggle_end_effector":"ToggleEndEffectorState",
                              "done":"AwaitCommandState",
-                             "exit":"exit"})
+                             "exit":"exit"},
+                remapping={'endEffectorSide':'endEffectorSide'})
 
             smach.StateMachine.add("GoToReadyState", goToReadyState,
                 transitions={'done':'AwaitCommandState',
@@ -796,13 +724,10 @@ class Demo9_CARL_Telemanipulation:
                 transitions={'done':'AwaitCommandState',
                              'exit':'exit'})
 
-            smach.StateMachine.add("ToggleLeftGripperState", toggleLeftGripperState,
+            smach.StateMachine.add("ToggleEndEffectorState", toggleEndEffectorState,
                 transitions={'done':'AwaitCommandState',
-                             'exit':'exit'})
-
-            smach.StateMachine.add("ToggleRightHandState", toggleRightHandState,
-                transitions={'done':'AwaitCommandState',
-                             'exit':'exit'})
+                             'exit':'exit'},
+                remapping={'endEffectorSide':'endEffectorSide'})
 
     def run(self):
         """
