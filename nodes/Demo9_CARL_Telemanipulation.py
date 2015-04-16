@@ -103,7 +103,8 @@ class CartesianDirection(IntEnum):
 # The time each trajectory should take
 TIME_GO_TO_READY = 5.0
 TIME_GO_TO_IDLE = 7.0
-TIME_GO_BACK_TO_READY = 5.0
+
+GO_BACK_TO_READY_SPEED = 0.01 # 1 cm/s
 
 # The speed at which the Cartesian position should change
 TRAVEL_SPEED = 0.02  # 2 cm per second
@@ -166,15 +167,36 @@ class GoBackToReadyState(smach.State):
         self.dreamerInterface = dreamerInterface
         self.goToIdleTraj = goToIdleTraj
 
+    def dist(self, point1, point2):
+        return math.sqrt(math.pow(point1[0] - point2[0], 2) + \
+                         math.pow(point1[1] - point2[1], 2) + \
+                         math.pow(point1[2] - point2[2], 2))
+
     def execute(self, userdata):
-        rospy.loginfo("Executing GoBackToReadyState")
+        rospy.loginfo("GoBackToReadyState: Executing GoBackToReadyState")
+
+        # Let's make the trajectory's duration a function of the Cartesian distance to traverse
+        rhCurrCartPos = self.dreamerInterface.rightHandCartesianGoalMsg.data
+        lhCurrCartPos = self.dreamerInterface.leftHandCartesianGoalMsg.data
+
+        rhFinalCartPos = self.goToIdleTraj.rhCartWP[0]
+        lhFinalCartPos = self.goToIdleTraj.lhCartWP[0]
+
+        travelDist = max(self.dist(rhCurrCartPos, rhFinalCartPos), self.dist(lhCurrCartPos, lhFinalCartPos))
+
+        if travelDist < 0.01:  # less than 1cm of movement, return done
+            rospy.loginfo("GoBackToReadyState: zero travel distance, returning done")
+            return "done"
+
+        travelTime = travelDist / GO_BACK_TO_READY_SPEED
+        rospy.loginfo("GoBackToReadyState: distance to travel is {0}, travel time is {1}".format(travelDist, travelTime))
 
         # Create a trajectory to go back to the start / idle position
-        traj = Trajectory.Trajectory("GoBackToReady", TIME_GO_BACK_TO_READY)  # TODO: make the time be proportional to the distance that needs to be traveled
+        traj = Trajectory.Trajectory("GoBackToReady", travelTime)  # TODO: make the time be proportional to the distance that needs to be traveled
 
         # Initial goal is current goal
-        traj.setInitRHCartWP(self.dreamerInterface.rightHandCartesianGoalMsg.data)
-        traj.setInitLHCartWP(self.dreamerInterface.leftHandCartesianGoalMsg.data)
+        traj.setInitRHCartWP(rhCurrCartPos)
+        traj.setInitLHCartWP(lhCurrCartPos)
         traj.setInitRHOrientWP(self.dreamerInterface.rightHandOrientationGoalMsg.data)
         traj.setInitLHOrientWP(self.dreamerInterface.leftHandOrientationGoalMsg.data)
         traj.setInitPostureWP(self.dreamerInterface.postureGoalMsg.data)
@@ -193,13 +215,13 @@ class GoBackToReadyState(smach.State):
         traj.addPostureWP(self.dreamerInterface.postureGoalMsg.data)
 
         # final way point is initial waypoint of GoToIdle trajectory
-        traj.addRHCartWP(self.goToIdleTraj.rhCartWP[0])
+        traj.addRHCartWP(rhFinalCartPos)
         traj.addRHOrientWP(self.goToIdleTraj.rhOrientWP[0])
-        traj.addLHCartWP(self.goToIdleTraj.lhCartWP[0])
+        traj.addLHCartWP(lhFinalCartPos)
         traj.addLHOrientWP(self.goToIdleTraj.lhOrientWP[0])
         traj.addPostureWP(self.goToIdleTraj.jPosWP[0])
 
-        # repea the same final point (this is to ensure the trajectory has sufficient number of points to perform cubic spline)
+        # repeat the same final point (this is to ensure the trajectory has sufficient number of points to perform cubic spline)
         traj.addRHCartWP(self.goToIdleTraj.rhCartWP[0])
         traj.addRHOrientWP(self.goToIdleTraj.rhOrientWP[0])
         traj.addLHCartWP(self.goToIdleTraj.lhCartWP[0])
@@ -797,9 +819,10 @@ class Demo9_CARL_Telemanipulation:
         sis = smach_ros.IntrospectionServer('server_name', self.fsm, '/SM_ROOT')
         sis.start()
 
-        index = raw_input("Start demo? Y/n\n")
-        if index == "N" or index == "n":
-            return
+        if ENABLE_USER_PROMPTS:
+            index = raw_input("Start demo? Y/n\n")
+            if index == "N" or index == "n":
+                return
 
         outcome = self.fsm.execute()
 
