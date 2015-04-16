@@ -71,17 +71,6 @@ DEFAULT_POSTURE = [0.0, 0.0,                                    # torso
                    0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,  # left arm
                    0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0]  # right arm
 
-# The time each trajectory should take
-TIME_GO_TO_READY = 5.0
-TIME_GO_TO_IDLE = 7.0
-TIME_GO_BACK_TO_READY = 5.0
-
-# The speed at which the Cartesian position should change
-TRAVEL_SPEED = 0.01  # 1 cm per second
-
-# The update frequency when adjusting the Cartesian position
-TRAVEL_UPDATE_FREQUENCY = 10
-
 # Define the commands that can be received from the CARL user interface.
 class Command(IntEnum):
     CMD_NONE = 0
@@ -110,6 +99,23 @@ class CartesianDirection(IntEnum):
     RIGHT = 3
     FORWARD = 4
     BACKWARD = 5
+
+# The time each trajectory should take
+TIME_GO_TO_READY = 5.0
+TIME_GO_TO_IDLE = 7.0
+TIME_GO_BACK_TO_READY = 5.0
+
+# The speed at which the Cartesian position should change
+TRAVEL_SPEED = 0.02  # 2 cm per second
+ACCELERATION = 0.06  # 1 cm/s^2
+DECELERATION = 0.06  # 1 cm/s^2
+
+# The update frequency when adjusting the Cartesian position
+TRAJECTORY_UPDATE_FREQUENCY = 100
+
+X_AXIS = 0
+Y_AXIS = 1
+Z_AXIS = 2
 
 # Define the Cartesian movement increment
 CARTESIAN_MOVE_DELTA = 0.01  # 1 cm movement increments
@@ -383,96 +389,99 @@ class MoveCartesianState(smach.State):
         else:
             return "UNKNOWN"
 
+    def axisNameToString(self, axisID):
+        if axisID == 0:
+            return "X"
+        if axisID == 1:
+            return "Y"
+        if axisID == 2:
+            return "Z"
+
     def execute(self, userdata):
         rospy.loginfo('MoveCartesianState: Executing, end effector = {0}, direction = {1}'.format(
             self.endEffector, self.directionToString(self.direction)))
 
         # Determine the current Cartesian position
         if self.endEffector == "right":
-            cartesianPosition = self.dreamerInterface.rightHandCartesianGoalMsg.data
+            self.origCartesianPosition = self.dreamerInterface.rightHandCartesianGoalMsg.data
         else:
-            cartesianPosition = self.dreamerInterface.leftHandCartesianGoalMsg.data
+            self.origCartesianPosition = self.dreamerInterface.leftHandCartesianGoalMsg.data
 
-        if cartesianPosition == None:
+        if self.origCartesianPosition == None:
             rospy.loginfo("MoveCartesianState: ERROR: Unable to get current Cartesian position. Aborting the move. Returning done.")
             return "done"
 
         # Compute new Cartesian position
-        X_AXIS = 0
-        Y_AXIS = 1
-        Z_AXIS = 2
 
         if self.direction == CartesianDirection.FORWARD:
-            newCartesianPosition = [cartesianPosition[X_AXIS] + CARTESIAN_MOVE_DELTA, cartesianPosition[Y_AXIS], cartesianPosition[Z_AXIS]]
+            oldPos = self.origCartesianPosition[X_AXIS]
+            newPos = self.origCartesianPosition[X_AXIS] + CARTESIAN_MOVE_DELTA
+            self.axisOfMovement = X_AXIS
+
         if self.direction == CartesianDirection.BACKWARD:
-            newCartesianPosition = [cartesianPosition[X_AXIS] - CARTESIAN_MOVE_DELTA, cartesianPosition[Y_AXIS], cartesianPosition[Z_AXIS]]
+            oldPos = self.origCartesianPosition[X_AXIS]
+            newPos = self.origCartesianPosition[X_AXIS] - CARTESIAN_MOVE_DELTA
+            self.axisOfMovement = X_AXIS
 
         if self.direction == CartesianDirection.LEFT:
-            newCartesianPosition = [cartesianPosition[X_AXIS], cartesianPosition[Y_AXIS] + CARTESIAN_MOVE_DELTA, cartesianPosition[Z_AXIS]]
+            oldPos = self.origCartesianPosition[Y_AXIS]
+            newPos = self.origCartesianPosition[Y_AXIS] + CARTESIAN_MOVE_DELTA
+            self.axisOfMovement = Y_AXIS
+
         if self.direction == CartesianDirection.RIGHT:
-            newCartesianPosition = [cartesianPosition[X_AXIS], cartesianPosition[Y_AXIS] - CARTESIAN_MOVE_DELTA, cartesianPosition[Z_AXIS]]
+            oldPos = self.origCartesianPosition[Y_AXIS]
+            newPos = self.origCartesianPosition[Y_AXIS] - CARTESIAN_MOVE_DELTA
+            self.axisOfMovement = Y_AXIS
 
         if self.direction == CartesianDirection.UP:
-            newCartesianPosition = [cartesianPosition[X_AXIS], cartesianPosition[Y_AXIS], cartesianPosition[Z_AXIS] + CARTESIAN_MOVE_DELTA]
+            oldPos = self.origCartesianPosition[Z_AXIS]
+            newPos = self.origCartesianPosition[Z_AXIS] + CARTESIAN_MOVE_DELTA
+            self.axisOfMovement = Z_AXIS
+
         if self.direction == CartesianDirection.DOWN:
-            newCartesianPosition = [cartesianPosition[X_AXIS], cartesianPosition[Y_AXIS], cartesianPosition[Z_AXIS] - CARTESIAN_MOVE_DELTA]
+            oldPos = self.origCartesianPosition[Z_AXIS]
+            newPos = self.origCartesianPosition[Z_AXIS] - CARTESIAN_MOVE_DELTA
+            self.axisOfMovement = Z_AXIS
 
-        rospy.loginfo("MoveCartesianState: Modifying goal Cartesian position:\n"\
-            "  - Current Cartesian position: {0}\n"\
-            "  - New Cartesian position: {1}".format(cartesianPosition, newCartesianPosition))
+        rospy.loginfo("MoveCartesianState: Modifying goal Cartesian position of {0} axis to be from {1} to {2}".format(
+            self.axisNameToString(self.axisOfMovement), oldPos, newPos))
 
-        # Compute the distance to travel
-        dist = math.sqrt(math.pow(cartesianPosition[X_AXIS] - newCartesianPosition[X_AXIS], 2) +
-                         math.pow(cartesianPosition[Y_AXIS] - newCartesianPosition[Y_AXIS], 2) +
-                         math.pow(cartesianPosition[Z_AXIS] - newCartesianPosition[Z_AXIS], 2))
+        # Initialize the trajectory generator
+        self.trajGen.init(oldPos, newPos, TRAVEL_SPEED, ACCELERATION, DECELERATION,
+            TRAJECTORY_UPDATE_FREQUENCY)
 
-        rospy.loginfo("MoveCartesianState: Distance to travel: {0}".format(dist))
-
-        # Compute the time to travel
-        travelTime = dist / TRAVEL_SPEED
-        rospy.loginfo("MoveCartesianState: Travel time: {0}s, speed: {1}m/s".format(travelTime, TRAVEL_SPEED))
-
-        # Compute the number of updates throughout the trajectory
-        numUpdates = travelTime / TRAVEL_UPDATE_FREQUENCY
-        rospy.loginfo("MoveCartesianState: Total number of updates: {0}, update frequency: {1}".format(numUpdates, TRAVEL_UPDATE_FREQUENCY))
-
-        # Compute the change in position of each update
-        deltaX = (newCartesianPosition[X_AXIS] - cartesianPosition[X_AXIS]) / numUpdates
-        deltaY = (newCartesianPosition[Y_AXIS] - cartesianPosition[Y_AXIS]) / numUpdates
-        deltaZ = (newCartesianPosition[Z_AXIS] - cartesianPosition[Z_AXIS]) / numUpdates
-        rospy.loginfo("MoveCartesianState: Step deltas:\n"\
-                      "  - deltaX = {0}\n"\
-                      "  - deltaY = {1}\n"\
-                      "  - deltaZ = {2}".format(deltaX, deltaY, deltaZ))
-
-        # Publish the trajectory
-        rospy.loginfo("MoveCartesianState: Publishing trajectory...")
-        for updateCount in range(0, int(math.ceil(numUpdates))):
-            currCartesianGoal = [cartesianPosition[X_AXIS] + updateCount * deltaX,
-                                 cartesianPosition[Y_AXIS] + updateCount * deltaY,
-                                 cartesianPosition[Z_AXIS] + updateCount * deltaZ]
-
-            if self.endEffector == "right":
-                self.dreamerInterface.updateRightHandCartesianPosition(currCartesianGoal)
-            else:
-                self.dreamerInterface.updateLeftHandCartesianPosition(currCartesianGoal)
-
-            rospy.sleep(1.0 / TRAVEL_UPDATE_FREQUENCY)
-
-        # Publish new Cartesian position goal. This ensures the end effector is at the new desired Cartesian position
-        rospy.loginfo("MoveCartesianState: Publishing final goal state...")
-        if self.endEffector == "right":
-            self.dreamerInterface.updateRightHandCartesianPosition(newCartesianPosition)
-        else:
-            self.dreamerInterface.updateLeftHandCartesianPosition(newCartesianPosition)
+        # Start the trajectory! The callback method is updateTrajGoals(...), which is defined below.
+        self.trajGen.start(self)
 
         # Wait 2 seconds to allow convergence before returning
-        rospy.sleep(2)
+        # rospy.sleep(2)
 
         if rospy.is_shutdown():
              return "exit"
         else:
             return "done"
+
+    def updateTrajGoals(self, goalPos, goalVel, done):
+
+        # Initialize the new Cartesian position to be the original Cartesian position
+        newCartesianPosition = self.origCartesianPosition
+
+        # Save the new goal Cartesian position
+        if self.axisOfMovement == X_AXIS:
+            newCartesianPosition[X_AXIS] = goalPos
+        elif self.axisOfMovement == Y_AXIS:
+            newCartesianPosition[Y_AXIS] = goalPos
+        else:
+            newCartesianPosition[Z_AXIS] = goalPos
+
+        rospy.loginfo("MoveCartesianState: Updating goal of {0} and to be {1}.".format(
+            self.endEffector, newCartesianPosition))
+
+        if self.endEffector == "right":
+            self.dreamerInterface.updateRightHandCartesianPosition(newCartesianPosition)
+        else:
+            self.dreamerInterface.updateLeftHandCartesianPosition(newCartesianPosition)            
+
 
 class EndEffectorToggleState(smach.State):
     """
