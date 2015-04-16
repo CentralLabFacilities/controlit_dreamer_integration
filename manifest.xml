@@ -9,6 +9,7 @@
     <url>http://ros.org/wiki/controlit_dreamer_integration</url>
 
     <depend package="controlit_core"/>
+    <depend package="controlit_trajectory_generators"/>
     
     <export>
         <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -lcontrolit_core" />

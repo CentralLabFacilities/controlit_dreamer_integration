@@ -56,6 +56,9 @@ import DreamerInterface
 import Trajectory
 import TrajectoryGeneratorCubicSpline
 
+import roslib; roslib.load_manifest('controlit_dreamer_integration')
+import TrapezoidVelocityTrajGen
+
 ENABLE_USER_PROMPTS = False
 
 # Shoulder abductors about 10 degrees away from body and elbows bent 90 degrees
@@ -342,6 +345,7 @@ class MoveCartesianState(smach.State):
 
         smach.State.__init__(self, outcomes=["done", "exit"])
         self.dreamerInterface = dreamerInterface
+        self.trajGen = TrapezoidVelocityTrajGen.TrapezoidVelocityTrajGen()
 
     def setParameters(self, endEffector, direction):
         """
