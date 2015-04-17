@@ -59,6 +59,11 @@ import TrajectoryGeneratorCubicSpline
 import roslib; roslib.load_manifest('controlit_dreamer_integration')
 import TrapezoidVelocityTrajGen
 
+# The previous demos that we would like to execute
+import Demo4_HandWave
+import Demo5_HandShake
+import Demo7_HookemHorns
+
 ENABLE_USER_PROMPTS = False
 
 # Shoulder abductors about 10 degrees away from body and elbows bent 90 degrees
@@ -90,6 +95,7 @@ class Command(IntEnum):
     CMD_MOVE_LEFT_HAND_RIGHT = 14
     CMD_TOGGLE_RIGHT_HAND = 15
     CMD_TOGGLE_LEFT_GRIPPER = 16
+    CMD_EXECUTE_DEMO = 17
 
 # Define the Cartesian directions. This is used by the MoveCartesianState.
 class CartesianDirection(IntEnum):
@@ -99,6 +105,9 @@ class CartesianDirection(IntEnum):
     RIGHT = 3
     FORWARD = 4
     BACKWARD = 5
+
+#==================================================================================
+# The following parameters are used by the trapezoid velocity trajectory generator
 
 # The time each trajectory should take
 TIME_GO_TO_READY = 5.0
@@ -120,6 +129,7 @@ Z_AXIS = 2
 
 # Define the Cartesian movement increment
 CARTESIAN_MOVE_DELTA = 0.01  # 1 cm movement increments
+
 
 class TrajectoryState(smach.State):
     """
@@ -256,9 +266,10 @@ class AwaitCommandState(smach.State):
             "go_back_to_ready",
             "move_cartesian_position",
             "toggle_end_effector",
+            "execute_demo",
             "done",
             "exit"],
-            output_keys=['endEffectorSide'])
+            output_keys=['endEffectorSide', 'demoName'])
 
         self.moveCartesianState = moveCartesianState
         self.goToIdleState = goToIdleState
@@ -270,15 +281,42 @@ class AwaitCommandState(smach.State):
         self.isIdle = True  # Initially we are in idle state
 
         # Register a ROS topic listener
-        self.demoCmdSubscriber  = rospy.Subscriber("/demo9/cmd", Int32, self.demoCmdCallback)
+        self.demoCmdSubscriber  = rospy.Subscriber("/demo9/cmd", Int32, self.demo9CmdCallback)
         self.demoDonePublisher = rospy.Publisher("/demo9/done",  Int32, queue_size=1)
 
-    def demoCmdCallback(self, msg):
+        self.demoCmdSubscriber  = rospy.Subscriber("/demo8/cmd", Int32, self.demo8CmdCallback)
+        self.demoDonePublisher = rospy.Publisher("/demo8/done",  Int32, queue_size=1)
+
+    def demo9CmdCallback(self, msg):
         """
         The callback method of the command ROS topic subscriber.
         """
 
         self.cmd = msg.data
+        self.rcvdCmd = True
+
+    def demo8CmdCallback(self, msg):
+        """
+        The callback method of the command ROS topic subscriber.
+        """
+
+        self.cmd = Command.CMD_EXECUTE_DEMO
+
+        # TODO: Get rid of hard-coded demo IDs. CARL Bridge should send this info to us directly.
+        DEMO_WAVE = 0
+        DEMO_SHAKE = 1
+        DEMO_HOOKEM_HORNS = 2
+
+        if msg.data == DEMO_WAVE:
+            self.demoName = "HandWave"
+        elif msg.data == DEMO_SHAKE:
+            self.demoName = "HandShake"
+        elif msg.data == DEMO_HOOKEM_HORNS:
+            self.demoName = "HookemHorns"
+        else:
+            rospy.logwarn("Unknown demo {0}".format(msg.data))
+            return
+
         self.rcvdCmd = True
 
     def execute(self, userdata):
@@ -356,6 +394,13 @@ class AwaitCommandState(smach.State):
             elif self.cmd == Command.CMD_TOGGLE_RIGHT_HAND:
                 userdata.endEffectorSide = "right"
                 return "toggle_end_effector"
+            elif self.cmd == Command.CMD_EXECUTE_DEMO:
+                if self.isIdle:
+                    userdata.demoName = self.demoName
+                    return "execute_demo"
+                else:
+                    rospy.logwarn("AwaitCommandState: ERROR: Attempted to run demo from a non-idle state!")
+                    return "done"
             else:
                 rospy.loginfo("AwaitCommandState: ERROR: Received a unknown command ({0})! Returning exit".format(self.cmd))
                 return "exit"
@@ -567,6 +612,39 @@ class SleepState(smach.State):
         else:
             return self.goodResult
 
+class ExecuteDemoState(smach.State):
+    """
+    Executes a demo.
+    """
+
+    def __init__(self, dreamerInterface):
+        smach.State.__init__(self, outcomes=["done", "exit"], input_keys=['demoName'])
+
+        # Instantiate the previous demos
+        self.handWaveDemo = Demo4_HandWave.Demo4_HandWave(dreamerInterface)
+        self.handShakeDemo = Demo5_HandShake.Demo5_HandShake(dreamerInterface)
+        self.hookemHornsDemo = Demo7_HookemHorns.Demo7_HookemHorns(dreamerInterface)
+
+    def execute(self, userdata):
+        rospy.loginfo('Executing demo {0}'.format(userdata.demoName))
+
+        if userdata.demoName == "HandWave":
+            print "Starting the Hand Wave Demo!"
+            self.handWaveDemo.run(enablePrompts = False)
+        elif userData.demoName == "HandShake":
+            print "Starting the Hand Shake Demo!"
+            self.handShakeDemo.run(enablePrompts = False)
+        elif userData.demoName == "HookemHorns":
+            print "Starting the Hook'em Horns Demo!"
+            self.hookemHornsDemo.run(enablePrompts = False)
+        else:
+            rospy.logwarn("Unknown demo {0}".format(userdata.demoName))
+
+        if rospy.is_shutdown():
+             return "exit"
+        else:
+            return "done"
+
 class Demo9_CARL_Telemanipulation:
     """
     The primary class that implement's the demo's FSM.
@@ -691,12 +769,13 @@ class Demo9_CARL_Telemanipulation:
         goToIdleState = TrajectoryState(self.dreamerInterface, self.trajGoToIdle)
         goBackToReadyState = GoBackToReadyState(self.dreamerInterface, self.trajGoToIdle)
         awaitCommandState = AwaitCommandState(moveCartesianState = moveCartesianState, goToIdleState = goToIdleState)
-
+        executeDemoState = ExecuteDemoState(self.dreamerInterface)
         toggleEndEffectorState = EndEffectorToggleState(self.dreamerInterface)
 
         # wire the states into a FSM
         self.fsm = smach.StateMachine(outcomes=['exit'])
         self.fsm.userdata.endEffectorSide = "right"
+        self.fsm.userdata.demoName = "none"
 
         with self.fsm:
 
@@ -705,9 +784,10 @@ class Demo9_CARL_Telemanipulation:
                              "go_back_to_ready":"GoBackToReadyState",
                              "move_cartesian_position":"MoveCartesianState",
                              "toggle_end_effector":"ToggleEndEffectorState",
+                             "execute_demo":"ExecuteDemoState",
                              "done":"AwaitCommandState",
                              "exit":"exit"},
-                remapping={'endEffectorSide':'endEffectorSide'})
+                remapping={'endEffectorSide':'endEffectorSide', 'demoName':'demoName'})
 
             smach.StateMachine.add("GoToReadyState", goToReadyState,
                 transitions={'done':'AwaitCommandState',
@@ -728,6 +808,11 @@ class Demo9_CARL_Telemanipulation:
                 transitions={'done':'AwaitCommandState',
                              'exit':'exit'},
                 remapping={'endEffectorSide':'endEffectorSide'})
+
+            smach.StateMachine.add("ExecuteDemoState", executeDemoState,
+                transitions={'done':'AwaitCommandState',
+                             'exit':'exit'},
+                remapping={'demoName':'demoName'})
 
     def run(self):
         """
