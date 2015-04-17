@@ -229,19 +229,19 @@ class DreamerInterface:
         warningPrinted = False
         while not rospy.is_shutdown() and (
             self.rightCartesianTaskEnablePublisher.get_num_connections() == 0 or \
-            self.leftCartesianTaskEnablePublisher.get_num_connections() == 0 or \
-            self.rightOrientationTaskEnablePublisher.get_num_connections() == 0 or \
-            self.leftOrientationTaskEnablePublisher.get_num_connections() == 0):
+            # self.leftCartesianTaskEnablePublisher.get_num_connections() == 0 or \
+            self.rightOrientationTaskEnablePublisher.get_num_connections() == 0 #or \
+            # self.leftOrientationTaskEnablePublisher.get_num_connections() == 0):
 
             if warningPrinted:
                 if self.rightCartesianTaskEnablePublisher.get_num_connections() == 0:
                     print "Waiting on right cartesian enable subscriber..."
-                if self.leftCartesianTaskEnablePublisher.get_num_connections() == 0:
-                    print "Waiting on left cartesian enable subscriber..."
+                # if self.leftCartesianTaskEnablePublisher.get_num_connections() == 0:
+                #     print "Waiting on left cartesian enable subscriber..."
                 if self.rightOrientationTaskEnablePublisher.get_num_connections() == 0:
                     print "Waiting on right orientation enable subscriber..."
-                if self.leftOrientationTaskEnablePublisher.get_num_connections() == 0:
-                    print "Waiting on left orientation enable subscriber..."
+                # if self.leftOrientationTaskEnablePublisher.get_num_connections() == 0:
+                #     print "Waiting on left orientation enable subscriber..."
                     
             time.sleep(0.5)
             pauseCount = pauseCount + 1
@@ -269,18 +269,18 @@ class DreamerInterface:
         warningPrinted = False
         while not rospy.is_shutdown() and (
             self.currentPosture == None or \
-            self.currentRightCartesianPos == None or self.currentLeftCartesianPos == None or \
-            self.currentRightOrientation == None or self.currentLeftOrientation == None):
+            self.currentRightCartesianPos == None self.currentRightOrientation == None):
+            # self.currentLeftCartesianPos == None or self.currentLeftOrientation == None):
 
             if warningPrinted:
                 if self.currentRightCartesianPos == None:
                     print "Waiting on right hand position state..."
                 if self.currentRightOrientation == None:
                     print "Waiting on right hand orientation state..."
-                if self.currentLeftCartesianPos == None:
-                    print "Waiting on left hand posirition state..."
-                if self.currentLeftOrientation == None:
-                    print "Waiting on left hand orientation state..."
+                # if self.currentLeftCartesianPos == None:
+                #     print "Waiting on left hand posirition state..."
+                # if self.currentLeftOrientation == None:
+                #     print "Waiting on left hand orientation state..."
                 if self.currentPosture == None:
                     print "Waiting on posture state..."
 
