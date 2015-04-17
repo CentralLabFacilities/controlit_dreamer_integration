@@ -631,10 +631,10 @@ class ExecuteDemoState(smach.State):
         if userdata.demoName == "HandWave":
             print "Starting the Hand Wave Demo!"
             self.handWaveDemo.run(enablePrompts = False)
-        elif userData.demoName == "HandShake":
+        elif userdata.demoName == "HandShake":
             print "Starting the Hand Shake Demo!"
             self.handShakeDemo.run(enablePrompts = False)
-        elif userData.demoName == "HookemHorns":
+        elif userdata.demoName == "HookemHorns":
             print "Starting the Hook'em Horns Demo!"
             self.hookemHornsDemo.run(enablePrompts = False)
         else:
