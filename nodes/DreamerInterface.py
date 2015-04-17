@@ -229,8 +229,8 @@ class DreamerInterface:
         warningPrinted = False
         while not rospy.is_shutdown() and (
             self.rightCartesianTaskEnablePublisher.get_num_connections() == 0 or \
+            self.rightOrientationTaskEnablePublisher.get_num_connections() == 0):
             # self.leftCartesianTaskEnablePublisher.get_num_connections() == 0 or \
-            self.rightOrientationTaskEnablePublisher.get_num_connections() == 0 #or \
             # self.leftOrientationTaskEnablePublisher.get_num_connections() == 0):
 
             if warningPrinted:
