@@ -269,7 +269,7 @@ class DreamerInterface:
         warningPrinted = False
         while not rospy.is_shutdown() and (
             self.currentPosture == None or \
-            self.currentRightCartesianPos == None self.currentRightOrientation == None):
+            self.currentRightCartesianPos == None or self.currentRightOrientation == None):
             # self.currentLeftCartesianPos == None or self.currentLeftOrientation == None):
 
             if warningPrinted:
