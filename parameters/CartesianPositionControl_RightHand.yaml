@@ -30,10 +30,9 @@ tasks:
         type: vector
 
         # these are the values used by UTA-WBC
-        value: [0.45, -0.25, 1.1]
+        # value: [0.45, -0.25, 1.1]
 
-        # measured Cartesian position when right hand is forward slightly
-        i# value: [0.129, -0.192, 0.795]
+        value: [0.033912978219317776, -0.29726881641499886, 0.82] #0.7965277787944901]
 
         # these are the Cartesian coordinates when all joints are close to zero:
         # value: [0.05910914740914856, -0.20988127817117105, 0.7879616040106433]   # from this task
@@ -50,6 +49,41 @@ tasks:
         value: [[1, 0, 0],
                 [0, 1, 0],
                 [0, 0, 1]]
+
+  - name: RightHandOrientation
+    type: controlit/OrientVectorToVectorTask
+    parameters:
+      - name: kp
+        type: real
+        value: 60
+      - name: kd
+        type: real
+        value: 3
+      - name: maxVelocity
+        type: real
+        value: 1000
+      - name: bodyName  # the coordinate frame of the current heading
+        type: string
+        value: right_wrist_yaw_link
+      - name: frameName  # the coordinate frame of the goal heading
+        type: string
+        value: world
+      - name: latchOn
+        type: real
+        value: 0
+      - name: resetLatch
+        type: real
+        value: 0
+      - name: bodyFrameVector      # in bodyName's frame
+        type: vector
+        value: [1.0, 0.0, 0.0]
+      - name: goalVector           # in frameName's frame
+        type: vector
+        value: [1.0, 0.0, 0.0]
+      - name: markerTopic
+        type: string
+        value: "RightHandOrientation/visualization_marker_array"
+
   - name: Posture     # Arbitrary instance name
     type: controlit/JointPositionTask # Must Match the NAME of the task in the task_library
     parameters:
@@ -61,9 +95,13 @@ tasks:
         #         20.0, 20.0, 20.0, 20.0, 20.0, 20.0, 20.0]   # right arm
 
         # these are the values used by UTA-WBC
-        value: [30.0, 30.0,                                 # torso
-                30.0, 30.0, 30.0, 20.0, 20.0, 30.0, 30.0,   # left arm 
-                30.0, 30.0, 30.0, 20.0, 20.0, 30.0, 30.0]   # right arm
+        # value: [30.0, 30.0,                                 # torso
+        #         30.0, 30.0, 30.0, 20.0, 20.0, 30.0, 30.0,   # left arm 
+        #         30.0, 30.0, 30.0, 20.0, 20.0, 30.0, 30.0]   # right arm
+
+        value: [60.0, 60.0,                                 # torso
+                60.0, 60.0, 60.0, 60.0, 60.0, 60.0, 60.0,   # left arm 
+                60.0, 60.0, 60.0, 60.0, 60.0, 60.0, 60.0]   # right arm
 
       - name: kd
         type: vector
@@ -91,9 +129,13 @@ tasks:
         #         0.0, 0.0, 0.0, 0.3, 0.0, 0.0, 0.0]       # right arm
 
         # these are the values used by UTA-WBC
-        value: [0.0, 0.0,                                # torso
-                0.0, 0.0, 0.0, 1.57, 0.0, 0.0, 0.0,      # left arm
-                0.0, 0.0, 0.0, 1.57, 0.0, 0.0, 0.0]      # right arm
+        # value: [0.0, 0.0,                                # torso
+        #         0.0, 0.0, 0.0, 1.57, 0.0, 0.0, 0.0,      # left arm
+        #         0.0, 0.0, 0.0, 1.57, 0.0, 0.0, 0.0]      # right arm
+
+        value: [0.0, 0.0,                                              # torso
+                0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,     # left arm
+                0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0]     # right arm
 
       - name: goalVelocity
         type: vector
@@ -130,12 +172,15 @@ compound_task:
      - name: RightHandPosition
        priority: 0
        enabled: 1
+     - name: RightHandOrientation
+       priority: 0
+       enabled: 1
      - name: Posture
        priority: 1
        enabled: 1
 constraints:
-  - name: ContactConstraint
-    type: controlit/FlatContactConstraint
+  - type: controlit/FlatContactConstraint
+    name: ContactConstraint
     parameters:
       - name: masterNodeName
         type: string
