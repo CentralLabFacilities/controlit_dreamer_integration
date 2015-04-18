@@ -287,9 +287,9 @@ class Demo11_Microwave:
         self.trajRemoveHand.makeLHCartStatic(self.trajPutInMicrowave)
         self.trajRemoveHand.makeLHOrientStatic(self.trajPutInMicrowave)
 
-        self.trajRemoveHand.addRHCartWP([0.47119534358064746, -0.10449674394795462, 1.159836831346125])
-        self.trajRemoveHand.addRHCartWP([0.4236115009509923, -0.13045448112794925, 1.1634881576765386])
-        self.trajRemoveHand.addRHCartWP([0.3786155662877312, -0.14413241031218332, 1.1770687014321575])
+        self.trajRemoveHand.addRHCartWP([0.47119534358064746, -0.12449674394795462, 1.159836831346125])
+        self.trajRemoveHand.addRHCartWP([0.4236115009509923, -0.14545448112794925, 1.1634881576765386])
+        self.trajRemoveHand.addRHCartWP([0.3786155662877312, -0.14613241031218332, 1.1770687014321575])
         self.trajRemoveHand.addRHCartWP([0.3251714879653987, -0.17651381911299455, 1.1692815213641417])
         self.trajRemoveHand.addRHCartWP([0.26406210129290075, -0.2018332409755626, 1.1621121489676702])
         self.trajRemoveHand.addRHCartWP([0.22426097557226143, -0.24114714346888125, 1.165866457882914])
