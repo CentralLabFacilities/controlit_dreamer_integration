@@ -118,7 +118,7 @@ tasks:
       - name: resetLatch
         type: real
         value: 0
-      - name: goalPosition      # w,x,y,z
+      - name: goalOrientation      # w,x,y,z
         type: vector
         value: [0, 1.0, 0.0, 0.0]
       - name: controlPoint      # w,x,y,z, fixed offset in body frame
