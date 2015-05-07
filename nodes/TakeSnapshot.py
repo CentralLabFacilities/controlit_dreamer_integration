@@ -47,8 +47,14 @@ class TakeSnapshot:
         self.postureTaskActualSubscriber = rospy.Subscriber("/dreamer_controller/Posture/actualPosition", Float64MultiArray, self.postureTaskActualCallback)
         self.rightCartesianTaskActualSubscriber = rospy.Subscriber("/dreamer_controller/RightHandPosition/actualWorldPosition", Float64MultiArray, self.rightCartesianTaskActualCallback)
         self.leftCartesianTaskActualSubscriber = rospy.Subscriber("/dreamer_controller/LeftHandPosition/actualWorldPosition",  Float64MultiArray, self.leftCartesianTaskActualCallback)
-        self.rightOrientationTaskActualSubscriber = rospy.Subscriber("/dreamer_controller/RightHandOrientation/actualHeading", Float64MultiArray, self.rightOrientationTaskActualCallback)
-        self.leftOrientationTaskActualSubscriber = rospy.Subscriber("/dreamer_controller/LeftHandOrientation/actualHeading", Float64MultiArray, self.leftOrientationTaskActualCallback)
+
+        # 3-DOF orientation tasks
+        self.rightOrientationTaskActualSubscriber = rospy.Subscriber("/dreamer_controller/RightHandOrientation/actualWorldOrientation", Float64MultiArray, self.rightOrientationTaskActualCallback)
+        self.leftOrientationTaskActualSubscriber = rospy.Subscriber("/dreamer_controller/LeftHandOrientation/actualWorldOrientation", Float64MultiArray, self.leftOrientationTaskActualCallback)
+
+        # 2-DOF orientation tasks
+        # self.rightOrientationTaskActualSubscriber = rospy.Subscriber("/dreamer_controller/RightHandOrientation/actualHeading", Float64MultiArray, self.rightOrientationTaskActualCallback)
+        # self.leftOrientationTaskActualSubscriber = rospy.Subscriber("/dreamer_controller/LeftHandOrientation/actualHeading", Float64MultiArray, self.leftOrientationTaskActualCallback)
 
         # Create the ROS topic publishers
         self.rightCartesianTaskEnablePublisher = rospy.Publisher("/dreamer_controller/RightHandPosition/enabled", Int32, queue_size=1)
@@ -77,28 +83,29 @@ class TakeSnapshot:
         """
 
         pauseCount = 0
-        warningPrinted = False
+        printWarning = False
         while not rospy.is_shutdown() and (
             self.rightCartesianTaskEnablePublisher.get_num_connections() == 0 or \
             self.leftCartesianTaskEnablePublisher.get_num_connections() == 0 or \
             self.rightOrientationTaskEnablePublisher.get_num_connections() == 0 or \
             self.leftOrientationTaskEnablePublisher.get_num_connections() == 0):
 
-            if warningPrinted:
+            if printWarning:
+                print "Waiting on connection to:"
                 if self.rightCartesianTaskEnablePublisher.get_num_connections() == 0:
-                    print "Still waiting on right cartesian enable subscriber..."
+                    print "  - right cartesian"
                 if self.leftCartesianTaskEnablePublisher.get_num_connections() == 0:
-                    print "Still waiting on left cartesian enable subscriber..."
+                    print "  - left cartesian"
                 if self.rightOrientationTaskEnablePublisher.get_num_connections() == 0:
-                    print "Still waiting on right orientation enable subscriber..."
+                    print "  - right orientation"
                 if self.leftOrientationTaskEnablePublisher.get_num_connections() == 0:
-                    print "Still waiting on left orientation enable subscriber..."
+                    print "  - left orientation"
                     
             time.sleep(0.5)
             pauseCount = pauseCount + 1
-            if pauseCount > 5 and not warningPrinted:
+            if pauseCount > 5 and not printWarning:
                 print "Waiting for connection to ControlIt!..."
-                warningPrinted = True
+                printWarning = True
 
         if rospy.is_shutdown():
             return
@@ -114,29 +121,30 @@ class TakeSnapshot:
 
         # Wait for connection to ControlIt!
         pauseCount = 0
-        warningPrinted = False
+        printWarning = False
         while not rospy.is_shutdown() and (
             self.currentPosture == None or \
             self.currentRightCartesianPos == None or self.currentLeftCartesianPos == None or \
             self.currentRightOrientation == None or self.currentLeftOrientation == None):
 
-            if warningPrinted:
+            if printWarning:
+                print "Waiting on state from:"
                 if self.currentRightCartesianPos == None:
-                    print "Still waiting on right hand position state..."
+                    print "  - right hand position"
                 if self.currentRightOrientation == None:
-                    print "Still waiting on right hand orientation state..."
+                    print "  - right hand orientation"
                 if self.currentLeftCartesianPos == None:
-                    print "Still waiting on left hand posirition state..."
+                    print "  - left hand position"
                 if self.currentLeftOrientation == None:
-                    print "Still waiting on left hand orientation state..."
+                    print "  - left hand orientation"
                 if self.currentPosture == None:
-                    print "Still waiting on posture state..."
+                    print "  - posture"
 
             time.sleep(0.5)
             pauseCount = pauseCount + 1
-            if pauseCount > 5 and not warningPrinted:
+            if pauseCount > 5 and not printWarning:
                 print "Waiting for data from ControlIt!..."
-                warningPrinted = True
+                printWarning = True
 
         if rospy.is_shutdown():
             return
