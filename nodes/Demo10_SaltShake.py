@@ -410,7 +410,7 @@ class Demo10_SaltShake:
 
         outcome = self.fsm.execute()
 
-        print "Cartesian based demo 1 done, waiting until ctrl+c is hit..."
+        print "Demo 10 done, waiting until ctrl+c is hit..."
         rospy.spin()  # just to prevent this node from exiting
         sis.stop()
 
