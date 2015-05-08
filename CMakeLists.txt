@@ -35,5 +35,7 @@ rosbuild_add_executable(RobotInterfaceDreamerTester src/RobotInterfaceDreamerTes
 controlit_build_link_depends(RobotInterfaceDreamerTester)
 target_link_libraries(RobotInterfaceDreamerTester ${PROJECT_NAME})
 
+rosbuild_add_executable(DreamerInteractiveMarkers src/DreamerInteractiveMarkers.cpp)
+
 # TESTS!
 # add_subdirectory(tests)

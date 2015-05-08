@@ -10,6 +10,8 @@
 
     <depend package="controlit_core"/>
     <depend package="controlit_trajectory_generators"/>
+
+    <depend package="interactive_markers"/>
     
     <export>
         <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -lcontrolit_core" />
