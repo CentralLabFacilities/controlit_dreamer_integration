@@ -10,6 +10,7 @@
 
     <depend package="controlit_core"/>
     <depend package="controlit_trajectory_generators"/>
+    <depend package="dreamer_controlit_common"/>
 
     <depend package="interactive_markers"/>
     

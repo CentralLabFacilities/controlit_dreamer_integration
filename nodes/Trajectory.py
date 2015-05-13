@@ -170,6 +170,19 @@ class Trajectory:
         '''
         return self.jPosWP[len(self.jPosWP) - 1]
 
+    def getPenultimateRHOrient(self):
+        '''
+        Returns the second to last orientation waypoint of the right hand.
+        '''
+        return self.rhOrientWP[len(self.rhOrientWP) - 2]
+
+    def getPenultimateLHOrient(self):
+        '''
+        Returns the second to last orientation waypoint of the left hand.
+        '''
+        return self.lhOrientWP[len(self.lhOrientWP) - 2]
+
+
     def setPrevTraj(self, traj):
         '''
         Updates this trajectory to start in the same configuration

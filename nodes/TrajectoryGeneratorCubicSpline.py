@@ -6,6 +6,9 @@ from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
+# threshold for matching waypoint is 1 cm
+WAYPOINT_MATCHING_THRESHOLD_DIST = 0.01
+
 class TrajectoryGeneratorCubicSpline:
     def __init__(self, waypoints):
         '''
@@ -103,6 +106,60 @@ class TrajectoryGeneratorCubicSpline:
 
             # do linear interpolation
             return (afterPoint - beforePoint) * fractionElapsed + beforePoint
+
+
+    def dist(self, point1, point2):
+        '''
+        Computes the linear distance between two points.
+
+        Keyword Parameters:
+          - point1: The first point
+          - point2: The second point
+        '''
+        ss = 0
+        for ii in range(self.numDim):
+            ss = ss + math.pow(point1[ii] - point2[ii], 2)
+
+        return math.sqrt(ss)
+
+    def getWaypointTimes(self):
+        '''
+        Returns an array of time values corresponding to the times when each waypoint is reached.
+        '''
+
+        # Store the waypoints in a two-dimensional array: [[x1, y1, z1], [x2, y2, z2], ...]
+        waypoints = []
+        for ii in range(len(self.waypoints[0])):
+            waypoint = []
+            for jj in range(self.numDim):
+                waypoint.append(self.waypoints[jj][ii])
+            waypoints.append(waypoint)
+
+        print "getWaypointTimes: reconstructed waypoints: {0}".format(waypoints)
+
+        # Allocate an array for storing the results
+        result = []
+        for ii in range(len(waypoints)):
+            result.append(0)
+
+        # Define some bookkeeping variables
+        currTime = 0
+        currWPIndx = 0
+        
+        while currTime <= self.totalTime and currWPIndx < len(waypoints):
+
+            currPoint = self.getPoint(currTime)
+            if self.dist(waypoints[currWPIndx], currPoint) < WAYPOINT_MATCHING_THRESHOLD_DIST:  
+                print "getWaypointTimes: Waypoint {0} time is {1}".format(currWPIndx, currTime)
+                result[currWPIndx] = currTime
+                currWPIndx = currWPIndx + 1
+
+            currTime = currTime + 0.001  # millisecond search
+
+        if currWPIndx != len(waypoints):
+            raise Exception("getWaypointTimes: ERROR: Could not find times for all waypoints!")
+
+        return result
 
 # Main method for testing and debugging purposes
 if __name__ == "__main__":

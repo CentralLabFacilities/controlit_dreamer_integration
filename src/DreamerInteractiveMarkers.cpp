@@ -162,7 +162,7 @@ void rightWristPosCallback(const boost::shared_ptr<std_msgs::Float64MultiArray c
 void rightWristOriCallback(const boost::shared_ptr<std_msgs::Float64MultiArray const> & msgPtr)
 {
   // Note order differences:
-  //  -  writeWristOrientation: x, y, z, w
+  //  -  rightWristOrientation: x, y, z, w
   //  -  msgPtr: w, x, y, z
   rightWristOrientation[0] = msgPtr->data[1]; // x
   rightWristOrientation[1] = msgPtr->data[2]; // y
@@ -184,7 +184,7 @@ void leftWristPosCallback(const boost::shared_ptr<std_msgs::Float64MultiArray co
 void leftWristOriCallback(const boost::shared_ptr<std_msgs::Float64MultiArray const> & msgPtr)
 {
   // Note order differences:
-  //  -  writeWristOrientation: x, y, z, w
+  //  -  rightWristOrientation: x, y, z, w
   //  -  msgPtr: w, x, y, z
   leftWristOrientation[0] = msgPtr->data[1]; // x
   leftWristOrientation[1] = msgPtr->data[2]; // y
