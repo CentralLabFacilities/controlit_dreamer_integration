@@ -366,10 +366,10 @@ class DreamerInterface:
         # ************************* new code to handle quaternion trajectories *****************************
         if self.useQuaternionControl:
             waypointTimesR = rhCartTG.getWaypointTimes();
-            waypointTimesL = rhCartTG.getWaypointTimes();
+            waypointTimesL = lhCartTG.getWaypointTimes();
 
-            print "right waypoint times: {0}".format(waypointTimesR)
-            print "left waypoint times: {0}".format(waypointTimesL)
+            # print "right waypoint times: {0}".format(waypointTimesR)
+            # print "left waypoint times: {0}".format(waypointTimesL)
 
 
         # *************************************************************************************************
@@ -433,8 +433,17 @@ class DreamerInterface:
                     # Determine which segment of the right hand orientation trajectory we are in...
                     startWPIndex = 0
                     for ii in range(len(waypointTimesR) - 1):
-                        if waypointTimesR[ii] >= deltaTime and waypointTimesR[ii + 1] <= deltaTime:
+                        # print "DreamerInterface: followTrajectory: right proportion region search:\n"\
+                        #       "  - waypoint times: {0}\n"\
+                        #       "  - ii: {1}\n"\
+                        #       "  - waypointTimesR[{1}]: {2}\n"\
+                        #       "  - waypointTimesR[{3}]: {4}\n"\
+                        #       "  - deltaTime: {5}".format(
+                        #         waypointTimesR, ii, waypointTimesR[ii], ii+1, waypointTimesR[ii+1], deltaTime)
+
+                        if (waypointTimesR[ii] <= deltaTime) and (waypointTimesR[ii + 1] >= deltaTime):
                             startWPIndex = ii
+                            # print "*** Setting startWPIndex to be {0}\n".format(startWPIndex)
 
                     # Determine the total time of the right hand orientation segment we are in...
                     segmentTotalTime = waypointTimesR[startWPIndex + 1] - waypointTimesR[startWPIndex]
@@ -452,19 +461,26 @@ class DreamerInterface:
                     
                     self.orientationUpdateMsg.rhProportion = segmentDeltaTime / segmentTotalTime
 
-                    print "DreamerInterface: followTrajectory: right proportion computation:\n"\
-                          "  - waypoint times: {0}\n"\
-                          "  - deltaTime: {1}\n"\
-                          "  - startWPIndex: {2}\n"\
-                          "  - segmentTotalTime: {3}\n"\
-                          "  - sigmentDeltaTime: {4}\n"\
-                          "  - proportion: {5}\n".format(
-                            waypointTimesR, deltaTime, startWPIndex, segmentTotalTime,
-                            segmentDeltaTime, self.orientationUpdateMsg.rhProportion)
+                    # print "DreamerInterface: followTrajectory: right proportion computation:\n"\
+                    #       "  - waypoint times: {0}\n"\
+                    #       "  - deltaTime: {1}\n"\
+                    #       "  - startWPIndex: {2}\n"\
+                    #       "  - segmentTotalTime: {3}\n"\
+                    #       "  - segmentDeltaTime: {4}\n"\
+                    #       "  - proportion: {5}\n".format(
+                    #         waypointTimesR, deltaTime, startWPIndex, segmentTotalTime,
+                    #         segmentDeltaTime, self.orientationUpdateMsg.rhProportion)
 
                     for ii in range(len(waypointTimesL) - 1):
-                        if waypointTimesL[ii] > deltaTime and waypointTimesL[ii + 1] <= deltaTime:
+                        if waypointTimesL[ii] <= deltaTime and waypointTimesL[ii + 1] >= deltaTime:
                             startWPIndex = ii
+
+                    # print "DreamerInterface: followTrajectory: left proportion region search:\n"\
+                    #         "  - deltaTime: {0}\n"\
+                    #         "  - waypoint times: {1}\n"\
+                    #         "  - startWPIndex: {2}\n"\
+                    #         "  - left orientation waypoints: {3}\n".format(
+                    #             deltaTime, waypointTimesL, startWPIndex, traj.lhOrientWP)
 
                     # Determine the total time of the left hand orientation segment we are in...
                     segmentTotalTime = waypointTimesL[startWPIndex + 1] - waypointTimesL[startWPIndex]

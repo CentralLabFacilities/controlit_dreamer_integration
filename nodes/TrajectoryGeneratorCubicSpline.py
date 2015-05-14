@@ -159,6 +159,9 @@ class TrajectoryGeneratorCubicSpline:
         if currWPIndx != len(waypoints):
             raise Exception("getWaypointTimes: ERROR: Could not find times for all waypoints!")
 
+        # Ensure the time of the last waypoint is the total time of the trajectory
+        result[len(waypoints) - 1] = self.totalTime
+
         return result
 
 # Main method for testing and debugging purposes
