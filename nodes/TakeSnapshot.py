@@ -227,7 +227,7 @@ class TakeSnapshot:
             result = result + "\n  " 
             result = result + "{0}".format(snapshot.leftHandCartesian)
 
-        result = result + "\n\nnLeftHandOrientation:"
+        result = result + "\n\nLeftHandOrientation:"
         for snapshot in snapShots[::-1]:
             result = result + "\n  " 
             result = result + "{0}".format(snapshot.leftHandOrientation)
