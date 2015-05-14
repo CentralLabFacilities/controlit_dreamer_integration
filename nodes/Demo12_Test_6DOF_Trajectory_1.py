@@ -279,9 +279,6 @@ class Demo12_Test6DOFTraj:
             0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,  # left arm
             -0.2703826362458247, -0.0065433902706428905, 0.041972401461917844, 0.6110144337952284, 0.019912862716942595, 0.044322813664107175, 0.02367545574623616])
 
-        
-        trajGoToIdle.setInitPostureWP(DEFAULT_POSTURE)
-
         # ==============================================================================================
         # define the states
         stateGoToReady = TrajectoryState(self.dreamerInterface, trajGoToReady)
