@@ -396,13 +396,28 @@ class DreamerInterface:
                 else:
                     # The following settings should result in the final orientations being
                     # sent to ControlIt!
-                    self.orientationUpdateMsg.rhStart = traj.getPenultimateRHOrient()
-                    self.orientationUpdateMsg.lhStart = traj.getPenultimateLHOrient()
+                    self.orientationUpdateMsg.rhStart.w = traj.getPenultimateRHOrient()[0]
+                    self.orientationUpdateMsg.rhStart.x = traj.getPenultimateRHOrient()[1]
+                    self.orientationUpdateMsg.rhStart.y = traj.getPenultimateRHOrient()[2]
+                    self.orientationUpdateMsg.rhStart.z = traj.getPenultimateRHOrient()[3]
 
-                    self.orientationUpdateMsg.rhEnd = traj.getFinalRHOrient()
-                    self.orientationUpdateMsg.lhEnd = traj.getFinalLHOrient()
+                    self.orientationUpdateMsg.lhStart.w = traj.getPenultimateLHOrient()[0]
+                    self.orientationUpdateMsg.lhStart.x = traj.getPenultimateLHOrient()[1]
+                    self.orientationUpdateMsg.lhStart.y = traj.getPenultimateLHOrient()[2]
+                    self.orientationUpdateMsg.lhStart.z = traj.getPenultimateLHOrient()[3]
 
-                    self.orientationUpdateMsg.proportion = 1
+                    self.orientationUpdateMsg.rhEnd.w = traj.getFinalRHOrient()[0]
+                    self.orientationUpdateMsg.rhEnd.x = traj.getFinalRHOrient()[1]
+                    self.orientationUpdateMsg.rhEnd.y = traj.getFinalRHOrient()[2]
+                    self.orientationUpdateMsg.rhEnd.z = traj.getFinalRHOrient()[3]
+
+                    self.orientationUpdateMsg.lhEnd.w = traj.getFinalLHOrient()[0]
+                    self.orientationUpdateMsg.lhEnd.x = traj.getFinalLHOrient()[1]
+                    self.orientationUpdateMsg.lhEnd.y = traj.getFinalLHOrient()[2]
+                    self.orientationUpdateMsg.lhEnd.z = traj.getFinalLHOrient()[3]
+
+                    self.orientationUpdateMsg.rhProportion = 1
+                    self.orientationUpdateMsg.lhProportion = 1
 
                 goalJPos = jPosTG.getLastPoint()
                 done = True
@@ -416,28 +431,55 @@ class DreamerInterface:
                     # Here is where the magic happens...
 
                     # Determine which segment of the right hand orientation trajectory we are in...
+                    startWPIndex = 0
                     for ii in range(len(waypointTimesR) - 1):
-                        if waypointTimesR[ii] > deltaTime and waypointTimesR[ii + 1] <= deltaTime:
+                        if waypointTimesR[ii] >= deltaTime and waypointTimesR[ii + 1] <= deltaTime:
                             startWPIndex = ii
 
                     # Determine the total time of the right hand orientation segment we are in...
-                    segmentTotalTime = waypointTimesR[ii + 1] - waypointTimesR[ii]
-                    segmentDeltaTime = deltaTime - waypointTimesR[ii]
+                    segmentTotalTime = waypointTimesR[startWPIndex + 1] - waypointTimesR[startWPIndex]
+                    segmentDeltaTime = deltaTime - waypointTimesR[startWPIndex]
 
-                    self.orientationUpdateMsg.rhStart = traj.rhOrientWP[startWPIndex]
-                    self.orientationUpdateMsg.rhEnd = traj.rhOrientWP[startWPIndex + 1]
+                    self.orientationUpdateMsg.rhStart.w = traj.rhOrientWP[startWPIndex][0]
+                    self.orientationUpdateMsg.rhStart.x = traj.rhOrientWP[startWPIndex][1]
+                    self.orientationUpdateMsg.rhStart.y = traj.rhOrientWP[startWPIndex][2]
+                    self.orientationUpdateMsg.rhStart.z = traj.rhOrientWP[startWPIndex][3]
+
+                    self.orientationUpdateMsg.rhEnd.w = traj.rhOrientWP[startWPIndex + 1][0]
+                    self.orientationUpdateMsg.rhEnd.x = traj.rhOrientWP[startWPIndex + 1][1]
+                    self.orientationUpdateMsg.rhEnd.y = traj.rhOrientWP[startWPIndex + 1][2]
+                    self.orientationUpdateMsg.rhEnd.z = traj.rhOrientWP[startWPIndex + 1][3]
+                    
                     self.orientationUpdateMsg.rhProportion = segmentDeltaTime / segmentTotalTime
+
+                    print "DreamerInterface: followTrajectory: right proportion computation:\n"\
+                          "  - waypoint times: {0}\n"\
+                          "  - deltaTime: {1}\n"\
+                          "  - startWPIndex: {2}\n"\
+                          "  - segmentTotalTime: {3}\n"\
+                          "  - sigmentDeltaTime: {4}\n"\
+                          "  - proportion: {5}\n".format(
+                            waypointTimesR, deltaTime, startWPIndex, segmentTotalTime,
+                            segmentDeltaTime, self.orientationUpdateMsg.rhProportion)
 
                     for ii in range(len(waypointTimesL) - 1):
                         if waypointTimesL[ii] > deltaTime and waypointTimesL[ii + 1] <= deltaTime:
                             startWPIndex = ii
 
                     # Determine the total time of the left hand orientation segment we are in...
-                    segmentTotalTime = waypointTimesL[ii + 1] - waypointTimesL[ii]
-                    segmentDeltaTime = deltaTime - waypointTimesL[ii]
+                    segmentTotalTime = waypointTimesL[startWPIndex + 1] - waypointTimesL[startWPIndex]
+                    segmentDeltaTime = deltaTime - waypointTimesL[startWPIndex]
 
-                    self.orientationUpdateMsg.lhStart = traj.lhOrientWP[startWPIndex]
-                    self.orientationUpdateMsg.lhEnd = traj.lhOrientWP[startWPIndex + 1]
+                    self.orientationUpdateMsg.lhStart.w = traj.lhOrientWP[startWPIndex][0]
+                    self.orientationUpdateMsg.lhStart.x = traj.lhOrientWP[startWPIndex][1]
+                    self.orientationUpdateMsg.lhStart.y = traj.lhOrientWP[startWPIndex][2]
+                    self.orientationUpdateMsg.lhStart.z = traj.lhOrientWP[startWPIndex][3]
+
+                    self.orientationUpdateMsg.lhEnd.w = traj.lhOrientWP[startWPIndex + 1][0]
+                    self.orientationUpdateMsg.lhEnd.x = traj.lhOrientWP[startWPIndex + 1][1]
+                    self.orientationUpdateMsg.lhEnd.y = traj.lhOrientWP[startWPIndex + 1][2]
+                    self.orientationUpdateMsg.lhEnd.z = traj.lhOrientWP[startWPIndex + 1][3]
+
                     self.orientationUpdateMsg.lhProportion = segmentDeltaTime / segmentTotalTime
 
                 goalJPos = jPosTG.getPoint(deltaTime)
