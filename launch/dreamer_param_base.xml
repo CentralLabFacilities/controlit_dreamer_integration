@@ -55,4 +55,7 @@
 
     <rosparam param="log_level">DEBUG</rosparam>
     <rosparam param="log_fields">["package", "file", "line", "function"]</rosparam>
+
+    <param name="use_single_threaded_control_model" type="bool" value="false" />
+    <param name="use_single_threaded_task_updater" type="bool" value="false" />
 </launch>
