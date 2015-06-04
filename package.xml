@@ -30,6 +30,7 @@
     <!--   <test_depend>gtest</test_depend> -->
     <buildtool_depend>catkin</buildtool_depend>
 
+    <depend>roscpp</depend>
     <depend>controlit_core</depend>
     <depend>controlit_trajectory_generators</depend>
     <depend>dreamer_controlit_common</depend>

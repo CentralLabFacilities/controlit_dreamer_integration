@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(controlit_exec)
+project(controlit_dreamer_integration)
 
 ################
 ## ControlIt! ##
@@ -37,14 +37,10 @@ find_package(Boost COMPONENTS components)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES controlit
+  LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS roscpp
 #  DEPENDS system_lib
 )
-
-
-
-
 
 # # Add the ControlIt!-specific build options and macros
 # rosbuild_find_ros_package(controlit_cmake)
@@ -77,8 +73,6 @@ include_directories(
     ${Boost_INCLUDE_DIRS}
     ${catkin_INCLUDE_DIRS}
     ${EIGEN_INCLUDE_DIRS}
-    # ${controlit_core_INCLUDE_DIRS}
-    # ${controlit_logging_INCLUDE_DIRS}
 )
 
 add_library(${PROJECT_NAME} SHARED 
@@ -104,6 +98,7 @@ add_executable(ServoClockDreamerTester src/ServoClockDreamerTester.cpp)
 target_link_libraries(ServoClockDreamerTester
     ${Boost_LIBRARIES}
     ${catkin_LIBRARIES}
+    ${PROJECT_NAME}
 )
 
 # rosbuild_add_executable(ServoClockDreamerTester src/ServoClockDreamerTester.cpp)
@@ -114,6 +109,7 @@ add_executable(RobotInterfaceDreamerTester src/RobotInterfaceDreamerTester.cpp)
 
 target_link_libraries(RobotInterfaceDreamerTester
     # ${Boost_LIBRARIES}
+    ${PROJECT_NAME}
     ${catkin_LIBRARIES}
 )
 
@@ -121,12 +117,12 @@ target_link_libraries(RobotInterfaceDreamerTester
 # controlit_build_link_depends(RobotInterfaceDreamerTester)
 # target_link_libraries(RobotInterfaceDreamerTester ${PROJECT_NAME})
 
-add_executable(DreamerInteractiveMarkers src/DreamerInteractiveMarkers.cpp)
+#add_executable(DreamerInteractiveMarkers src/DreamerInteractiveMarkers.cpp)
 
-target_link_libraries(RobotInterfaceDreamerTester
-    # ${Boost_LIBRARIES}
-    ${catkin_LIBRARIES}
-)
+#target_link_libraries(DreamerInteractiveMarkers
+#    # ${Boost_LIBRARIES}
+#    ${catkin_LIBRARIES}
+#)
 
 # rosbuild_add_executable(DreamerInteractiveMarkers src/DreamerInteractiveMarkers.cpp)
 
