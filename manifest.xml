@@ -1,21 +1,43 @@
-<package>
-    <description brief="controlit_dreamer_integration">
+<?xml version="1.0"?>
+<package format="2">
+
+    <name>controlit_dreamer_integration</name>
+
+    <version>0.0.0</version>
+
+    <description>
         This package contains packages that enable ControlIt! to work with Dreamer.
     </description>
 
-    <author>Chien-Liang Fok</author>
-    <license>BSD</license>
-    <review status="unreviewed" notes=""/>
+    <license>LGPLv2.1</license>
+
     <url>http://ros.org/wiki/controlit_dreamer_integration</url>
 
-    <depend package="controlit_core"/>
-    <depend package="controlit_trajectory_generators"/>
-    <depend package="dreamer_controlit_common"/>
+    <maintainer email="liangfok@utexas.edu">Chien-Liang Fok</maintainer>
 
-    <depend package="interactive_markers"/>
-    
+    <author>Chien-Liang Fok</author>
+
+    <!-- The *_depend tags are used to specify dependencies -->
+    <!-- Dependencies can be catkin packages or system dependencies -->
+    <!-- Examples: -->
+    <!-- Use build_depend for packages you need at compile time: -->
+    <!--   <build_depend>message_generation</build_depend> -->
+    <!-- Use buildtool_depend for build tool packages: -->
+    <!--   <buildtool_depend>catkin</buildtool_depend> -->
+    <!-- Use run_depend for packages you need at runtime: -->
+    <!--   <run_depend>message_runtime</run_depend> -->
+    <!-- Use test_depend for packages you need only for testing: -->
+    <!--   <test_depend>gtest</test_depend> -->
+    <buildtool_depend>catkin</buildtool_depend>
+
+    <depend>controlit_core</depend>
+    <depend>controlit_trajectory_generators</depend>
+    <depend>dreamer_controlit_common</depend>
+    <depend>interactive_markers</depend>
+
     <export>
-        <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -lcontrolit_core" />
+        <!-- <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -lcontrolit_core" /> -->
+        <cpp cflags="-I${prefix}/include" lflags="-lcontrolit_core" />
         <controlit_core plugin="${prefix}/controlit_dreamer_plugins.xml" />
     </export>
 
