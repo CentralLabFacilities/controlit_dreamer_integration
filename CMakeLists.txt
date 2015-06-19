@@ -75,13 +75,13 @@ include_directories(
     ${EIGEN_INCLUDE_DIRS}
 )
 
-add_library(${PROJECT_NAME} SHARED 
-    src/OdometryStateReceiverDreamer.cpp 
-    src/PluginList.cpp 
-    src/RobotInterfaceDreamer.cpp 
-    src/ServoClockDreamer.cpp 
-    src/HandControllerDreamer.cpp 
-    src/HeadControllerDreamer.cpp 
+add_library(${PROJECT_NAME} SHARED
+    src/OdometryStateReceiverDreamer.cpp
+    src/PluginList.cpp
+    src/RobotInterfaceDreamer.cpp
+    src/ServoClockDreamer.cpp
+    src/HandControllerDreamer.cpp
+    src/HeadControllerDreamer.cpp
     src/TimerRTAI.cpp
 )
 
