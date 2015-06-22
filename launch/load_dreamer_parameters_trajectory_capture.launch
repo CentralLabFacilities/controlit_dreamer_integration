@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<launch>
+    <!-- Specify a custom debug level. -->
+    <env name="ROSCONSOLE_CONFIG_FILE" value="$(find controlit_environment_config)/config/rosconsole.config"/>
+
+    <!-- Load the robot description parameter. -->
+    <param name="robot_description"
+           command="$(find xacro)/xacro.py '$(find controlit_dreamer_integration)/models/xacro/controlit_dreamer.xacro'"/>
+
+    <!-- Load the controller parameters. -->
+    <group ns="dreamer_controller/controlit">
+        <include file="$(find controlit_dreamer_integration)/launch/dreamer_param_base.xml"/>
+        <param name="parameters" textfile="$(find controlit_dreamer_integration)/parameters/JointPositionControlWithSensing.yaml"/>
+    </group>
+</launch>

@@ -1,0 +1,146 @@
+header:
+  version: 2
+  description: Dreamer both hands Cartesian position control
+tasks:
+  - name: RightHandPosition
+    type: controlit/CartesianPositionTask  # must match class name in sensor_plugins.xml
+    parameters:
+      - name: bodyName  # the coordinate frame of the current position
+        type: string
+        value: right_wrist_yaw
+      - name: frameName  # the coordinate frame of the goal heading
+        type: string
+        value: world
+      - name: controlPoint
+        type: vector
+        value: [0.0, 0.0, 0.0] #in bodyName's  frame
+
+  - name: LeftHandPosition
+    type: controlit/CartesianPositionTask  # must match class name in sensor_plugins.xml
+    parameters:
+      - name: bodyName  # the coordinate frame of the current position
+        type: string
+        value: left_wrist_yaw
+      - name: frameName  # the coordinate frame of the goal heading
+        type: string
+        value: world
+      - name: controlPoint
+        type: vector
+        value: [0.0, 0.0, 0.0] # in bodyName's  frame
+
+  - name: RightHandOrientation
+    type: controlit/OrientQuaternionTask
+    parameters:
+      - name: bodyName  # the coordinate frame of the current heading
+        type: string
+        value: right_wrist_yaw
+      - name: frameName  # the coordinate frame of the goal heading
+        type: string
+        value: world
+
+  - name: LeftHandOrientation
+    type: controlit/OrientQuaternionTask
+    parameters:
+      - name: bodyName  # the coordinate frame of the current heading
+        type: string
+        value: left_wrist_yaw
+      - name: frameName  # the coordinate frame of the goal heading
+        type: string
+        value: world
+
+  - name: Posture     # Arbitrary instance name
+    type: controlit/JointPositionTask # Must Match the NAME of the task in the task_library
+    parameters:
+      - name: kp
+        type: vector
+        value: [60.0, 60.0,                                 # torso
+                60.0, 60.0, 60.0, 60.0, 60.0, 60.0, 60.0,   # left arm 
+                60.0, 60.0, 60.0, 60.0, 60.0, 60.0, 60.0]   # right arm
+
+      - name: kd
+        type: vector
+        value: [3, 3,                  # torso
+                3, 3, 3, 3, 3, 3, 3,   # left arm
+                3, 3, 3, 3, 3, 3, 3]   # right arm
+
+      - name: maxVelocity
+        type: vector
+        value: [1000, 1000,                                  # torso
+                1000, 1000, 1000, 1000, 1000, 1000, 1000,    # left arm 
+                1000, 1000, 1000, 1000, 1000, 1000, 1000]    # right arm
+
+      - name: goalPosition
+        type: vector
+        value: [0.0, 0.0,                                              # torso
+                0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0,     # left arm
+                0.0, 0.174532925, 0.0, 0.174532925, 0.0, 0.0, 0.0]     # right arm
+
+        # Elbows bent at 90 degrees (useful for testing right hand)
+        # value: [0.0, 0.0,                                              # torso
+        #         0.0, 0.174532925, 0.0, 1.57, 0.0, 0.0, 0.0,     # left arm
+        #         0.0, 0.174532925, 0.0, 1.57, 1.57, 0.0, 0.0]     # right arm
+
+      - name: goalVelocity
+        type: vector
+        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+      - name: goalAcceleration
+        type: vector
+        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+      - name: maxAcceleration
+        type: real
+        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+compound_task:
+  type: compound_task
+  name: My compound task
+  events:
+    - name: converged
+      expression: Posture.converged and Posture.quiescent
+  task_list:
+     - name: Posture
+       priority: 0
+       enableState: 2
+     - name: RightHandPosition
+       priority: 1
+       enableState: 1
+     - name: LeftHandPosition
+       priority: 2
+       enableState: 1
+     - name: RightHandOrientation
+       priority: 3
+       enableState: 1
+     - name: LeftHandOrientation
+       priority: 4
+       enableState: 1
+constraints:
+  - type: controlit/FlatContactConstraint
+    name: ContactConstraint
+    parameters:
+      - name: masterNodeName
+        type: string
+        value: "rigid6DoF"
+      - name: contactPoint
+        type: vector
+        value: [0, 0, 0]
+  - name: TorsoTransmission
+    type: controlit/TransmissionConstraint
+    parameters:
+      - name: masterNodeName
+        type: string
+        value: "torso_lower_pitch"
+      - name: slaveNodeName
+        type: string
+        value: "torso_upper_pitch"
+      - name: transmissionRatio
+        type: float
+        value: 1.0
+constraint_set:
+  type: constraint_set
+  name: My Constraint Set
+  active_constraints:
+    - name: ContactConstraint
+      enableState: 2
+    - name: TorsoTransmission
+      enableState: 2
