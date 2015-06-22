@@ -2,5 +2,5 @@
 <launch>
     <include file="$(find controlit_dreamer_integration)/launch/load_dreamer_parameters_cartpos_bothhands_6dof.launch"/>
     <include file="$(find controlit_dreamer_integration)/launch/start_controlit.launch"/>
-    <node name="dreamer_controlit_interactive_markers" pkg="controlit_dreamer_integration" type="DreamerInteractiveMarkers"/>
+    <node name="dreamer_interactive_markers" pkg="dreamer_controlit_demos" type="DreamerInteractiveMarkers"/>
 </launch>

@@ -89,9 +89,6 @@ target_link_libraries(${PROJECT_NAME}
     ${Boost_LIBRARIES}
     ${catkin_LIBRARIES}
 )
-# rosbuild_add_openmp_flags(${PROJECT_NAME})
-# rosbuild_link_boost(${PROJECT_NAME} signals)
-# controlit_build_link_depends(${PROJECT_NAME})
 
 add_executable(ServoClockDreamerTester src/ServoClockDreamerTester.cpp)
 
@@ -101,10 +98,6 @@ target_link_libraries(ServoClockDreamerTester
     ${PROJECT_NAME}
 )
 
-# rosbuild_add_executable(ServoClockDreamerTester src/ServoClockDreamerTester.cpp)
-# controlit_build_link_depends(ServoClockDreamerTester)
-# target_link_libraries(ServoClockDreamerTester ${PROJECT_NAME})
-
 add_executable(RobotInterfaceDreamerTester src/RobotInterfaceDreamerTester.cpp)
 
 target_link_libraries(RobotInterfaceDreamerTester
@@ -112,19 +105,6 @@ target_link_libraries(RobotInterfaceDreamerTester
     ${PROJECT_NAME}
     ${catkin_LIBRARIES}
 )
-
-# rosbuild_add_executable(RobotInterfaceDreamerTester src/RobotInterfaceDreamerTester.cpp)
-# controlit_build_link_depends(RobotInterfaceDreamerTester)
-# target_link_libraries(RobotInterfaceDreamerTester ${PROJECT_NAME})
-
-#add_executable(DreamerInteractiveMarkers src/DreamerInteractiveMarkers.cpp)
-
-#target_link_libraries(DreamerInteractiveMarkers
-#    # ${Boost_LIBRARIES}
-#    ${catkin_LIBRARIES}
-#)
-
-# rosbuild_add_executable(DreamerInteractiveMarkers src/DreamerInteractiveMarkers.cpp)
 
 # TESTS!
 # add_subdirectory(tests)

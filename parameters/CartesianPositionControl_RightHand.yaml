@@ -149,19 +149,11 @@ tasks:
         type: real
         value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
-      - name: error
-        type: vector
-        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-
-      - name: errorDot
-        type: vector
-        value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-
-    events:
-      - name: converged
-        expression: errorNorm < 55e-4 #err is a norm...it is positive
-      - name: quiescent
-        expression: errorDotNorm < 3e-2 #absolute value take in code
+    # events:
+    #   - name: converged
+    #     expression: errorNorm < 55e-4 #err is a norm...it is positive
+    #   - name: quiescent
+    #     expression: errorDotNorm < 3e-2 #absolute value take in code
 compound_task:
   type: compound_task
   name: My compound task
@@ -171,13 +163,13 @@ compound_task:
   task_list:
      - name: RightHandPosition
        priority: 0
-       enabled: 1
+       enableState: 2
      - name: RightHandOrientation
        priority: 0
-       enabled: 1
+       enableState: 2
      - name: Posture
        priority: 1
-       enabled: 1
+       enableState: 2
 constraints:
   - type: controlit/FlatContactConstraint
     name: ContactConstraint
@@ -188,9 +180,6 @@ constraints:
       - name: contactPoint
         type: vector
         value: [0, 0, 0]
-      - name: enabled
-        type: integer
-        value: 1
   - name: TorsoTransmission
     type: controlit/TransmissionConstraint
     parameters:
@@ -208,6 +197,6 @@ constraint_set:
   name: My Constraint Set
   active_constraints:
     - name: ContactConstraint
-      enabled: 1
+      enableState: 2
     - name: TorsoTransmission
-      enabled: 1
+      enableState: 2

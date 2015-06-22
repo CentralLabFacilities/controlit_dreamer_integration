@@ -33,7 +33,6 @@
     <depend>roscpp</depend>
     <depend>controlit_core</depend>
     <depend>controlit_trajectory_generators</depend>
-    <depend>dreamer_controlit_common</depend>
     <depend>interactive_markers</depend>
 
     <export>
