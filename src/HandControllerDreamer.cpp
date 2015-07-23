@@ -16,6 +16,18 @@ namespace dreamer {
 
 #define THUMB_SPEED 1  // radians per second
 
+#define TORQUE_COMMAND_J0_CONTRACT 0 // temporary value
+#define TORQUE_COMMAND_J1_CONTRACT 0.180
+#define TORQUE_COMMAND_J2_CONTRACT 0.115
+#define TORQUE_COMMAND_J3_CONTRACT 0.2
+#define TORQUE_COMMAND_J4_CONTRACT 0.03
+
+#define TORQUE_COMMAND_J0_EXTEND 0
+#define TORQUE_COMMAND_J1_EXTEND 0
+#define TORQUE_COMMAND_J2_EXTEND 0
+#define TORQUE_COMMAND_J3_EXTEND 0
+#define TORQUE_COMMAND_J4_EXTEND 0
+
 HandControllerDreamer::HandControllerDreamer() :
     powerGraspRight(false),
     powerGraspLeft(false),
@@ -151,10 +163,10 @@ void HandControllerDreamer::getCommand(Vector & command)
             closingRightFingers = true;
             // thumbKp = 1; //POWER_GRASP_DISABLED_KP;
 
-            command[1] = 0.3; // close right_thumb_mcp
-            command[2] = (includeRightPointerFinger ? 0.3 : -0.1);  // right_pointer_finger
-            command[3] = (includeRightMiddleFinger  ? 0.3 : -0.1);  // right_middle_finger
-            command[4] = (includeRightPinkyFinger   ? 0.3 : -0.1);  // right_pinky_finger
+            command[1] = TORQUE_COMMAND_J1_CONTRACT; // close right_thumb_mcp
+            command[2] = (includeRightPointerFinger ? TORQUE_COMMAND_J2_CONTRACT : TORQUE_COMMAND_J2_EXTEND);  // right_pointer_finger (uses torque commands with opposite signs)
+            command[3] = (includeRightMiddleFinger  ? TORQUE_COMMAND_J3_CONTRACT : TORQUE_COMMAND_J3_EXTEND);  // right_middle_finger
+            command[4] = (includeRightPinkyFinger   ? TORQUE_COMMAND_J4_CONTRACT : TORQUE_COMMAND_J4_EXTEND);  // right_pinky_finger
         // }
         // else
         // {
@@ -177,26 +189,32 @@ void HandControllerDreamer::getCommand(Vector & command)
     {
         closingRightFingers = false;
         closingThumbFinger = false;
-        command[4] = command[3] = command[2] = command[1] = -0.1;  // right_thumb_mcp, right_pointer_finger_mcp, right_pointer_finger_mcp, right_pinky_mcp
+
+        // Set the torque commands for "relaxing" e.g. "extending" the fingers"
+        command[1] = TORQUE_COMMAND_J1_EXTEND;
+        command[2] = TORQUE_COMMAND_J2_EXTEND;
+        command[3] = TORQUE_COMMAND_J3_EXTEND;
+        command[4] = TORQUE_COMMAND_J4_EXTEND;
         
         // wait until all fingers are relaxed before moving the right_thumb_cmc
         if (std::abs(currPosition[1]) < 0.02)
         {
-            thumbGoalPos = 1.57;  // right_thumb_cmc at 90 degree position
-            if (currPosition[0] < 1.57)
-            {
-                command[0] = 0.1; // Issue 0.1 Nm of torque to force the joint to go to position 1.57 radians
-                timeAtRelaxedPos = ros::Time::now();
-            }
-            else
-            {
-                double elapsedTime = (ros::Time::now() - timeAtRelaxedPos).toSec();
-                if (elapsedTime > 3.0)
-                    command[0] = 0.05;
-                else
-                    command[0] = 0.1;   // Decrease torque after 3 seconds to prevent right_thumb-cmc motor from over heating
+        	command[0] = TORQUE_COMMAND_J0_EXTEND;
+            // thumbGoalPos = 1.57;  // right_thumb_cmc at 90 degree position
+            // if (currPosition[0] < 1.57)
+            // {
+            //     command[0] = 0.1; // Issue 0.1 Nm of torque to force the joint to go to position 1.57 radians
+            //     timeAtRelaxedPos = ros::Time::now();
+            // }
+            // else
+            // {
+            //     double elapsedTime = (ros::Time::now() - timeAtRelaxedPos).toSec();
+            //     if (elapsedTime > 3.0)
+            //         command[0] = 0.05;
+            //     else
+            //         command[0] = 0.1;   // Decrease torque after 3 seconds to prevent right_thumb-cmc motor from over heating
                 
-            }
+            // }
         }
         else
         {
