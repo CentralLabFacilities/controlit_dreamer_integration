@@ -26,7 +26,7 @@ namespace dreamer {
 #define TORQUE_COMMAND_J1_EXTEND 0
 #define TORQUE_COMMAND_J2_EXTEND 0
 #define TORQUE_COMMAND_J3_EXTEND 0
-#define TORQUE_COMMAND_J4_EXTEND -0.01
+#define TORQUE_COMMAND_J4_EXTEND -0.05
 
 HandControllerDreamer::HandControllerDreamer() :
     powerGraspRight(false),
