@@ -3,6 +3,8 @@
 
 #include <ros/ros.h>
 
+#include <std_msgs/Int32.h>
+#include <std_msgs/Float64.h>
 #include <std_msgs/Bool.h>
 #include <sensor_msgs/JointState.h>
 
@@ -69,6 +71,20 @@ public:
 private:
 
     /*!
+     * The callback method for specifying the right hand control mode.
+     */
+    void rightHandModeCallback(const boost::shared_ptr<std_msgs::Int32 const> & msgPtr);
+
+    /*!
+     * The callback method for specifying the desired position of the right_thumb_cmc.
+     */
+    void rightThumbCMCPosCallback(const boost::shared_ptr<std_msgs::Float64 const> & msgPtr);
+
+    void rightThumbCMCKpCallback(const boost::shared_ptr<std_msgs::Float64 const> & msgPtr);
+
+    void rightThumbCMCKdCallback(const boost::shared_ptr<std_msgs::Float64 const> & msgPtr);
+
+    /*!
      * The callback method for the right hand power grasp control.
      */
     void rightHandCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr);
@@ -86,6 +102,7 @@ private:
     void includeRightMiddleFingerCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr);
     void includeRightPointerFingerCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr);
 
+    int rightHandControlMode;
     bool powerGraspRight;
     bool powerGraspLeft;
     bool closingThumbFinger;
@@ -105,6 +122,10 @@ private:
     double thumbInitPos;
 
     // ROS Subscribers
+    ros::Subscriber rightHandModeSubscriber;
+    ros::Subscriber rightThumbCMCPosSubscriber;
+    ros::Subscriber rightThumbCMCKpSubscriber;
+    ros::Subscriber rightThumbCMCKdSubscriber;
     ros::Subscriber rightHandPowerGraspSubscriber;
     ros::Subscriber leftGripperPowerGraspSubscriber;
     ros::Subscriber includeRightPinkyFingerSubscriber;

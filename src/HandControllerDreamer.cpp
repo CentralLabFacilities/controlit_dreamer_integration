@@ -8,6 +8,9 @@ namespace dreamer {
 #define NUM_COMMAND_DOFS 6                   // Command includes both left and right hands
 #define NUM_TORQUE_CONTROLLED_JOINTS 6
 
+#define POWER_GRASP_MODE 0
+#define POSITION_MODE 1
+
 #define RIGHT_THUMB_CMC_INDEX 0
 #define LEFT_GRIPPER_JOINT_INDEX 5
 
@@ -29,6 +32,7 @@ namespace dreamer {
 #define TORQUE_COMMAND_J4_EXTEND -0.05
 
 HandControllerDreamer::HandControllerDreamer() :
+    rightHandControlMode(POWER_GRASP_MODE),
     powerGraspRight(false),
     powerGraspLeft(false),
     closingThumbFinger(false),
@@ -52,6 +56,18 @@ bool HandControllerDreamer::init(ros::NodeHandle & nh)
 {
     currPosition.setZero(NUM_COMMAND_DOFS);
     currVelocity.setZero(NUM_COMMAND_DOFS);
+
+    rightHandModeSubscriber = nh.subscribe("controlit/rightHand/mode", 1,
+        & HandControllerDreamer::rightHandModeCallback, this);
+
+    rightThumbCMCPosSubscriber = nh.subscribe("controlit/rightHand/thumb/position", 1,
+        & HandControllerDreamer::rightThumbCMCPosCallback, this);
+
+    rightThumbCMCKpSubscriber = nh.subscribe("controlit/rightHand/thumb/kp", 1,
+        & HandControllerDreamer::rightThumbCMCKpCallback, this);
+
+    rightThumbCMCKdSubscriber = nh.subscribe("controlit/rightHand/thumb/kd", 1,
+        & HandControllerDreamer::rightThumbCMCKdCallback, this);
 
     // CONTROLIT_INFO << "Subscribing to power grasp topic...";
     rightHandPowerGraspSubscriber = nh.subscribe("controlit/rightHand/powerGrasp", 1, 
@@ -131,7 +147,7 @@ void HandControllerDreamer::updateState(Vector position, Vector velocity)
     {
         for (size_t ii = 0; ii < NUM_RIGHT_HAND_DOFS; ii++)
         {   
-            rhStatePublisher.msg_.position[ii] =  currPosition[ii];
+            rhStatePublisher.msg_.position[ii] = currPosition[ii];
             rhStatePublisher.msg_.velocity[ii] = currVelocity[ii];
         }
 
@@ -143,84 +159,91 @@ void HandControllerDreamer::getCommand(Vector & command)
 {
     command.setZero(6); // for debugging, reset everything to zero 
 
-    if (powerGraspRight)
+    if (rightHandControlMode == POWER_GRASP_MODE)
     {
-        // thumbKp = POWER_GRASP_ENABLED_KP;
-
-        // thumbGoalPos = 0; // right_thumb_cmc 90 degrees from palm
-
-        // if (!closingRightFingers && !closingThumbFinger)
-        // {
-        //     closingThumbFinger = true;
-
-        //     timeBeginCloseThumb = ros::Time::now();
-        //     thumbInitPos = currPosition[0];
-        // }
-        
-        // wait until right_thumb_cmc is at the zero position before curling the fingers
-        // if (closingRightFingers || std::abs(currPosition[0]) < 0.2)  // 0.2 radians is 11.46 degrees
-        // {
-            closingRightFingers = true;
-            // thumbKp = 1; //POWER_GRASP_DISABLED_KP;
-
-            command[1] = TORQUE_COMMAND_J1_CONTRACT; // close right_thumb_mcp
-            command[2] = (includeRightPointerFinger ? TORQUE_COMMAND_J2_CONTRACT : TORQUE_COMMAND_J2_EXTEND);  // right_pointer_finger (uses torque commands with opposite signs)
-            command[3] = (includeRightMiddleFinger  ? TORQUE_COMMAND_J3_CONTRACT : TORQUE_COMMAND_J3_EXTEND);  // right_middle_finger
-            command[4] = (includeRightPinkyFinger   ? TORQUE_COMMAND_J4_CONTRACT : TORQUE_COMMAND_J4_EXTEND);  // right_pinky_finger
-        // }
-        // else
-        // {
-        //     // CONTROLIT_INFO << "Not curling right_thumb_mcp, current position of right_thumb_cmc is " << std::abs(currPosition[0]);
-
-        //     // double elapsedTime = (ros::Time::now() - timeBeginCloseThumb).toSec();
-        //     // thumbGoalPos = thumbInitPos - elapsedTime * THUMB_SPEED;
-        //     // if (thumbGoalPos < 0)
-        //     //     thumbGoalPos = 0;
-
-        //     thumbGoalPos = -0.69; // -40 degrees
-        // }
-
-        // The PD control law for right_thumb_cmc
-        // command[0] = thumbKp * (thumbGoalPos - currPosition[0]) - thumbKd * currVelocity[0];
-        // command[0] = -0.15; // Force right_thumb_cmc to go to -40 degree position.
-        command[0] = 0; // send the right_thumb_cmc a torque command of zero to prevent it from overheating
-    }
-    else
-    {
-        closingRightFingers = false;
-        closingThumbFinger = false;
-
-        // Set the torque commands for "relaxing" e.g. "extending" the fingers"
-        command[1] = TORQUE_COMMAND_J1_EXTEND;
-        command[2] = TORQUE_COMMAND_J2_EXTEND;
-        command[3] = TORQUE_COMMAND_J3_EXTEND;
-        command[4] = TORQUE_COMMAND_J4_EXTEND;
-        
-        // wait until all fingers are relaxed before moving the right_thumb_cmc
-        if (std::abs(currPosition[1]) < 0.02)
+        if (powerGraspRight)
         {
-        	command[0] = TORQUE_COMMAND_J0_EXTEND;
-            // thumbGoalPos = 1.57;  // right_thumb_cmc at 90 degree position
-            // if (currPosition[0] < 1.57)
+            // thumbKp = POWER_GRASP_ENABLED_KP;
+
+            // thumbGoalPos = 0; // right_thumb_cmc 90 degrees from palm
+
+            // if (!closingRightFingers && !closingThumbFinger)
             // {
-            //     command[0] = 0.1; // Issue 0.1 Nm of torque to force the joint to go to position 1.57 radians
-            //     timeAtRelaxedPos = ros::Time::now();
+            //     closingThumbFinger = true;
+
+            //     timeBeginCloseThumb = ros::Time::now();
+            //     thumbInitPos = currPosition[0];
+            // }
+            
+            // wait until right_thumb_cmc is at the zero position before curling the fingers
+            // if (closingRightFingers || std::abs(currPosition[0]) < 0.2)  // 0.2 radians is 11.46 degrees
+            // {
+                closingRightFingers = true;
+                // thumbKp = 1; //POWER_GRASP_DISABLED_KP;
+
+                command[1] = TORQUE_COMMAND_J1_CONTRACT; // close right_thumb_mcp
+                command[2] = (includeRightPointerFinger ? TORQUE_COMMAND_J2_CONTRACT : TORQUE_COMMAND_J2_EXTEND);  // right_pointer_finger (uses torque commands with opposite signs)
+                command[3] = (includeRightMiddleFinger  ? TORQUE_COMMAND_J3_CONTRACT : TORQUE_COMMAND_J3_EXTEND);  // right_middle_finger
+                command[4] = (includeRightPinkyFinger   ? TORQUE_COMMAND_J4_CONTRACT : TORQUE_COMMAND_J4_EXTEND);  // right_pinky_finger
             // }
             // else
             // {
-            //     double elapsedTime = (ros::Time::now() - timeAtRelaxedPos).toSec();
-            //     if (elapsedTime > 3.0)
-            //         command[0] = 0.05;
-            //     else
-            //         command[0] = 0.1;   // Decrease torque after 3 seconds to prevent right_thumb-cmc motor from over heating
-                
+            //     // CONTROLIT_INFO << "Not curling right_thumb_mcp, current position of right_thumb_cmc is " << std::abs(currPosition[0]);
+
+            //     // double elapsedTime = (ros::Time::now() - timeBeginCloseThumb).toSec();
+            //     // thumbGoalPos = thumbInitPos - elapsedTime * THUMB_SPEED;
+            //     // if (thumbGoalPos < 0)
+            //     //     thumbGoalPos = 0;
+
+            //     thumbGoalPos = -0.69; // -40 degrees
             // }
+
+            // The PD control law for right_thumb_cmc
+            command[RIGHT_THUMB_CMC_INDEX] = thumbKp * (thumbGoalPos - currPosition[RIGHT_THUMB_CMC_INDEX]) - thumbKd * currVelocity[RIGHT_THUMB_CMC_INDEX];
+            // command[0] = -0.15; // Force right_thumb_cmc to go to -40 degree position.
+            // command[0] = 0; // send the right_thumb_cmc a torque command of zero to prevent it from overheating
         }
         else
         {
-            // CONTROLIT_INFO << "Not putting right_thumb_cmc into relax position, current positions of fingers:\n"
-            //               << "  - right_thumb_mcp: " << std::abs(currPosition[1]);
+            closingRightFingers = false;
+            closingThumbFinger = false;
+
+            // Set the torque commands for "relaxing" e.g. "extending" the fingers"
+            command[1] = TORQUE_COMMAND_J1_EXTEND;
+            command[2] = TORQUE_COMMAND_J2_EXTEND;
+            command[3] = TORQUE_COMMAND_J3_EXTEND;
+            command[4] = TORQUE_COMMAND_J4_EXTEND;
+            
+            // wait until all fingers are relaxed before moving the right_thumb_cmc
+            if (std::abs(currPosition[1]) < 0.02)
+            {
+                command[0] = TORQUE_COMMAND_J0_EXTEND;
+                // thumbGoalPos = 1.57;  // right_thumb_cmc at 90 degree position
+                // if (currPosition[0] < 1.57)
+                // {
+                //     command[0] = 0.1; // Issue 0.1 Nm of torque to force the joint to go to position 1.57 radians
+                //     timeAtRelaxedPos = ros::Time::now();
+                // }
+                // else
+                // {
+                //     double elapsedTime = (ros::Time::now() - timeAtRelaxedPos).toSec();
+                //     if (elapsedTime > 3.0)
+                //         command[0] = 0.05;
+                //     else
+                //         command[0] = 0.1;   // Decrease torque after 3 seconds to prevent right_thumb-cmc motor from over heating
+                    
+                // }
+            }
+            else
+            {
+                // CONTROLIT_INFO << "Not putting right_thumb_cmc into relax position, current positions of fingers:\n"
+                //               << "  - right_thumb_mcp: " << std::abs(currPosition[1]);
+            }
         }
+    }
+    else // right hand is in position control mode
+    {
+        command[RIGHT_THUMB_CMC_INDEX] = thumbKp * (thumbGoalPos - currPosition[RIGHT_THUMB_CMC_INDEX]) - thumbKd * currVelocity[RIGHT_THUMB_CMC_INDEX];
     }
 
     // Publish the right hand command
@@ -231,13 +254,34 @@ void HandControllerDreamer::getCommand(Vector & command)
             rhCommandPublisher.msg_.effort[ii] =  command[ii];
         }
 
-        rhCommandPublisher.msg_.position[0] = thumbGoalPos; // publish the current goal position of the right_thumb_cmc
+        rhCommandPublisher.msg_.position[RIGHT_THUMB_CMC_INDEX] = thumbGoalPos; // publish the current goal position of the right_thumb_cmc
 
         rhCommandPublisher.unlockAndPublish();
     }
 
     // Issue command to left gripper
     command[5] = powerGraspLeft ? 2 : -0.5;
+}
+
+
+void HandControllerDreamer::rightHandModeCallback(const boost::shared_ptr<std_msgs::Int32 const> & msgPtr)
+{
+    rightHandControlMode = msgPtr->data;
+}
+
+void HandControllerDreamer::rightThumbCMCPosCallback(const boost::shared_ptr<std_msgs::Float64 const> & msgPtr)
+{
+    thumbGoalPos = msgPtr->data;
+}
+
+void HandControllerDreamer::rightThumbCMCKpCallback(const boost::shared_ptr<std_msgs::Float64 const> & msgPtr)
+{
+    thumbKp = msgPtr->data;
+}
+
+void HandControllerDreamer::rightThumbCMCKdCallback(const boost::shared_ptr<std_msgs::Float64 const> & msgPtr)
+{
+    thumbKd = msgPtr->data;
 }
 
 void HandControllerDreamer::rightHandCallback(const boost::shared_ptr<std_msgs::Bool const> & msgPtr)
