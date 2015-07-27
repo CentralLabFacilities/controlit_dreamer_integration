@@ -14,8 +14,8 @@ namespace dreamer {
 #define RIGHT_THUMB_CMC_INDEX 0
 #define LEFT_GRIPPER_JOINT_INDEX 5
 
-#define POWER_GRASP_ENABLED_KP 3
-#define POWER_GRASP_ENABLED_KD 0
+#define RIGHT_THUMB_CMC_KP 3
+#define RIGHT_THUMB_CMC_KD 0
 
 #define THUMB_SPEED 1  // radians per second
 
@@ -40,8 +40,8 @@ HandControllerDreamer::HandControllerDreamer() :
     includeRightPointerFinger(true),
     includeRightMiddleFinger(true),
     includeRightPinkyFinger(true),
-    thumbKp(POWER_GRASP_ENABLED_KP),
-    thumbKd(POWER_GRASP_ENABLED_KD),
+    thumbKp(RIGHT_THUMB_CMC_KP),
+    thumbKd(RIGHT_THUMB_CMC_KD),
     thumbGoalPos(0),
     rhCommandPublisher("controlit/rightHand/command", 1),
     rhStatePublisher("controlit/rightHand/state", 1)
@@ -213,32 +213,34 @@ void HandControllerDreamer::getCommand(Vector & command)
             command[2] = TORQUE_COMMAND_J2_EXTEND;
             command[3] = TORQUE_COMMAND_J3_EXTEND;
             command[4] = TORQUE_COMMAND_J4_EXTEND;
+
+            command[RIGHT_THUMB_CMC_INDEX] = thumbKp * (thumbGoalPos - currPosition[RIGHT_THUMB_CMC_INDEX]) - thumbKd * currVelocity[RIGHT_THUMB_CMC_INDEX];
             
             // wait until all fingers are relaxed before moving the right_thumb_cmc
-            if (std::abs(currPosition[1]) < 0.02)
-            {
-                command[0] = TORQUE_COMMAND_J0_EXTEND;
-                // thumbGoalPos = 1.57;  // right_thumb_cmc at 90 degree position
-                // if (currPosition[0] < 1.57)
-                // {
-                //     command[0] = 0.1; // Issue 0.1 Nm of torque to force the joint to go to position 1.57 radians
-                //     timeAtRelaxedPos = ros::Time::now();
-                // }
-                // else
-                // {
-                //     double elapsedTime = (ros::Time::now() - timeAtRelaxedPos).toSec();
-                //     if (elapsedTime > 3.0)
-                //         command[0] = 0.05;
-                //     else
-                //         command[0] = 0.1;   // Decrease torque after 3 seconds to prevent right_thumb-cmc motor from over heating
+            // if (std::abs(currPosition[1]) < 0.02)
+            // {
+            //     command[0] = TORQUE_COMMAND_J0_EXTEND;
+            //     // thumbGoalPos = 1.57;  // right_thumb_cmc at 90 degree position
+            //     // if (currPosition[0] < 1.57)
+            //     // {
+            //     //     command[0] = 0.1; // Issue 0.1 Nm of torque to force the joint to go to position 1.57 radians
+            //     //     timeAtRelaxedPos = ros::Time::now();
+            //     // }
+            //     // else
+            //     // {
+            //     //     double elapsedTime = (ros::Time::now() - timeAtRelaxedPos).toSec();
+            //     //     if (elapsedTime > 3.0)
+            //     //         command[0] = 0.05;
+            //     //     else
+            //     //         command[0] = 0.1;   // Decrease torque after 3 seconds to prevent right_thumb-cmc motor from over heating
                     
-                // }
-            }
-            else
-            {
-                // CONTROLIT_INFO << "Not putting right_thumb_cmc into relax position, current positions of fingers:\n"
-                //               << "  - right_thumb_mcp: " << std::abs(currPosition[1]);
-            }
+            //     // }
+            // }
+            // else
+            // {
+            //     // CONTROLIT_INFO << "Not putting right_thumb_cmc into relax position, current positions of fingers:\n"
+            //     //               << "  - right_thumb_mcp: " << std::abs(currPosition[1]);
+            // }
         }
     }
     else // right hand is in position control mode
