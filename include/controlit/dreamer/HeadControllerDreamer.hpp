@@ -7,12 +7,17 @@
 #include <controlit/addons/ros/RealTimePublisherHeader.hpp>
 #include <std_msgs/Float64MultiArray.h>
 
+#include <SerialStream.h>
+
 using controlit::addons::eigen::Vector;
 using controlit::addons::eigen::Matrix;
 using controlit::addons::eigen::Matrix3d;
 
 namespace controlit {
 namespace dreamer {
+
+#define SERIAL_BUFFER_SIZE 18
+#define SERIAL_START_BYTE 0x55
 
 /*!
  * Implements controllers for Dreamer's head joints.
@@ -51,7 +56,7 @@ public:
      *   4: eye_pitch
      *   5: right_eye_yaw
      *   6: left_eye_yaw
-     * 
+     *
      * \param[in] velocity The current velocity of the head joints.
      */
     void updateState(Vector position, Vector velocity);
@@ -66,28 +71,38 @@ public:
 private:
 
     /*!
-     * Callback methods for head joint commands
+     * Callback methods for head joint position commands.
      */
-    void headCommandCallback(const boost::shared_ptr<std_msgs::Float64MultiArray const> & msgPtr);
+    void positionCommandCallback(const boost::shared_ptr<std_msgs::Float64MultiArray const> & msgPtr);
+
+    /*!
+     * Callback method for head joint position error values.
+     */
+    void positionErrorCallback(const boost::shared_ptr<std_msgs::Float64MultiArray const> & msgPtr);
 
     // Local variables for holding the current position and velocity state.
     Vector currPosition;
     Vector currVelocity;
 
-
     // ROS Subscribers
-    ros::Subscriber headCommandSubscriber;
+    ros::Subscriber headPositionCommandSubscriber;
+    ros::Subscriber headPositionErrorSubscriber;
 
     // The command
     Vector commandPos;
     // Vector commandVel;
+    Vector errorPos;
 
     // ROS publishers
     controlit::addons::ros::RealtimePublisherHeader<sensor_msgs::JointState>
         jointStatePublisher;
 
-    controlit::addons::ros::RealtimePublisherHeader<sensor_msgs::JointState> 
+    controlit::addons::ros::RealtimePublisherHeader<sensor_msgs::JointState>
         jointCommandPublisher;
+
+    LibSerial::SerialStream serialPort;
+
+    char serialOutputBuff[SERIAL_BUFFER_SIZE];
 };
 
 } // namespace dreamer
