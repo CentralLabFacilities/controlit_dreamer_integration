@@ -1,5 +1,7 @@
 #include <controlit/dreamer/HeadControllerDreamer.hpp>
-#include <controlit/logging/Logging.hpp>
+
+#include <controlit/logging/RealTimeLogging.hpp>
+#include <SerialStreamBuf.h>
 
 namespace controlit {
 namespace dreamer {
@@ -21,7 +23,7 @@ HeadControllerDreamer::~HeadControllerDreamer()
 bool HeadControllerDreamer::init(ros::NodeHandle & nh)
 {
     serialPort.Open("/dev/ttyS0");
-    serialPort.SetBaudRate(LibSerial::SerialStreamBuff::BAUD115200);
+    serialPort.SetBaudRate(LibSerial::SerialStreamBuf::BAUD_115200);
     serialPort.SetCharSize(LibSerial::SerialStreamBuf::CHAR_SIZE_8); // 8 bit wide characters
     serialPort.SetNumOfStopBits(1); // use one stop bit
     serialPort.SetParity(LibSerial::SerialStreamBuf::PARITY_ODD);
