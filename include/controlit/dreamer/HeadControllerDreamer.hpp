@@ -80,6 +80,14 @@ private:
      */
     void positionErrorCallback(const boost::shared_ptr<std_msgs::Float64MultiArray const> & msgPtr);
 
+    /*!
+     * Saves a float as an array of bytes.
+     *
+     * \param buff The buffer to store the bytes in.
+     * \param val The value to save.
+     */
+    void saveFloat(char * buff, float val);
+
     // Local variables for holding the current position and velocity state.
     Vector currPosition;
     Vector currVelocity;
@@ -103,6 +111,7 @@ private:
     LibSerial::SerialStream serialPort;
 
     char serialOutputBuff[SERIAL_BUFFER_SIZE];
+    char checksum;
 };
 
 } // namespace dreamer

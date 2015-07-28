@@ -7,6 +7,7 @@ namespace controlit {
 namespace dreamer {
 
 #define NUM_DOFS 7
+#define PRINT_SERIAL_MESSAGES 1
 
 HeadControllerDreamer::HeadControllerDreamer() :
     jointStatePublisher("controlit/head/joint_states", 1),
@@ -107,6 +108,16 @@ void HeadControllerDreamer::updateState(Vector position, Vector velocity)
     // }
 }
 
+void HeadControllerDreamer::saveFloat(char * buff, float val)
+{
+    unsigned char const * pp = reinterpret_cast<unsigned char const *>(&val);
+
+    for (std::size_t ii = 0; ii != sizeof(float); ++ii)
+    {
+        buff[ii] = pp[ii];
+    }
+}
+
 void HeadControllerDreamer::getCommand(Vector & command)
 {
     // CONTROLIT_INFO << "Method Called";
@@ -128,10 +139,40 @@ void HeadControllerDreamer::getCommand(Vector & command)
     //     jointCommandPublisher.unlockAndPublish();
     // }
 
-    // package up the error values for transmission over the serial port
+    // Package up the error values for transmission over the serial port.
 
-    // TODO
-    CONTROLIT_INFO_RT << "Size of position error: " << sizeof(errorPos[0]);
+    // The errors are specified as type double (8 bytes). Cast them to be of type float (4 bytes) for transmission.
+
+    saveFloat(&serialOutputBuff[1], static_cast<float>(errorPos[0]));
+    saveFloat(&serialOutputBuff[5], static_cast<float>(errorPos[1]));
+    saveFloat(&serialOutputBuff[9], static_cast<float>(errorPos[2]));
+    saveFloat(&serialOutputBuff[13], static_cast<float>(errorPos[3]));
+
+    // Compute and save the checksum, which is simply the XOR of all bytes preceding the checking byte in the message.
+    checksum = 0x00;
+    for (std::size_t ii = 0; ii < SERIAL_BUFFER_SIZE - 1; ii++)
+    {
+        checksum ^= serialOutputBuff[ii];
+    }
+    serialOutputBuff[SERIAL_BUFFER_SIZE - 1] = checksum;
+
+    // Some debug output
+    #if PRINT_SERIAL_MESSAGES
+    {
+        std::stringstream msgBuff;
+        msgBuff << "Transmitting the following packet:\n";
+        msgBuff << "  [0x" << std::hex << std::uppercase << SERIAL_START_BYTE << std::nouppercase << std::dec << "]";
+        msgBuff << " [" << errorPos[0] << "] [" << errorPos[1] << "] [" << errorPos[2] << "] [" << errorPos[3] << "]\n";
+        msgBuff << "Bytes:\n";
+        for (std::size_t ii = 0; ii < SERIAL_BUFFER_SIZE; ii++)
+        {
+            msgBuff << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2)  << static_cast<int>(serialOutputBuff[ii]);
+            if (ii < SERIAL_BUFFER_SIZE - 1)
+                msgBuff << ", ";
+        }
+        CONTROLIT_INFO_RT << msgBuff.str();
+    }
+    #endif
 
     // send position error values to head
     serialPort.write(serialOutputBuff, SERIAL_BUFFER_SIZE);
