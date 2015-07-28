@@ -25,6 +25,7 @@ controlit_build_init()
 find_package(Eigen REQUIRED)
 find_package(OpenMP)
 find_package(Boost COMPONENTS components)
+find_package(LibSerial REQUIRED)
 
 ###################################
 ## catkin specific configuration ##
@@ -73,6 +74,7 @@ include_directories(
     ${Boost_INCLUDE_DIRS}
     ${catkin_INCLUDE_DIRS}
     ${EIGEN_INCLUDE_DIRS}
+    ${LIBSERIAL_INCLUDE_DIR}
 )
 
 add_library(${PROJECT_NAME} SHARED
@@ -88,6 +90,7 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
     ${Boost_LIBRARIES}
     ${catkin_LIBRARIES}
+    ${LIBSERIAL_LIBRARY}
 )
 
 add_executable(ServoClockDreamerTester src/ServoClockDreamerTester.cpp)
