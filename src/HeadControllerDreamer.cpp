@@ -7,7 +7,7 @@ namespace controlit {
 namespace dreamer {
 
 #define NUM_DOFS 7
-#define PRINT_SERIAL_MESSAGES 1
+#define PRINT_SERIAL_MESSAGES 0
 
 HeadControllerDreamer::HeadControllerDreamer() :
     jointStatePublisher("controlit/head/joint_states", 1),
