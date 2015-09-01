@@ -14,7 +14,7 @@ namespace dreamer {
 #define RIGHT_THUMB_CMC_INDEX 0
 #define LEFT_GRIPPER_JOINT_INDEX 5
 
-#define RIGHT_THUMB_CMC_KP 3
+#define RIGHT_THUMB_CMC_KP 1
 #define RIGHT_THUMB_CMC_KD 0
 
 #define THUMB_SPEED 1  // radians per second
@@ -70,16 +70,16 @@ bool HandControllerDreamer::init(ros::NodeHandle & nh)
         & HandControllerDreamer::rightThumbCMCKdCallback, this);
 
     // CONTROLIT_INFO << "Subscribing to power grasp topic...";
-    rightHandPowerGraspSubscriber = nh.subscribe("controlit/rightHand/powerGrasp", 1, 
+    rightHandPowerGraspSubscriber = nh.subscribe("controlit/rightHand/powerGrasp", 1,
         & HandControllerDreamer::rightHandCallback, this);
 
-    includeRightPinkyFingerSubscriber = nh.subscribe("controlit/rightHand/includeRightPinkyFinger", 1, 
+    includeRightPinkyFingerSubscriber = nh.subscribe("controlit/rightHand/includeRightPinkyFinger", 1,
         & HandControllerDreamer::includeRightPinkyFingerCallback, this);
 
-    includeRightMiddleFingerSubscriber = nh.subscribe("controlit/rightHand/includeRightMiddleFinger", 1, 
+    includeRightMiddleFingerSubscriber = nh.subscribe("controlit/rightHand/includeRightMiddleFinger", 1,
         & HandControllerDreamer::includeRightMiddleFingerCallback, this);
 
-    includeRightPointerFingerSubscriber = nh.subscribe("controlit/rightHand/includeRightIndexFinger", 1, 
+    includeRightPointerFingerSubscriber = nh.subscribe("controlit/rightHand/includeRightIndexFinger", 1,
         & HandControllerDreamer::includeRightPointerFingerCallback, this);
 
     leftGripperPowerGraspSubscriber = nh.subscribe("controlit/leftGripper/powerGrasp", 1,
