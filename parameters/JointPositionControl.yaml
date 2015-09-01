@@ -15,7 +15,7 @@ tasks:
         #         30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0] # right arm
         value: [60.0, 60.0,                               # torso
                 60.0, 60.0, 60.0, 60.0, 60.0, 60.0, 60.0, # left arm
-                60.0, 60.0, 60.0, 60.0, 60.0, 60.0, 60.0] # right arm
+                60.0, 60.0, 60.0, 40.0, 60.0, 60.0, 60.0] # right arm
 
       - name: kd
         type: vector
@@ -24,7 +24,7 @@ tasks:
         #         1, 1, 1, 1, 1, 1, 1]
         value: [3, 3,                    # torso
                 3, 3, 3, 3, 3, 3, 3,     # left arm
-                3, 3, 3, 3, 3, 3, 3]     # right arm
+                3, 3, 3, 0, 3, 3, 3]     # right arm
 
       - name: maxVelocity
         type: vector
@@ -65,21 +65,21 @@ tasks:
         type: vector
         value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
-    events:
-      - name: converged
-        expression: errorNorm < 55e-4 #err is a norm...it is positive
-      - name: quiescent
-        expression: errorDotNorm < 3e-2 #absolute value take in code
+    #events:
+    #  - name: converged
+    #    expression: errorNorm < 55e-4 #err is a norm...it is positive
+    #  - name: quiescent
+    #    expression: errorDotNorm < 3e-2 #absolute value take in code
 compound_task:
   type: compound_task
   name: My compound task
-  events:
-    - name: converged
-      expression: Posture.converged and Posture.quiescent
+  #events:
+  #  - name: converged
+  #    expression: Posture.converged and Posture.quiescent
   task_list:
      - name: Posture
        priority: 0
-       enabled: 1
+       enableState: 2
 constraints:
   - name: ContactConstraint
     type: controlit/FlatContactConstraint
@@ -90,9 +90,6 @@ constraints:
       - name: contactPoint
         type: vector
         value: [0, 0, 0]
-      - name: enabled
-        type: integer
-        value: 1
   - name: TorsoTransmission
     type: controlit/TransmissionConstraint
     parameters:
@@ -110,6 +107,6 @@ constraint_set:
   name: My Constraint Set
   active_constraints:
     - name: ContactConstraint
-      enabled: 1
+      enableState: 2
     - name: TorsoTransmission
-      enabled: 1
+      enableState: 2

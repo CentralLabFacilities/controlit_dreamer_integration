@@ -41,7 +41,7 @@ ServoClockDreamer::~ServoClockDreamer()
 
 void ServoClockDreamer::updateLoopImpl()
 {
-    PRINT_INFO_STATEMENT("Method called!");
+    // PRINT_INFO_STATEMENT("Method called!");
 
     // Compute the period of the real-time servo loop.
     // TODO: Make this a parameter
@@ -132,12 +132,12 @@ void * ServoClockDreamer::rtMethod(void *)
     //////////////////////////////////////////////////
     // Start the real time engine...
     
-    rtThreadState = RT_THREAD_RUNNING;
     RTIME tickPeriod = nano2count(rtPeriod_ns);
     rt_task_make_periodic(task, rt_get_time() + tickPeriod, tickPeriod); 
     mlockall(MCL_CURRENT | MCL_FUTURE);
     rt_make_hard_real_time();
-    
+    rtThreadState = RT_THREAD_RUNNING;
+
     //////////////////////////////////////////////////
     // The servo init method if necessary.
 
