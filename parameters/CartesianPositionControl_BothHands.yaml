@@ -270,9 +270,9 @@ tasks:
 compound_task:
   type: compound_task
   name: My compound task
-  events:
-    - name: converged
-      expression: Posture.converged and Posture.quiescent
+  # events:
+  #   - name: converged
+  #     expression: Posture.converged and Posture.quiescent
   task_list:
      # - name: ChestOrientation
      #   priority: 0
