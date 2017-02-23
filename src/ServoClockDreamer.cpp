@@ -1,6 +1,8 @@
 #include <controlit/dreamer/ServoClockDreamer.hpp>
 #include <controlit/logging/RealTimeLogging.hpp>
 
+#include <rtai_nam2num.h>
+
 namespace controlit {
 namespace dreamer {
 

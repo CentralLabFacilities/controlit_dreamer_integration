@@ -8,7 +8,6 @@
 #include <rtai_shm.h>
 #include <rtai.h>
 #include <rtai_sem.h>
-#include <rtai_nam2num.h>
 #include <rtai_registry.h>
 
 namespace controlit {

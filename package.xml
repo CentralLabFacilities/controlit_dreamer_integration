@@ -31,6 +31,7 @@
     <buildtool_depend>catkin</buildtool_depend>
 
     <depend>roscpp</depend>
+    <build_depend>controlit_cmake</build_depend>
     <depend>controlit_core</depend>
     <depend>controlit_trajectory_generators</depend>
     <depend>interactive_markers</depend>

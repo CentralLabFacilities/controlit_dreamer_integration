@@ -8,7 +8,7 @@
 
 // #include <thread>  // for std::mutex
 #include <unistd.h>
-#include "m3uta/controllers/torque_shm_uta_sds.h"
+#include "m3/shared_mem/torque_shm_sds.h"
 #include <urdf/model.h>
 
 #include <rtai_sem.h> // for SEM
@@ -118,12 +118,12 @@ private:
      * Holds a copy of the status that was read from the shared memory.
      * It is defined in mekabot/m3uta/src/m3uta/controllers/torque_shm_uta_sds.h.
      */
-    M3UTATorqueShmSdsStatus shm_status;
+    M3TorqueShmSdsStatus shm_status;
 
     /*!
      * Holds a copy of the command to be written to shared memory.
      */
-    M3UTATorqueShmSdsCommand shm_cmd;
+    M3TorqueShmSdsCommand shm_cmd;
 
     /*!
      * The object that generates the commands for the hands.

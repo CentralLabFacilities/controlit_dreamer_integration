@@ -5,27 +5,30 @@ project(controlit_dreamer_integration)
 ## ControlIt! ##
 ################
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__IN_RTAI__ -ffast-math")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__IN_RTAI__ -ffast-math")
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
     cmake_modules
-    controlit_core
     controlit_cmake
+    controlit_core
     roscpp
 )
 
-# message("** controlit_cmake_DIR: " ${controlit_cmake_DIR})
-list(APPEND CMAKE_MODULE_PATH ${controlit_cmake_DIR}/../../../../src/controlit/controlit_cmake/cmake)
-# message("** CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
+#message("** controlit_cmake_DIR: " ${controlit_cmake_DIR})
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../controlit/controlit_cmake/Modules ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
+#message("** CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
 
 include(controlitbuild)
 controlit_build_init()
 
 find_package(Eigen REQUIRED)
 find_package(OpenMP)
-find_package(Boost COMPONENTS components)
 find_package(LibSerial REQUIRED)
+find_package(RTAI REQUIRED)
 
 ###################################
 ## catkin specific configuration ##
@@ -70,11 +73,12 @@ catkin_package(
 ## Your package locations should be listed before other locations
 include_directories(
     include
-    /usr/realtime/include
     ${Boost_INCLUDE_DIRS}
     ${catkin_INCLUDE_DIRS}
     ${EIGEN_INCLUDE_DIRS}
     ${LIBSERIAL_INCLUDE_DIR}
+    ${RTAI_INCLUDE_DIR}
+    ${controlit_core_INCLUDE_DIRS}
 )
 
 add_library(${PROJECT_NAME} SHARED
@@ -91,22 +95,32 @@ target_link_libraries(${PROJECT_NAME}
     ${Boost_LIBRARIES}
     ${catkin_LIBRARIES}
     ${LIBSERIAL_LIBRARY}
+    ${RTAI_LIBRARY}
+    ${controlit_core_LIBRARIES}
 )
 
 add_executable(ServoClockDreamerTester src/ServoClockDreamerTester.cpp)
 
 target_link_libraries(ServoClockDreamerTester
-    ${Boost_LIBRARIES}
-    ${catkin_LIBRARIES}
     ${PROJECT_NAME}
+    ${controlit_core_LIBRARIES}
 )
 
 add_executable(RobotInterfaceDreamerTester src/RobotInterfaceDreamerTester.cpp)
 
 target_link_libraries(RobotInterfaceDreamerTester
-    # ${Boost_LIBRARIES}
     ${PROJECT_NAME}
-    ${catkin_LIBRARIES}
+    ${controlit_core_LIBRARIES}
+)
+
+install(TARGETS ${PROJECT_NAME}
+    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+ 
+install(DIRECTORY launch parameters plugins/
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
 # TESTS!

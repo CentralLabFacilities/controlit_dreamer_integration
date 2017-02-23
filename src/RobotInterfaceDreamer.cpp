@@ -12,6 +12,7 @@
 #include <m3rt/base/m3rt_def.h>
 
 #include <rtai_shm.h>
+#include <rtai_nam2num.h>
 
 #define TORQUE_SHM "TSHMM"
 #define TORQUE_CMD_SEM "TSHMC"
@@ -300,11 +301,11 @@ bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool 
     // If the reflected sequence number is equal to the current sequence number,
     // compute the round trip communication latency and publish it.
     //---------------------------------------------------------------------------------
-    if (seqno == shm_status.seqno)
-    {
-        double latency = rttTimer->getTime();
-        publishCommLatency(latency);
-    }
+    //if (seqno == shm_status.seqno)
+    //{
+    //    double latency = rttTimer->getTime();
+    //    publishCommLatency(latency);
+    //}
 
     // Temporary code to print everything received
     // printSHMStatus();
@@ -459,8 +460,8 @@ bool RobotInterfaceDreamer::read(controlit::RobotState & latestRobotState, bool 
         handJointPositions[ii] = DEG_TO_RAD(shm_status.right_hand.theta[ii]);
         handJointVelocities[ii] = DEG_TO_RAD(shm_status.right_hand.thetadot[ii]);
     }
-    handJointPositions[5] = DEG_TO_RAD(shm_status.left_hand.theta[0]);
-    handJointVelocities[5] = DEG_TO_RAD(shm_status.left_hand.thetadot[0]);
+    //handJointPositions[5] = DEG_TO_RAD(shm_status.left_hand.theta[0]);
+    //handJointVelocities[5] = DEG_TO_RAD(shm_status.left_hand.thetadot[0]);
 
     handController.updateState(handJointPositions, handJointVelocities);
 
@@ -566,7 +567,7 @@ bool RobotInterfaceDreamer::write(const controlit::Command & command)
         shm_cmd.right_hand.tq_desired[ii] = 1.0e3 * handCommand[ii];
     }
 
-    shm_cmd.left_hand.tq_desired[0] = 1.0e3 * handCommand[5]; // The left gripper accepts commands in Nm?
+    //shm_cmd.left_hand.tq_desired[0] = 1.0e3 * handCommand[5]; // The left gripper accepts commands in Nm?
 
     // shm_cmd.right_hand.tq_desired[0] = 0;
     // shm_cmd.right_hand.tq_desired[1] = 0;
@@ -624,7 +625,7 @@ bool RobotInterfaceDreamer::write(const controlit::Command & command)
         rttTimer->start();
     }
 
-    shm_cmd.seqno = seqno;
+    //shm_cmd.seqno = seqno;
 
     //---------------------------------------------------------------------------------
     // Write the command to shared memory.  This transmits the command to the M3
